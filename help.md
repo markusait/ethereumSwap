@@ -1,7 +1,7 @@
 original
 
   "scripts": {
-    "start": "webpack-dev-server --open --mode development",
+    "start": "webpack-dev-server --content-base bundle",
     "build": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

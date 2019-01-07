@@ -1,22 +1,52 @@
 const path = require('path')
+const { join, resolve } = require('path')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-// const HTMLWebpackPlugin = require('html-webpack-plugin');
-// const HTMLWebpackPluginConfig = new HTMLWebpackPlugin({
-//   template: path.join(__dirname, 'client/public', 'index.html'),
-//   filename: 'index.html',
-//   inject: 'body'
-// });
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
 module.exports = {
-  entry: path.join(__dirname, 'client', 'index.js'),
+  entry: ['babel-polyfill', path.join(__dirname, 'client', 'index.js')],
   devServer: {
     // publicPath: "/",
     contentBase: path.join(__dirname, 'client'),
-    // hot: true
+    // hot: true crashes if used???
   },
   output: {
     path: path.join(__dirname, 'dist'),
     filename: 'build.js'
   },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: resolve(__dirname, 'client/public', 'index.html'),
+      filename: './index.html'
+    })
+  ],
+
+  module: {
+    rules: [{
+      test: /\.css$/,
+      use: ['style-loader', 'css-loader'],
+      include: [/client/, /node_modules/]
+    }, {
+      test: /\.jsx?$/,
+      loader: 'babel-loader',
+      exclude: /node_modules/,
+      query: {
+        presets: ['es2015', 'react', 'stage-2']
+      }
+    }, {
+      test: /\.json$/,
+      loader: 'json-loader',
+      include: '/build/contracts/'
+    }]
+  }
+}
+
+//******************************
+// Additional Webpack config
+//******************************
+
+  // entry: path.join(__dirname, 'client', 'index.js'),
+
   // plugins: [HTMLWebpackPluginConfig],
   // plugins: [
   //   // Copy our app's index.html to the build folder.
@@ -26,24 +56,9 @@ module.exports = {
   // ],
   //not sure if needed
   // devtool: 'source-map',
-  module: {
-    rules: [
-      {
-        test: /\.css$/,
-        use: ['style-loader','css-loader'],
-        include: [/client/, /node_modules/]
-      }, {
-        test: /\.jsx?$/,
-        loader: 'babel-loader',
-        exclude: /node_modules/,
-        query: {
-          presets: ['es2015', 'react', 'stage-2']
-        }
-      }, {
-        test: /\.json$/,
-        loader: 'json-loader',
-        include: '/build/contracts/'
-      }
-    ]
-  }
-}
+
+// const HTMLWebpackPluginConfig = new HTMLWebpackPlugin({
+//   template: path.join(__dirname, 'client/public', 'index.html'),
+//   filename: 'index.html',
+//   inject: 'body'
+// });
