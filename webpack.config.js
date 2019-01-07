@@ -4,7 +4,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  entry: ['babel-polyfill', path.join(__dirname, 'client', 'index.js')],
+  entry: ['babel-polyfill', path.join(__dirname, 'client/src', 'index.js')],
   devServer: {
     // publicPath: "/",
     contentBase: path.join(__dirname, 'client'),
