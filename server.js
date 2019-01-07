@@ -26,12 +26,12 @@ mongoose
 
 // Serve static assets if in production
 // if (process.env.NODE_ENV === 'production') {
-if (true) {
+if (false) {
   // Set static folder
   app.use(express.static(path.join(__dirname, 'public')));
 
   app.get('*', (req, res) => {
-      res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
+      res.sendFile(path.join(__dirname, 'client/public/index.html'));
   })
 }
 // https://stackoverflow.com/questions/43557390/react-router-and-express-get-conflict

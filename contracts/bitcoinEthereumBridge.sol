@@ -293,7 +293,7 @@ contract usingOraclize {
 
 
 contract bitcoinEthereumBridge is usingOraclize {
-  
+
   uint public bitcoinWithdrawAmount;
   string public bitcoinWithdrawAddress;
   bytes32 public oraclizeID;
