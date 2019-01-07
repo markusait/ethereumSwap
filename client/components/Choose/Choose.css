@@ -1,0 +1,38 @@
+.split {
+    color: #fff;
+
+  height: 100%;
+  width: 50%;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+
+/* Control the left side */
+.left {
+  background-color: #ff9e2c;
+    padding: 1rem;
+  left: 0;
+}
+
+/* Control the right side */
+.right {
+  right: 0;
+  background-color: #b6701e;
+}
+
+/* If you want the content centered horizontally and vertically */
+.centered {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+/* h1 {
+  font-size: 1.75rem;
+  margin: 0 0 0.75rem 0;
+} */

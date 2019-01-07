@@ -7,14 +7,14 @@
     "test": "test"
   },
   "scripts": {
-    "start": "webpack-dev-server --open",
+    "start": "webpack-dev-server --content-base bundle",
     "build": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "babel-core": "^6.26.0",
+    "babel-core": "^6.26.3",
     "babel-loader": "^7.1.3",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
@@ -29,8 +29,14 @@
     "style-loader": "^0.20.2",
     "truffle-contract": "^3.0.4",
     "web3": "^0.20.5",
-    "webpack": "^4.0.1",
+    "webpack": "^4.28.3",
     "webpack-cli": "^2.0.9",
-    "webpack-dev-server": "^3.0.0"
+    "webpack-dev-server": "^3.1.14"
+  },
+  "dependencies": {
+    "copy-webpack-plugin": "^4.6.0",
+    "html-webpack-plugin": "^3.2.0",
+    "react-materialize": "^2.6.0",
+    "react-router-dom": "^4.3.1"
   }
 }

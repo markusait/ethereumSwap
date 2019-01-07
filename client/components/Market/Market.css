@@ -1,0 +1,6 @@
+.market-page {
+  height: 100vh;
+  background-image: linear-gradient(to bottom, #ff8a00, #da1b60);
+  display: flex;
+  justify-content: flex-start;
+}
