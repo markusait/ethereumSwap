@@ -311,12 +311,12 @@ contract EthereumBridge is usingOraclize {
     return "pong";
   }
   // Constructor
-  function EthereumBridge() payable public {
+  function EthereumBridge() public {
         // owner = msg.sender;
         // emit LogUpdate(owner, address(this).balance);
         // Replace the next line with your version:
-        OAR = OraclizeAddrResolverI(0xECD3C45d2eaEA5aA79aCf1D3700DF7f03a77C52B);
-        oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS);
+        OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
+        // oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS);
         // update();
       }
 
@@ -342,9 +342,9 @@ contract EthereumBridge is usingOraclize {
     //require that it has been created or not payed out yet
     require(deposit[_bitcoinAddress].exsists);
     //calling Oraclize API and assiging the right ID
-    if (oraclize_getPrice("URL") > address(this).balance) {
-      // emit LogInfo("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
-    } else {
+    // if (oraclize_getPrice("URL") > address(this).balance) {
+    //   // emit LogInfo("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+    // } else {
       // emit LogInfo("Oraclize query was sent, standing by for the answer..");
       string memory query = strConcat("https://blockchain.info/q/txresult/", _txHash, "/", _bitcoinAddress);
       bytes32 oraclizeID = oraclize_query("URL", query, 500000);
@@ -354,14 +354,16 @@ contract EthereumBridge is usingOraclize {
       deposit[_bitcoinAddress].oraclizeID = oraclizeID;
       //making sure it can be looked up
       oraclizeLookup[oraclizeID] = _bitcoinAddress;
-    }
+    // }
   }
 
   //Oraclize call back function invoking payout process
   //change result to payed Amount
   function __callback(bytes32 _oraclizeID, string _result) {
     string memory bitcoinAddress = oraclizeLookup[_oraclizeID];
-    address recipientAddress = deposit[bitcoinAddress].potentialPayoutAddress;
+    // address recipientAddress = deposit[bitcoinAddress].potentialPayoutAddress;
+    //testing
+    address recipientAddress = 0xc68598cd56FAf5896b7D7bAb0DE5545D1E9bd90E;
     uint amount = stringToUint(deposit[bitcoinAddress].ethDepositInWei);
     //only Oraclize allowed
     require(msg.sender == oraclize_cbAddress());
@@ -375,22 +377,22 @@ contract EthereumBridge is usingOraclize {
 
   //@edit maybe include in __callback function to save gas
   //if API Result is correct payout the Bitcoin sender
-  function _checkCallback(bytes32 _oraclizeID, string _payedAmount) internal returns (bool){
-    string memory bitcoinAddress = oraclizeLookup[_oraclizeID];
-    // can be omitted:  require(deposit[bitcoinAddress].exsists);
-    //checking the amount payed which oracle got from API is at least the requested minimum payout Amount
-    require(stringToUint(_payedAmount) >= stringToUint(deposit[bitcoinAddress].bitcoinWithdrawAmount));
-    // deposit[bitcoinAddress].exsists == false; would make reusable but leaving out for now
-
-    //payout will be initialized
-    // _withdrawToRecipient(deposit[bitcoinAddress].ethDepositInWei, deposit[bitcoinAddress].potentialPayoutAddress);
-    return true;
-  }
-
-  //Finally withdrawing the right amount
-  function _withdrawToRecipient(string _amount, address _recipientAddress) internal {
-    _recipientAddress.transfer(stringToUint(_amount));
-  }
+  // function _checkCallback(bytes32 _oraclizeID, string _payedAmount) internal returns (bool){
+  //   string memory bitcoinAddress = oraclizeLookup[_oraclizeID];
+  //   // can be omitted:  require(deposit[bitcoinAddress].exsists);
+  //   //checking the amount payed which oracle got from API is at least the requested minimum payout Amount
+  //   require(stringToUint(_payedAmount) >= stringToUint(deposit[bitcoinAddress].bitcoinWithdrawAmount));
+  //   // deposit[bitcoinAddress].exsists == false; would make reusable but leaving out for now
+  //
+  //   //payout will be initialized
+  //   // _withdrawToRecipient(deposit[bitcoinAddress].ethDepositInWei, deposit[bitcoinAddress].potentialPayoutAddress);
+  //   return true;
+  // }
+  //
+  // //Finally withdrawing the right amount
+  // function _withdrawToRecipient(string _amount, address _recipientAddress) internal {
+  //   _recipientAddress.transfer(stringToUint(_amount));
+  // }
 
   /* HELPER FUNCTIONS */
   uint80 constant None = uint80(0);
