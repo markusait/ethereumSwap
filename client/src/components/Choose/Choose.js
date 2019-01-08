@@ -40,8 +40,6 @@ class Choose extends Component {
     <Link to="/market">Go to MarketPlace</Link>
   </div>
 </div>
-
-
     </section>)
   }
 }

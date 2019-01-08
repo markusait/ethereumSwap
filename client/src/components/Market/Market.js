@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Link, Router, Route, IndexRoute, BrowserRouter} from 'react-router-dom'
-import SimpleStorageContract from "../../contracts/SimpleStorage.json";
+import EthereumBridge from "../../contractInterface/EthereumBridge.json";
 import getWeb3 from "../../utils/getWeb3";
 import './Market.css';
 
@@ -26,10 +26,10 @@ class Market extends Component {
       // Get the contract instance.
       const networkId = await web3.eth.net.getId();
       // for ganach networkId should be  5777
-      const deployedNetwork = SimpleStorageContract.networks[networkId];
+      const deployedNetwork = EthereumBridge.networks[networkId];
       console.log(networkId);
       // console.log(deployedNetwork.address);
-      const instance = new web3.eth.Contract(SimpleStorageContract.abi, deployedNetwork && deployedNetwork.address,);
+      const instance = new web3.eth.Contract(EthereumBridge.abi, deployedNetwork && deployedNetwork.address,);
 
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.

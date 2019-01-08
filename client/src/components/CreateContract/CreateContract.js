@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {Link, Router, Route, IndexRoute, BrowserRouter} from 'react-router-dom'
-import SimpleStorageContract from "../../contracts/SimpleStorage.json";
+import EthereumBridge from "../../contractInterface/EthereumBridge.json";
 import getWeb3 from "../../utils/getWeb3";
 import {Icon, Tag} from 'react-materialize'
 import './CreateContract.css';
@@ -13,7 +13,7 @@ class Market extends Component {
   //       data: [{
   //         tag: 'Apple',
   //       }, {
-  //         tag: 'Microsoft',
+  //         tag: 'Microsoftaddress, amountaddress, amount',
   //       }, {
   //         tag: 'Google',
   //       }],
@@ -32,7 +32,6 @@ class Market extends Component {
 
   componentDidMount = async () => {
     try {
-      console.log("Did Mounting");
       // Get network provider and web3 instance.
       const web3 = await getWeb3();
 
@@ -42,18 +41,19 @@ class Market extends Component {
       // Get the contract instance.
       const networkId = await web3.eth.net.getId();
       // for ganach networkId should be  5777
-      const deployedNetwork = SimpleStorageContract.networks[networkId];
+      const deployedNetwork = EthereumBridge.networks[networkId];
       console.log(networkId);
       // console.log(deployedNetwork.address);
-      const instance = new web3.eth.Contract(SimpleStorageContract.abi, deployedNetwork && deployedNetwork.address,);
-
+      const instance = new web3.eth.Contract(EthereumBridge.abi, deployedNetwork && deployedNetwork.address);
+      console.log(instance);
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
       this.setState({
         web3,
         accounts,
         contract: instance
-      }, this.runExample);
+      })
+      // , this.runExample);
     } catch (error) {
       // Catch any errors for any of the above operations.
       alert(`Failed to load web3, accounts, or contract. Check console for details.`,);
@@ -61,25 +61,26 @@ class Market extends Component {
     }
   };
 
-  activateLasers = async () => {
-    console.log('button clicked');
-  }
 
   handleChange = (event) => {
     const target = event.target;
+    //Bitcoin Stellar switch here
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
     console.log(target.value);
     this.setState({
       [name]: value
     });
-    // this.setState({bitcoinAddress: event.target.value});
   }
 
   handleSubmit = (event) => {
-    console.log(this.state.bitcoinAmount);
-    console.log(this.state.bitcoinAddress);
-    alert(JSON.stringify(this.state.bitcoinAmount));
+    // console.log(this.state.bitcoinAmount);
+    // console.log(this.state.bitcoinAddress);
+    // alert(JSON.stringify(this.state.bitcoinAmount));
+    const address = this.state.bitcoinAddress
+    const amount = this.state.bitcoinAmount
+    this.createSmartContract(address, amount)
+
     event.preventDefault();
   }
 
@@ -93,7 +94,11 @@ class Market extends Component {
   //   event.preventDefault();
   // }
 
+  //Could also use vars to make stateless (but input maintains state anyways)
+  createSmartContract = async () => {
+    const { accounts, amount, contract } = this.state;
 
+  }
 
   //making sure example is not run each time
   runExample = async () => {
@@ -154,7 +159,6 @@ class Market extends Component {
                     <button type="submit" value="Submit" id="initContract" className="btn waves-effect waves-light orange">Submit
                       {
                         //data-parse="uppercase"
-                        // onClick={this.activateLasers}
                         // <i className="material-icons right">send</i> thre is also  other way in docs with <Icon>
                       }
                     </button>
