@@ -28,7 +28,7 @@ class Market extends Component {
     web3: null,
     accounts: null,
     // account = '0x0',
-    contract: null
+    deployedContract: null
   };
 
   componentDidMount = async () => {
@@ -39,27 +39,29 @@ class Market extends Component {
       // Use web3 to get the user's accounts.
       const accounts = await web3.eth.getAccounts();
 
-      const instance = TruffleContract(EthereumBridge)
-
-      instance.setProvider(web3.currentProvider)
+      // const instance = TruffleContract(EthereumBridge)
+      //
+      // instance.setProvider(web3.currentProvider)
 
       // Get the contract instance.
-      // const networkId = await web3.eth.net.getId();
+      const networkId = await web3.eth.net.getId();
       // for ganach networkId should be  5777
-      // const deployedNetwork = EthereumBridge.networks[networkId];
-      // console.log(deployedNetwork.address);
-      // const instance = new web3.eth.Contract(EthereumBridge.abi, deployedNetwork && deployedNetwork.address);
+      const deployedNetwork = EthereumBridge.networks[networkId];
+      console.log(deployedNetwork.address);
+      const instance = new web3.eth.Contract(EthereumBridge.abi, deployedNetwork && deployedNetwork.address);
+      const deployedContract = await instance.deployed()
+      console.log(deployedContract.address);
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
       this.setState({
         web3,
         accounts,
-        contract: instance
+        deployedContract: deployedContract
       })
       // , this.runExample);
     } catch (error) {
       // Catch any errors for any of the above operations.
-      alert(`Failed to load web3, accounts, or contract. Check console for details.`,);
+      // alert(`Failed to load web3, accounts, or contract. Check console for details.`,);
       console.error(error);
     }
   };
@@ -99,18 +101,32 @@ class Market extends Component {
   //Could also use vars to make stateless (but input maintains state anyways)
   depositToContract = async () => {
     try {
-      const { accounts, bitcoinAddress, bitcoinAmount, contract } = this.state;
-      console.log(contract);
-      const deployedContract = await contract.deployed()
-      console.log(deployedContract.address);
+      const { accounts, bitcoinAddress, bitcoinAmount, deployedContract } = this.state;
       // deployedCOntract = await contract.deploy(options)
       // await contract.methods.depositEther(bitcoinAddress, bitcoinAmount.toString()).send({ from: accounts[0] });
-
+      // bitcoinAddress : "3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9"
+      // bitcoinAmount: "615525"
+      //TODO eth amount for deposit here!!!
+      const res = await deployedContract.depositEther(bitcoinAddress,bitcoinAmount, {from:accounts[0],value: 1000000000000000000})
     } catch (e) {
       console.error(e);
     }
 
   }
+
+  // initializePayoutProcess = async () => {
+  //   try {
+  //     const { accounts, bitcoinAddress, bitcoinTransactionHash, contract, oraclizeApiPrice } = this.state;
+  //     // bitcoinTransactionHash: "b1ddc46ad47f6f95d75129281b22636d5b19a06bcf534305b018fd8e688265e1"
+  //     // bitcoinAddress : "3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9"
+  //     //oraclizeApiPrice = 500000000000000000
+  //     //render the Price
+  //     const result = await app.getTransaction(bitcoinTransactionHash, bitcoinAddress, {from:accounts[0],value: oraclizeApiPrice})
+  //
+  //   }catch (e) {
+  //     console.error(e);
+  //   }
+  // }
 
   //making sure example is not run each time
   runExample = async () => {
