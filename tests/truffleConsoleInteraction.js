@@ -2,10 +2,23 @@
 truffle migrate --reset
 //open truffle console in same project dir
 truffle console
-//Getting a copy of the smart contract asynchronously (app = LendingClub.deploy() does not work )
-LendingClub.deployed().then((instance) => {app = instance})
+//Getting a copy of the smart contract asynchronously (app = EthereumBridge.deploy() does not work )
+EthereumBridge.deployed().then((instance) => {app = instance})
 //Using web3!!! in truffle console
 web3.eth.getAccounts(function(e,a) { accounts=a; });
+//sending amount to contract
+app.depositEther("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa","111", {from:accounts[0],value: 100}).then((instance) => {console.log(instance)}).catch(e => console.log(e))
+
+
+
+
+
+
+//test
+app.ping.call(1)
+
+
+
 
 app.setContractDetails([accounts[0],accounts[1]],100000,1).then((instance) => {console.log(instance)}).catch(e => console.log(e))
 

@@ -296,7 +296,6 @@ contract EthereumBridge is usingOraclize {
 
   // uint public bitcoinWithdrawAmount;
   // string public bitcoinWithdrawAddress;
-  string public apiCallResult;
   struct Bond {
       bool exsists;
       string ethDepositInWei;
@@ -308,6 +307,18 @@ contract EthereumBridge is usingOraclize {
   mapping(string => Bond) deposit;
   //checking oraclize
   mapping(bytes32 => string) oraclizeLookup;
+  function ping(uint x) returns (string){
+    return "pong";
+  }
+  // Constructor
+  function EthereumBridge() payable public {
+        // owner = msg.sender;
+        // emit LogUpdate(owner, address(this).balance);
+        // Replace the next line with your version:
+        OAR = OraclizeAddrResolverI(0xECD3C45d2eaEA5aA79aCf1D3700DF7f03a77C52B);
+        oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS);
+        // update();
+      }
 
   // Deposited by sender of the bitcoin assigning the contract values
   // depositing eth in contract with outputAddress and the needed amount in Satoshi for which eth can withdrawed
@@ -331,15 +342,19 @@ contract EthereumBridge is usingOraclize {
     //require that it has been created or not payed out yet
     require(deposit[_bitcoinAddress].exsists);
     //calling Oraclize API and assiging the right ID
-    string memory query = strConcat("https://blockchain.info/q/txresult/", _txHash, "/", _bitcoinAddress);
-    bytes32 oraclizeID = oraclize_query("URL", query, 500000);
-
-    // assigning the message sender as potential payout
-    deposit[_bitcoinAddress].potentialPayoutAddress = msg.sender;
-    //could use for double checking
-    deposit[_bitcoinAddress].oraclizeID = oraclizeID;
-    //making sure it can be looked up
-    oraclizeLookup[oraclizeID] = _bitcoinAddress;
+    if (oraclize_getPrice("URL") > address(this).balance) {
+      // emit LogInfo("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+    } else {
+      // emit LogInfo("Oraclize query was sent, standing by for the answer..");
+      string memory query = strConcat("https://blockchain.info/q/txresult/", _txHash, "/", _bitcoinAddress);
+      bytes32 oraclizeID = oraclize_query("URL", query, 500000);
+      // assigning the message sender as potential payout
+      deposit[_bitcoinAddress].potentialPayoutAddress = msg.sender;
+      //could use for double checking
+      deposit[_bitcoinAddress].oraclizeID = oraclizeID;
+      //making sure it can be looked up
+      oraclizeLookup[oraclizeID] = _bitcoinAddress;
+    }
   }
 
   //Oraclize call back function invoking payout process
