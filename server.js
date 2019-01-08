@@ -21,9 +21,12 @@ mongoose
     useNewUrlParser: true
   }) // Adding new mongo url parser
   .then(() => console.log('MongoDB Connected...'))
-  .catch(err => console.log(err));
+  .catch((err) => console.log(err));
 
-
+app.get('/', function (req, res) {
+  app.use(express.static(path.join(__dirname, 'client/build')));
+  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+});
 // Serve static assets if in production
 // if (process.env.NODE_ENV === 'production') {
 if (false) {

@@ -3,6 +3,7 @@ import {Link, Router, Route, IndexRoute, BrowserRouter} from 'react-router-dom'
 import EthereumBridge from "../../contractInterface/EthereumBridge.json";
 import getWeb3 from "../../utils/getWeb3";
 import {Icon, Tag} from 'react-materialize'
+import TruffleContract from 'truffle-contract'
 import './CreateContract.css';
 
 class Market extends Component {
@@ -38,14 +39,16 @@ class Market extends Component {
       // Use web3 to get the user's accounts.
       const accounts = await web3.eth.getAccounts();
 
+      const instance = TruffleContract(EthereumBridge)
+
+      instance.setProvider(web3.currentProvider)
+
       // Get the contract instance.
-      const networkId = await web3.eth.net.getId();
+      // const networkId = await web3.eth.net.getId();
       // for ganach networkId should be  5777
-      const deployedNetwork = EthereumBridge.networks[networkId];
-      console.log(networkId);
+      // const deployedNetwork = EthereumBridge.networks[networkId];
       // console.log(deployedNetwork.address);
-      const instance = new web3.eth.Contract(EthereumBridge.abi, deployedNetwork && deployedNetwork.address);
-      console.log(instance);
+      // const instance = new web3.eth.Contract(EthereumBridge.abi, deployedNetwork && deployedNetwork.address);
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
       this.setState({
@@ -67,7 +70,6 @@ class Market extends Component {
     //Bitcoin Stellar switch here
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
-    console.log(target.value);
     this.setState({
       [name]: value
     });
@@ -79,7 +81,7 @@ class Market extends Component {
     // alert(JSON.stringify(this.state.bitcoinAmount));
     const address = this.state.bitcoinAddress
     const amount = this.state.bitcoinAmount
-    this.createSmartContract(address, amount)
+    this.depositToContract()
 
     event.preventDefault();
   }
@@ -95,8 +97,18 @@ class Market extends Component {
   // }
 
   //Could also use vars to make stateless (but input maintains state anyways)
-  createSmartContract = async () => {
-    const { accounts, amount, contract } = this.state;
+  depositToContract = async () => {
+    try {
+      const { accounts, bitcoinAddress, bitcoinAmount, contract } = this.state;
+      console.log(contract);
+      const deployedContract = await contract.deployed()
+      console.log(deployedContract.address);
+      // deployedCOntract = await contract.deploy(options)
+      // await contract.methods.depositEther(bitcoinAddress, bitcoinAmount.toString()).send({ from: accounts[0] });
+
+    } catch (e) {
+      console.error(e);
+    }
 
   }
 

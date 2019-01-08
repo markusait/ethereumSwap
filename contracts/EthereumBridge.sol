@@ -292,55 +292,106 @@ contract usingOraclize {
 //
 
 
-contract bitcoinEthereumBridge is usingOraclize {
+contract EthereumBridge is usingOraclize {
 
-  uint public bitcoinWithdrawAmount;
-  string public bitcoinWithdrawAddress;
-  bytes32 public oraclizeID;
+  // uint public bitcoinWithdrawAmount;
+  // string public bitcoinWithdrawAddress;
   string public apiCallResult;
-  address public recipientAddress;
-  address public owner;
-
-  //lets have an owner here so it can transferred back
-
+  struct Bond {
+      bool exsists;
+      string ethDepositInWei;
+      string bitcoinWithdrawAmount;
+      address potentialPayoutAddress;
+      bytes32 oraclizeID;
+    }
+  //checking payout with the string bitcoinAddress as key (solidity uses a sha3 hashmap)
+  mapping(string => Bond) deposit;
+  //checking oraclize
+  mapping(bytes32 => string) oraclizeLookup;
 
   // Deposited by sender of the bitcoin assigning the contract values
   // depositing eth in contract with outputAddress and the needed amount in Satoshi for which eth can withdrawed
-  function deposit(string sentBitcoinAddress, uint sentBitcoinAmount) payable public {
-      // require(msg.value == (uint256) amount);
-      bitcoinWithdrawAddress = sentBitcoinAddress;
-      bitcoinWithdrawAmount = sentBitcoinAmount;
+  function depositEther(string _bitcoinAddress, string _bitcoinAmountinSatoshi) payable public {
+      // checking for duplicate key in mapping
+      require(!deposit[_bitcoinAddress].exsists);
+      Bond memory paymentStruct = Bond({
+                                  exsists:true,
+                                  ethDepositInWei:uint2str(msg.value),
+                                  bitcoinWithdrawAmount:_bitcoinAmountinSatoshi,
+                                  potentialPayoutAddress: None,
+                                  oraclizeID: stringToBytes32("0")});
+      deposit[_bitcoinAddress] = paymentStruct;
   }
 
   //Bitcoin sender calls this function with his tx_hash and ricipientAddress which will invoke call back function
   // make sure you take a new bitcoin address that does not have any past transactions so far
-  function getTransaction(string txHash) payable {
+  //payable because oraclize call
+  function getTransaction(string _txHash, string _bitcoinAddress) payable {
     //should require tx.hash.length == 64 or bytes(str).length ==
-    //making sure that the msg.sender is the recipient of eth
-    recipientAddress = msg.sender;
-    // string memory query = strConcat("json(https://api.blockcypher.com/v1/btc/main/txs/", txHash, ").confidence");
-    string memory query = strConcat("https://blockchain.info/q/txresult/", txHash, "/", bitcoinWithdrawAddress);
-    oraclizeID = oraclize_query("URL", query, 500000);
-  }
-  //Oraclize call back function invoking payout process
-  function __callback(bytes32 _oraclizeID, string _result) {
-    if(msg.sender != oraclize_cbAddress()) throw;
-    apiCallResult = _result;
-    checkCallback();
-  }
-  //if API Result is correct payout the Bitcoin sender
-  function checkCallback(){
-    //require confidence has to be greater than 0.9 to be a secure tx
-    require(stringToUint(apiCallResult) >= bitcoinWithdrawAmount);
-    withdrawAll();
-  }
-  //Finally withdrawing the right amount
-  function withdrawAll() internal {
-    recipientAddress.transfer(address(this).balance);
+    //require that it has been created or not payed out yet
+    require(deposit[_bitcoinAddress].exsists);
+    //calling Oraclize API and assiging the right ID
+    string memory query = strConcat("https://blockchain.info/q/txresult/", _txHash, "/", _bitcoinAddress);
+    bytes32 oraclizeID = oraclize_query("URL", query, 500000);
+
+    // assigning the message sender as potential payout
+    deposit[_bitcoinAddress].potentialPayoutAddress = msg.sender;
+    //could use for double checking
+    deposit[_bitcoinAddress].oraclizeID = oraclizeID;
+    //making sure it can be looked up
+    oraclizeLookup[oraclizeID] = _bitcoinAddress;
   }
 
+  //Oraclize call back function invoking payout process
+  //change result to payed Amount
+  function __callback(bytes32 _oraclizeID, string _result) {
+    string memory bitcoinAddress = oraclizeLookup[_oraclizeID];
+    address recipientAddress = deposit[bitcoinAddress].potentialPayoutAddress;
+    uint amount = stringToUint(deposit[bitcoinAddress].ethDepositInWei);
+    //only Oraclize allowed
+    require(msg.sender == oraclize_cbAddress());
+    //check if correct
+    // require(_checkCallback(_oraclizeID, _result));
+    require(stringToUint(_result) >= stringToUint(deposit[bitcoinAddress].bitcoinWithdrawAmount));
+    //initialize payout
+    recipientAddress.transfer(amount);
+    // _withdrawToRecipient(deposit[bitcoinAddress].ethDepositInWei, deposit[bitcoinAddress].potentialPayoutAddress);
+  }
+
+  //@edit maybe include in __callback function to save gas
+  //if API Result is correct payout the Bitcoin sender
+  function _checkCallback(bytes32 _oraclizeID, string _payedAmount) internal returns (bool){
+    string memory bitcoinAddress = oraclizeLookup[_oraclizeID];
+    // can be omitted:  require(deposit[bitcoinAddress].exsists);
+    //checking the amount payed which oracle got from API is at least the requested minimum payout Amount
+    require(stringToUint(_payedAmount) >= stringToUint(deposit[bitcoinAddress].bitcoinWithdrawAmount));
+    // deposit[bitcoinAddress].exsists == false; would make reusable but leaving out for now
+
+    //payout will be initialized
+    // _withdrawToRecipient(deposit[bitcoinAddress].ethDepositInWei, deposit[bitcoinAddress].potentialPayoutAddress);
+    return true;
+  }
+
+  //Finally withdrawing the right amount
+  function _withdrawToRecipient(string _amount, address _recipientAddress) internal {
+    _recipientAddress.transfer(stringToUint(_amount));
+  }
 
   /* HELPER FUNCTIONS */
+  uint80 constant None = uint80(0);
+
+  //setter and getter for mapping
+  function stringToBytes32(string memory source) returns (bytes32 result) {
+    bytes memory tempEmptyStringTest = bytes(source);
+    if (tempEmptyStringTest.length == 0) {
+        return 0x0;
+    }
+
+    assembly {
+        result := mload(add(source, 32))
+    }
+}
+
   function stringToUint(string s) constant returns (uint result) {
         bytes memory b = bytes(s);
         uint i;
@@ -352,12 +403,6 @@ contract bitcoinEthereumBridge is usingOraclize {
             }
         }
     }
-
-  function getBitcoinAddress() returns (string){
-    return bitcoinWithdrawAddress;
-  }
-
-  function getBitcoinAmount() returns (uint){
-    return bitcoinWithdrawAmount;
-  }
+  //oraclize json
+  // string memory query = strConcat("json(https://api.blockcypher.com/v1/btc/main/txs/", txHash, ").confidence");
 }
