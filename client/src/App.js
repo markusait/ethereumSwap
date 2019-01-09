@@ -29,7 +29,7 @@ class App extends Component {
       const deployedNetwork = EthereumBridge.networks[networkId];
       console.log(networkId);
       // console.log(deployedNetwork.address);
-      const instance = new web3.eth.Contract(EthereumBridge.abi, deployedNetwork && deployedNetwork.address,);
+      const instance = new web3.eth.Contract(EthereumBridge.abi, deployedNetwork && deployedNetwork.address);
 
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.

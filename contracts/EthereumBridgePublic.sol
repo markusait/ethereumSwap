@@ -296,7 +296,7 @@ contract EthereumBridge is usingOraclize {
 
   // uint public bitcoinWithdrawAmount;
   // string public bitcoinWithdrawAddress;
-  struct Offer {
+  struct Bond {
       bool exsists;
       string ethDepositInWei;
       string bitcoinWithdrawAmount;
@@ -304,14 +304,13 @@ contract EthereumBridge is usingOraclize {
       bytes32 oraclizeID;
     }
   //checking payout with the string bitcoinAddress as key (solidity uses a sha3 hashmap)
-  mapping(string => Offer) deposit;
+  mapping(string => Bond) deposit;
   //checking oraclize
   mapping(bytes32 => string) oraclizeLookup;
-
   function ping(uint x) returns (string){
     return "pong";
   }
-  // Constructor only used in testing for Oraclize Bridge
+  // Constructor
   function EthereumBridge() public {
         // owner = msg.sender;
         // emit LogUpdate(owner, address(this).balance);
@@ -325,14 +324,13 @@ contract EthereumBridge is usingOraclize {
   // depositing eth in contract with outputAddress and the needed amount in Satoshi for which eth can withdrawed
   function depositEther(string _bitcoinAddress, string _bitcoinAmountinSatoshi) payable public {
       // checking for duplicate key in mapping
-      // Omit this when developing for better testing
-      // require(!deposit[_bitcoinAddress].exsists);
-      Offer memory paymentStruct = Offer({
+      require(!deposit[_bitcoinAddress].exsists);
+      Bond memory paymentStruct = Bond({
                                   exsists:true,
                                   ethDepositInWei:uint2str(msg.value),
                                   bitcoinWithdrawAmount:_bitcoinAmountinSatoshi,
                                   potentialPayoutAddress: None,
-                                  oraclizeID: stringToBytes32("0")}); //fix this
+                                  oraclizeID: stringToBytes32("0")});
       deposit[_bitcoinAddress] = paymentStruct;
   }
 

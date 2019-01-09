@@ -5,7 +5,9 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const con = mongoose.createConnection('mongodb://localhost/postdb');
 
-const port = process.env.PORT || 3012;
+const port = process.env.PORT || 5000;
+
+const offers = require('./routes/api/offers');
 
 app.use(bodyParser.urlencoded({
   extended: false
@@ -23,10 +25,20 @@ mongoose
   .then(() => console.log('MongoDB Connected...'))
   .catch((err) => console.log(err));
 
-app.get('/', function (req, res) {
-  app.use(express.static(path.join(__dirname, 'client/build')));
-  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
-});
+
+//Use Routes
+app.use('/api/offers', offers);
+
+app.get('/ping', (req, res) => {
+    res.json({"pong":"pong"})
+})
+
+
+
+// app.get('/', function (req, res) {
+//   app.use(express.static(path.join(__dirname, 'client/build')));
+//   res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+// });
 // Serve static assets if in production
 // if (process.env.NODE_ENV === 'production') {
 if (false) {

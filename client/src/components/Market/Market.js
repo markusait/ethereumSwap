@@ -4,14 +4,18 @@ import EthereumBridge from "../../contractInterface/EthereumBridge.json";
 import getWeb3 from "../../utils/getWeb3";
 import './Market.css';
 
+// TODO:
+//should render only if valid offer (can also show past offers)
+//should  not make delete but write to db when payment occurs
+//
+
 
 class Market extends Component {
     state = {
-    storageValue: 0,
     web3: null,
     accounts: null,
     // account = '0x0',
-    contract: null
+    deployedContract: null
   };
 
   componentDidMount = async () => {
