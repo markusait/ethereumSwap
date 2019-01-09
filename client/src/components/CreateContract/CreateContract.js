@@ -6,29 +6,22 @@ import {Icon, Tag} from 'react-materialize'
 import TruffleContract from 'truffle-contract'
 import './CreateContract.css';
 import axios from 'axios';
-class Market extends Component {
-  //  constructor(props) {
-  //   super(props);
-  //   $(document).ready(function() {
-  //     $('.chips').material_chip({
-  //       data: [{
-  //         tag: 'Apple',
-  //       }, {
-  //         tag: 'Microsoftaddress, amountaddress, amount',
-  //       }, {
-  //         tag: 'Google',
-  //       }],
-  //     });
-  //   });
-  // }
+class CreateContract extends Component {
+
   state = {
+    //testing
+    // const randomString = Math.random().toString(36).substring(34)
     bitcoinAddress: '3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9',
     bitcoinAmount: 615525,
     ethAmount: 1000000000000000000,
     web3: null,
+    networkId: null,
     accounts: null,
     // account = '0x0',
-    deployedContract: null
+    deployedContract: null,
+    deployedContractAddress: null,
+    offerTxHash: null,
+    createdOffer: false
   };
 
   componentDidMount = async () => {
@@ -54,16 +47,12 @@ class Market extends Component {
       console.log(deployedNetwork.address);
       console.log(deployedContract._address);
 
-      // TODO: save the network, network id and deployedNetwork
-
       // const deployedContract = await TruffleContract(EthereumBridge)
       // deployedContract.setProvider(web3.currentProvider)
       // deployedContract.setNetwork(web3.currentProvider)
-
-      this.setState({web3, accounts, deployedContract: deployedContract})
+      this.setState({web3, accounts, deployedContract, networkId, deployedContractAddress: deployedContract._address})
       // , this.runExample);
     } catch (error) {
-      // Catch any errors for any of the above operations.
       // alert(`Failed to load web3, accounts, or contract. Check console for details.`,);
       console.error(error);
     }
@@ -79,49 +68,20 @@ class Market extends Component {
     this.setState({[name]: value});
   }
 
-  handleSubmit = (event) => {
-    this.depositToContract()
-    event.preventDefault();
-    // console.log(this.state.bitcoinAmount);
-    // console.log(this.state.bitcoinAddress);
-    // alert(JSON.stringify(this.state.bitcoinAmount));
-    // const address = this.state.bitcoinAddress
-    // const amount = this.state.bitcoinAmount
-  }
-
-  //handle Submit without updating state
-  // handleSubmit = (event) => {
-  //   event.preventDefault();
-  //   const data = new FormData(event.target);
-  //   console.log(event.target);
-  //    alert('A name was submitted: ' + this.state.value);
-  //   alert(JSON.stringify(data));
-  //   event.preventDefault();
-  // }
-
   //Could also use vars to make stateless (but input maintains state anyways)
-  depositToContract = async () => {
+  depositToContract = async (event) => {
+    event.preventDefault();
     try {
       const {accounts, bitcoinAddress, bitcoinAmount, ethAmount, deployedContract} = this.state;
-      // deployedCOntract = await contract.deploy(options)
-      // await contract.methods.depositEther(bitcoinAddress, bitcoinAmount.toString()).send({ from: accounts[0] });
-      // bitcoinAddress : "3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9"
-      // bitcoinAmount: "615525"
-
-      // deployedContract.methods.depositEther("3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9","615525").send({from:accounts[0],value: 1000000000000000000}).then((instance) => {console.log(instance)}).catch(e => console.log(e))
-
-      const res = await deployedContract.methods.depositEther(bitcoinAddress, bitcoinAmount.toString()).send({
+      const response = await deployedContract.methods.depositEther(bitcoinAddress, bitcoinAmount.toString()).send({
         // TODO: secify gas price and usage here
         from: accounts[0],
-        value: 1000000000000000000
+        value: ethAmount
       })
-          //   Get the value from the contract to prove it worked.
-    // const response = await contract.methods.get().call();
-    //
-    //   Update state with the result.
-    // this.setState({ storageValue: response });
-    console.log(res);
-    this.writeDetailsToDB(res)
+
+      console.log(response);
+      this.setState({offerTxHash: response.transactionHash, createdOffer: true});
+      this.writeDetailsToDB()
 
     } catch (e) {
       console.error(e)
@@ -132,55 +92,43 @@ class Market extends Component {
   writeDetailsToDB = async () => {
     try {
       console.log("writing to db");
-      //id
-      //time
-      //from address
-      //bitcoinAddress
-      //bitcoinAmount
-      //Amount deposited Ether
-      //oraclizeID
-      //payedout: false
-      //to which contract address
-      // const res = axios.post('/api/offers', {
-      //   username: this.state.field_user,
-      //   password: sha256(this.state.field_pass),
-      //   updateTime: Date()
-      // })
+      //could add on payout oraclizeID
+      //omit this for this.state in db response
+      const {
+        accounts,
+        bitcoinAddress,
+        bitcoinAmount,
+        deployedContract,
+        deployedContractAddress,
+        networkId,
+        ethAmount,
+        offerTxHash
+      } = this.state;
+      //writing to db
+      const response = await axios.post('/api/offers', {
+        contractAddress: deployedContractAddress,
+        contractNetworkId: networkId,
+        ownerAddress: accounts[0],
+        amountEth: ethAmount,
+        bitcoinAddress: bitcoinAddress,
+        bitcoinAmount: bitcoinAmount,
+        offerTxHash: offerTxHash
+      })
+      console.log(response);
 
     } catch (e) {
       console.error(e)
     }
   }
 
-  // initializePayoutProcess = async () => {
-  //   try {
-  //     const { accounts, bitcoinAddress, bitcoinTransactionHash, contract, oraclizeApiPrice } = this.state;
-  //      bitcoinTransactionHash: "b1ddc46ad47f6f95d75129281b22636d5b19a06bcf534305b018fd8e688265e1"
-  //      bitcoinAddress : "3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9"
-  //     oraclizeApiPrice = 500000000000000000
-  //     render the Price
-  //     const result = await app.getTransaction(bitcoinTransactionHash, bitcoinAddress, {from:accounts[0],value: oraclizeApiPrice})
-  //
-  //   }catch (e) {
-  //     console.error(e);
-  //   }
-  // }
 
-  //making sure example is not run each time
-  runExample = async () => {
-    // const { accounts, contract } = this.state;
-    //
-    //   Stores a given value, 5 by default.
-    // await contract.methods.set(5).send({ from: accounts[0] });
-    //get the form data here (address and amount )
-    // await contract.methods.deposit(string sentBitcoinAddress, uint sentBitcoinAmount)
-    //   Get the value from the contract to prove it worked.
-    // const response = await contract.methods.get().call();
-    //
-    //   Update state with the result.
-    // this.setState({ storageValue: response });
-  };
   render() {
+    if(this.state.createdOffer){
+      //return a banner here with redirect to market option
+      // should also redirect with information so that the created offer is highlighted
+      // return ()
+      alert("you created a new offer")
+    }
     return (<section className="market">
       <div className="market-page">
         <div className="container">
@@ -194,7 +142,7 @@ class Market extends Component {
                   Type in your Bitcoin Address and the amount of Ether or USD you want to set it free
                 </p>
                 <div className="row">
-                  <form onSubmit={this.handleSubmit} id="contractForm" className="col s12">
+                  <form onSubmit={this.depositToContract} id="contractForm" className="col s12">
                     <div className="row">
                       <div className="chips-addresses input-field col s12">
                         <input name="bitcoinAddress" value={this.state.bitcoinAddress} onChange={this.handleChange} id="bitcoinAddress" type="text" className="validate"/>
@@ -211,21 +159,17 @@ class Market extends Component {
                         </label>
                       </div>
                       {
-                      // <div className="input-field col s6">
-                      //   <input id="amountUSD" type="number" min="1" max="10000000000" className="validate"></input>
-                      //   <label htmlFor="amountUSD">Amount in USD</label>
-                      // </div>
-                    }
+                        // <div className="input-field col s6">
+                        //   <input id="amountUSD" type="number" min="1" max="10000000000" className="validate"></input>
+                        //   <label htmlFor="amountUSD">Amount in USD</label>
+                        // </div>
+                      }
                       <div className="input-field col s6">
                         <input id="ethAmount" name="ethAmount" value={this.state.ethAmount} onChange={this.handleChange} type="number" min="1" max="100000000000000000000" className="validate"></input>
                         <label htmlFor="ethAmount">How much Ether (in Wei) is the BTC worth for you</label>
                       </div>
                     </div>
-
-                    <button type="submit" value="Submit" id="initContract" className="btn waves-effect waves-light orange">Submit {
-                        //data-parse="uppercase"
-                        // <i className="material-icons right">send</i> thre is also  other way in docs with <Icon>
-                      }
+                    <button type="submit" value="Submit" id="initContract" className="btn waves-effect waves-light orange">Submit
                     </button>
                   </form>
                   <div></div>
@@ -239,4 +183,4 @@ class Market extends Component {
   }
 }
 
-export default Market;
+export default CreateContract;

@@ -308,9 +308,11 @@ contract EthereumBridge is usingOraclize {
   //checking oraclize
   mapping(bytes32 => string) oraclizeLookup;
 
-  function ping(uint x) returns (string){
-    return "pong";
-  }
+  //oraclize ID?
+  // event payedOutEvent(
+  //       address indexed _winner,
+  //       uint indexed _winnerId
+  // );
   // Constructor only used in testing for Oraclize Bridge
   function EthereumBridge() public {
         // owner = msg.sender;
@@ -375,6 +377,7 @@ contract EthereumBridge is usingOraclize {
     //initialize payout
     recipientAddress.transfer(amount);
     // _withdrawToRecipient(deposit[bitcoinAddress].ethDepositInWei, deposit[bitcoinAddress].potentialPayoutAddress);
+    //emit event here
   }
 
   //@edit maybe include in __callback function to save gas

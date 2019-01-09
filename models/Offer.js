@@ -31,6 +31,11 @@ const offerSchema = new Schema({
       type: String,
       required: false
     },
+    payedOut:{
+      type: Boolean,
+      default: true,
+      required: false
+    },
     date : {
       type: Date,
       default: Date.now,
