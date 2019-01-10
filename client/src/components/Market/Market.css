@@ -1,37 +1,29 @@
-/* .market-page {
+.market-page {
   height: 100vh;
   background-image: linear-gradient(to bottom, #ff8a00, #da1b60);
   display: flex;
   justify-content: flex-start;
-} */
+}
 
 
-
+.offers {
+    margin: 100px 100px 100px 100px;
+}
 
 /* body {
   height: 100%;
 } */
-/* html, */
- .purple-square-container {
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
-.purple-square {
-  /* background-color: #B10DC9; */
-  /* width: 300px;
-  height: 300px; */
-}
-  .advantages {
+.advantages {
   border: 2px solid #fff;
   border-radius: 1rem;
   margin-top: 2.8rem;
   padding: 1rem;
   box-shadow: 0px 12px 30px 3px rgba(169, 168, 168, 0.21);
 }
-.inner-containerr{
-  width: 100%;
-  height:80%;
-}
+
+/* 4 items compensating for the paddig */
+/* @media (max-width: 920px) {
+  .product-card {
+    flex: 1 21%;
+  } */

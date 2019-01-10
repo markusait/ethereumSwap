@@ -33,7 +33,7 @@ const offerSchema = new Schema({
     },
     payedOut:{
       type: Boolean,
-      default: true,
+      default: false,
       required: false
     },
     date : {
