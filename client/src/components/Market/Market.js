@@ -6,10 +6,7 @@ import getWeb3 from "../../utils/getWeb3";
 import './Market.css';
 import axios from 'axios';
 import img from '../../assets/index.jpeg'
-// TODO:
-//should render only if valid offer (can also show past offers)
-//should  not make delete but write to db when payment occurs
-//
+
 
 class Market extends Component {
   state = {
@@ -34,7 +31,6 @@ class Market extends Component {
     try {
       //fetch db for Offers
       const offersData = await this.getOffersFromDB()
-      console.log(offersData);
 
       // Get network provider and web3 instance.
       const web3 = await getWeb3();
@@ -56,9 +52,6 @@ class Market extends Component {
       console.log(deployedNetwork.address);
       console.log(deployedContract._address);
 
-      // const deployedContract = await TruffleContract(EthereumBridge)
-      // deployedContract.setProvider(web3.currentProvider)
-      // deployedContract.setNetwork(web3.currentProvider)
       this.setState({
         offersData,
         web3,
@@ -73,19 +66,23 @@ class Market extends Component {
       console.error(error);
     }
   };
-
+  // TODO: secify gas price and usage here
+  // this.writeDetailsToDB() with payed = true  and payer address
+  //should either get ID from function to process payment or
+  //what it has in state: oraclizeApiPrice, accouts[0], deployedContract (should later choose from Mainnet, my testnet and Ropsten )
+  //bitcoinTransactionHash and bitcoinAddress from state
+  //maybe just save the ID from the form(it should not render the mongodb but would be good for genereal stuff)
   initializePayoutProcess = async (event) => {
     event.preventDefault();
     try {
       const {accounts, bitcoinAddress, bitcoinTransactionHash, deployedContract, oraclizeApiPrice} = this.state;
       const response = await deployedContract.methods.getTransaction(bitcoinTransactionHash, bitcoinAddress).send({
-        // TODO: secify gas price and usage here
+
         from: accounts[0],
         value: oraclizeApiPrice
       })
       console.log(response);
       this.setState({redeemTxHash: response.transactionHash});
-      // this.writeDetailsToDB()
 
     } catch (e) {
       console.error(e);
@@ -93,6 +90,7 @@ class Market extends Component {
   }
 
   handleChange = (event) => {
+    console.log("yaay");
     const target = event.target;
     // TODO: Bitcoin Stellar switch here
     const value = target.type === 'checkbox'
@@ -100,8 +98,9 @@ class Market extends Component {
       : target.value;
     const name = target.name;
     this.setState({[name]: value});
-    console.log(this.state);
+    console.log(this.state.bitcoinTransactionHash);
   }
+
   getOffersFromDB = async () => {
     try {
       const response = await axios.get('/api/offers')
@@ -115,13 +114,18 @@ class Market extends Component {
   }
 
   render() {
-    // <div className="purple-square-container">
     return (
       <div className="market-page">
         <div className="inner-container">
             <section className="offers">
               <div className="row">
-              <MarketOffers offers={this.state.offersData} img={img}/>
+              <MarketOffers
+                offers={this.state.offersData}
+                img={img}
+                handleChange={this.handleChange}
+                bitcoinTransactionHash={this.state.bitcoinTransactionHash}
+                bitcoinAddress={this.state.bitcoinAmount}/>
+
               </div>
           </section>
           </div>

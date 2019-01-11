@@ -26,7 +26,6 @@ class CreateContract extends Component {
 
   componentDidMount = async () => {
     try {
-
       // Get network provider and web3 instance.
       const web3 = await getWeb3();
 
@@ -47,13 +46,8 @@ class CreateContract extends Component {
       console.log(deployedNetwork.address);
       console.log(deployedContract._address);
 
-      // const deployedContract = await TruffleContract(EthereumBridge)
-      // deployedContract.setProvider(web3.currentProvider)
-      // deployedContract.setNetwork(web3.currentProvider)
       this.setState({web3, accounts, deployedContract, networkId, deployedContractAddress: deployedContract._address})
-      // , this.runExample);
     } catch (error) {
-      // alert(`Failed to load web3, accounts, or contract. Check console for details.`,);
       console.error(error);
     }
   };
@@ -68,16 +62,13 @@ class CreateContract extends Component {
     this.setState({[name]: value});
   }
 
+  // TODO: secify gas price and usage here
   //Could also use vars to make stateless (but input maintains state anyways)
   depositToContract = async (event) => {
     event.preventDefault();
     try {
       const {accounts, bitcoinAddress, bitcoinAmount, ethAmount, deployedContract} = this.state;
-      const response = await deployedContract.methods.depositEther(bitcoinAddress, bitcoinAmount.toString()).send({
-        // TODO: secify gas price and usage here
-        from: accounts[0],
-        value: ethAmount
-      })
+      const response = await deployedContract.methods.depositEther(bitcoinAddress, bitcoinAmount.toString()).send({from: accounts[0], value: ethAmount})
 
       console.log(response);
       this.setState({offerTxHash: response.transactionHash, createdOffer: true});
@@ -92,7 +83,7 @@ class CreateContract extends Component {
   writeDetailsToDB = async () => {
     try {
       console.log("writing to db");
-      //could add on payout oraclizeID
+      // TODO: could add on payout oraclizeID
       //omit this for this.state in db response
       const {
         accounts,
@@ -121,13 +112,19 @@ class CreateContract extends Component {
     }
   }
 
-
   render() {
-    if(this.state.createdOffer){
-      //return a banner here with redirect to market option
+
+      // TODO: return a banner here with redirect to market option
       // should also redirect with information so that the created offer is highlighted
       // return ()
-      alert("you created a new offer")
+      const MarketLink = () => {
+        if (this.state.createdOffer) {
+        return (<React.Fragment>
+          <Link to="/market">Go to MarketPlace</Link>
+        </React.Fragment>)
+      } else {
+        return (<React.Fragment>  </React.Fragment>)
+      }
     }
     return (<section className="market">
       <div className="market-page">
@@ -138,6 +135,7 @@ class CreateContract extends Component {
                 <h5 className="center">
                   Create a new Smart Escrow Contract
                 </h5>
+                <MarketLink />
                 <p className="light">
                   Type in your Bitcoin Address and the amount of Ether or USD you want to set it free
                 </p>
