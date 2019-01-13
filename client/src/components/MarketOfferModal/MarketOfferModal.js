@@ -11,7 +11,6 @@ class MarketOfferModal extends Component {
     }
   }
   componentWillMount = async () => {
-    console.log('Modal called');
     if (!this.props.show) {
       console.log(this.props.id)
       return null

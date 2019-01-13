@@ -1,6 +1,6 @@
+# Ethereum Swap
 
-# Election - DAPP Tutorial (REVAMPED & MODERNIZED)
-This migrates all of the frontend code of this tutorial to use ReactJS, Es6, & Webpack: https://github.com/dappuniversity/election
+Swap ETH for BTC
 
 ## Getting Started
 ```
@@ -13,6 +13,7 @@ $ npm run start
 
 ## Using the Ethereum bridge for local Testing
 ```
-node bridge -a 9 -H 127.0.0.1 -p 7545 --dev
-
+npm install -g ethereum-bridge
+ethereum-bridge -a 9 -H 127.0.0.1 -p 7545 --dev
 ```
+more (info)[https://github.com/oraclize/ethereum-bridge]
