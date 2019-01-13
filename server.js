@@ -31,10 +31,10 @@ app.use('/api/offers', offers);
 
 
 
-// app.get('/', function (req, res) {
-//   app.use(express.static(path.join(__dirname, 'client/build')));
-//   res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
-// });
+app.get('*', function (req, res) {
+  app.use(express.static(path.join(__dirname, 'client/build')));
+  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+});
 
 // Serve static assets if in production
 // if (process.env.NODE_ENV === 'production') {

@@ -68,8 +68,7 @@ class CreateOffer extends Component {
 
   }
 
-  writeDetailsToDB = async (event) => {
-    event.preventDefault();
+  writeDetailsToDB = async () => {
     try {
       console.log("writing to db");
       // TODO: could add on payout oraclizeID
@@ -83,7 +82,7 @@ class CreateOffer extends Component {
         bitcoinAmount: data.bitcoinAmount,
         offerTxHash: data.offerTxHash
       }
-      const response = await axios.post('/api/items', offer)
+      const response = await axios.post('/api/offers', offer)
       console.log(response);
 
     } catch (e) {
@@ -119,7 +118,7 @@ class CreateOffer extends Component {
                   Type in your Bitcoin Address and the amount of Ether or USD you want to set it free
                 </p>
                 <div className="row">
-                  <form onSubmit={this.writeDetailsToDB} id="contractForm" className="col s12">
+                  <form onSubmit={this.depositToContract} id="contractForm" className="col s12">
                     <div className="row">
                       <div className="chips-addresses input-field col s12">
                         <input name="bitcoinAddress" value={this.state.bitcoinAddress} onChange={this.handleChange} id="bitcoinAddress" type="text" className="validate"/>
