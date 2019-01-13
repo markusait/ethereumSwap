@@ -17,7 +17,7 @@ app.use(bodyParser.json());
 // DB Config
 const db = require('./config.js').mongoURI;
 
-// Connect to Mongo
+// Connect to MongoDB
 mongoose
   .connect(db, {
     useNewUrlParser: true
@@ -29,16 +29,13 @@ mongoose
 //Use Routes
 app.use('/api/offers', offers);
 
-app.get('/ping', (req, res) => {
-    res.json({"pong":"pong"})
-})
-
 
 
 // app.get('/', function (req, res) {
 //   app.use(express.static(path.join(__dirname, 'client/build')));
 //   res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
 // });
+
 // Serve static assets if in production
 // if (process.env.NODE_ENV === 'production') {
 if (false) {
@@ -49,24 +46,5 @@ if (false) {
       res.sendFile(path.join(__dirname, 'client/public/index.html'));
   })
 }
-// https://stackoverflow.com/questions/43557390/react-router-and-express-get-conflict
-// app.get('/*', function(req, res) {
-//     res.sendFile(path.join(__dirname, '/public/index.html'), function(err) {
-//       if (err) {
-//         res.status(500).send(err)
-//       }
-//     });
-// });
-
-// app.get('/api/customers', (req, res) => {
-//   const customers = [
-//     {id: 1, firstName: 'John', lastName: 'Doe'},
-//     {id: 2, firstName: 'Brad', lastName: 'Traversy'},
-//     {id: 3, firstName: 'Mary', lastName: 'Swanson'},
-//   ];
-//
-//   res.json(customers);
-// });
-
 
 app.listen(port, () => console.log(`Server started on port ${port}`));

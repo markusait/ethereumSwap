@@ -1,12 +1,11 @@
-import React, {Component, Button} from "react"
-import {Link, Router, Route, IndexRoute, BrowserRouter} from 'react-router-dom'
+import React, {Component} from "react"
 import MarketOfferModal from '../MarketOfferModal/MarketOfferModal'
 import EthereumSwap from "../../contractInterface/EthereumSwap.json"
 
 import './Market.css'
 import getWeb3 from "../../utils/getWeb3"
 import axios from 'axios'
-import img from '../../assets/index.jpeg'
+// import img from '../../assets/index.jpeg'
 
 class Market extends Component {
   state = {
@@ -28,9 +27,11 @@ class Market extends Component {
     try {
       //fetch db for Offers get offers data from constructor
       const offersData = await this.getOffersFromDB()
+      console.log(offersData);
 
       // Get network provider and web3 instance.
       const web3 = await getWeb3()
+      console.log(web3);
 
       // Use web3 to get the user's accounts.
       const accounts = await web3.eth.getAccounts()
@@ -62,7 +63,6 @@ class Market extends Component {
       // TODO: make this false once you fix it
       // let offerData = response.data.filter(data => data.payedOut == true)
       let offerData = response.data
-      console.log(response);
       return offerData
     } catch (e) {
       console.error(e)
@@ -97,6 +97,8 @@ class Market extends Component {
 
 
   render() {
+    console.log('rendering!');
+    console.log(this.state.offersData);
     const MarketOffers = ({offers}) => {
       if (offers) {
         return (<React.Fragment>
@@ -129,21 +131,6 @@ class Market extends Component {
                       initializePayout={this.initializePayoutProcess}
                       >
                     </MarketOfferModal>
-                    {
-                      //should only render if the Modal
-                      //should pass the mongodb id (or bitcoinAddress) in the URL
-                      // <Link to={{
-                      //     pathname: "/marketOfferModal",
-                      //     state: {
-                      //       modal: true,
-                      //       data: offer
-                      //     }
-                      //   }} activeStyle={{
-                      //     color: 'red'
-                      //   }}>
-                      //   Claim your Ether!
-                      // </Link>
-                    }
                   </div>
                 </div>
               </div>

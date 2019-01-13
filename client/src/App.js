@@ -1,8 +1,7 @@
 import React, {Component} from "react";
 import EthereumBridge from "./contractInterface/EthereumBridge.json";
 import getWeb3 from "./utils/getWeb3";
-import {Link, Router, Route, IndexRoute, BrowserRouter} from 'react-router-dom'
-import Choose from './components/Choose/Choose';
+import {Link} from 'react-router-dom'
 
 import "./App.css";
 
@@ -12,15 +11,6 @@ class App extends Component {
     web3: null,
     accounts: null,
     contract: null,
-    stations: [
-      {
-        call: 'station one',
-        frequency: '000'
-      }, {
-        call: 'station two',
-        frequency: '001'
-      }
-    ]
   };
 
   componentDidMount = async () => {
@@ -58,16 +48,8 @@ class App extends Component {
     // if (!this.state.web3) {
     //   return <div>Loading Web3, accounts, and contract...</div>;
     // }
-    return (<section class="page">
+    return (<section className="page">
       <div className="App">
-
-        {
-          // <Link to="/">Get Started</Link>
-          // <Route path="/" render={() => <h1>Home 2</h1>} />
-          // <Route path="/" render={() => <h1>Home 2</h1>} />
-          // <Route exact path="/choose" component={Choose}/>
-          // <Choose />
-        }
         <h1 className="text-large">
           Welcome to the Bitcoin Ethereum Bridge
         </h1>

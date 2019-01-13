@@ -12,7 +12,7 @@ class Choose extends Component {
         <div class="centered">
           <h1>Buy Bitcoins for Ether</h1>
           <p>Open up a Smart Contract in our market place.</p>
-          <Link to="/createContract">
+          <Link to="/createOffer">
             create a new Smart Contract</Link>
         </div>
       </div>

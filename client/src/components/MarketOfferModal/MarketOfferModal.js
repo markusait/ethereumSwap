@@ -1,7 +1,5 @@
 import React, {Component} from "react"
-// import MarketOffers from '../MarketOffers/MarketOffers'
 import './MarketOfferModal.css'
-import img from '../../assets/index.jpeg'
 // import Modal from 'react-modal'
 
 class MarketOfferModal extends Component {
@@ -13,6 +11,7 @@ class MarketOfferModal extends Component {
     }
   }
   componentWillMount = async () => {
+    console.log('Modal called');
     if (!this.props.show) {
       console.log(this.props.id)
       return null
@@ -25,6 +24,7 @@ class MarketOfferModal extends Component {
   }
 
   render() {
+    console.log('Modal is rendering');
     if (!this.props.show) {
       return null
     }
