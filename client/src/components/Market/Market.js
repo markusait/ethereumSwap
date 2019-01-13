@@ -2,19 +2,22 @@ import React, {Component, Button} from "react";
 import {Link, Router, Route, IndexRoute, BrowserRouter} from 'react-router-dom'
 import MarketOfferModal from '../MarketOfferModal/MarketOfferModal'
 import './Market.css';
+import getWeb3 from "../../utils/getWeb3";
 import axios from 'axios';
 import img from '../../assets/index.jpeg'
 
 class Market extends Component {
   state = {
     offersData: null,
-    activeModal: null
+    activeModal: null,
+    web3: null
   };
 
   componentWillMount = async () => {
     try {
       const offersData = await this.getOffersFromDB()
-      this.setState({offersData: offersData})
+      const web3 = await getWeb3();
+      this.setState({offersData: offersData, web3: web3})
     } catch (error) {
       console.error(error);
     }
@@ -30,7 +33,7 @@ class Market extends Component {
       console.error(e)
     }
   }
-  clickHandler = (e, index) => {
+  openModal = (e, index) => {
     console.log(index);
     this.setState({activeModal: index})
   }
@@ -49,33 +52,32 @@ class Market extends Component {
               <div key={offer._id} className="container col s12 m6 l4">
                 <div className="advantages card-panel hoverable">
                   <div className="card-content">
-                    <span className="card-title activator grey-text text-darken-4">Card Title
+                    <span className="card-title activator grey-text text-darken-4">Offer
                     </span>
                     <p>
                       BitcoinAddress: {offer.bitcoinAddress}</p>
                     <p>
                       Amount BTC: {offer.bitcoinAmount}</p>
                     <p>
-                      Amount to Pay: {offer.ethAmount}</p>
+                      Amount to Pay: {offer.amountEth}</p>
                     <p>
                       Ethereum Address of contract: {offer.contractAddress}</p>
                     <p>
                       id: {offer._id}
                     </p>
                     <div>
-                      <button id={offer._id} onClick={e => this.clickHandler(e, index)}>View Details</button>
+                      <button id={offer._id} onClick={e => this.openModal(e, index)}>View Details</button>
                     </div>
                     <MarketOfferModal
                       offer={offer}
-                      id={offer._id}
+                      id={index}
                       show={this.state.activeModal === index}
                       onHide={this.hideModal}
+                      web3={this.state.web3}
                       >
-                    <div>
-                      Here's some content for the modal
-                    </div>
                     </MarketOfferModal>
                     {
+                      //should only render if the Modal
                       //should pass the mongodb id (or bitcoinAddress) in the URL
                       // <Link to={{
                       //     pathname: "/marketOfferModal",

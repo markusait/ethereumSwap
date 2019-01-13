@@ -30,41 +30,31 @@ class MarketOfferModal extends Component {
   }
   componentWillMount = async () => {
     if (!this.props.show) {
-      // console.log(this.props);
-      console.log("not showing modal!");
+      console.log(this.props.id);
       return null;
     }
     try {
       //fetch db for Offers get offers data from constructor
       // Get network provider and web3 instance.
       const web3 = await getWeb3();
-      console.log("trying");
-      console.log(web3);
+      console.log('mounting');
+
       // Use web3 to get the user's accounts.
       const accounts = await web3.eth.getAccounts();
-
+      console.log(accounts);
       // Get the contract instance.
       const networkId = await web3.eth.net.getId();
       // for ganach networkId should be  5777
       const deployedNetwork = EthereumBridge.networks[networkId];
       // console.log(deployedNetwork.address);
       const deployedContract = new web3.eth.Contract(EthereumBridge.abi, deployedNetwork && deployedNetwork.address);
-      // const deployedContract = await instance.deployed()
-      console.log(web3);
-      console.log(networkId);
-      console.log(deployedNetwork);
-      console.log(deployedContract);
-      console.log(deployedNetwork.address);
-      console.log(deployedContract._address);
 
       this.setState({web3, accounts, deployedContract, networkId, deployedContractAddress: deployedContract._address})
-      console.log(this.state);
     } catch (error) {
       // alert(`Failed to load web3, accounts, or contract. Check console for details.`,);
       console.error(error);
     }
   }
-  // TODO: secify gas price and usage here
   // this.writeDetailsToDB() with payed = true  and payer address
   //should either get ID from function to process payment or
   //what it has in state: oraclizeApiPrice, accouts[0], deployedContract (should later choose from Mainnet, my testnet and Ropsten )
@@ -74,10 +64,9 @@ class MarketOfferModal extends Component {
     event.preventDefault();
     try {
       const {accounts, bitcoinAddress, bitcoinTransactionHash, deployedContract, oraclizeApiPrice} = this.state;
-      const response = await deployedContract.methods.getTransaction(bitcoinTransactionHash, bitcoinAddress).send({from: accounts[0], value: oraclizeApiPrice})
+      const response = await deployedContract.methods.getTransaction(bitcoinTransactionHash, bitcoinAddress).send({from: accounts[0], value: oraclizeApiPrice, gas: 1500000})
       console.log(response);
       this.setState({redeemTxHash: response.transactionHash});
-
     } catch (e) {
       console.error(e);
     }
@@ -97,11 +86,11 @@ class MarketOfferModal extends Component {
     return (
       <div className="modal">
         <div className="modal-content">
-            <button className="close" onClick={this.props.onHide}/>
-          <p>{JSON.stringify(this.props.offer)}</p>
+          <p>{JSON.stringify(this.props.web3.methods)}</p>
         </div>
-        <div class="modal-footer">
-          <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
+        <div className="modal-footer">
+          <button onClick={this.props.onHide} type="submit" value="Close" id="initContract" className="btn waves-effect waves-light orange">Close
+          </button>
         </div>
       {
       //   <div>

@@ -25,9 +25,9 @@ class App extends Component {
 
   componentDidMount = async () => {
     try {
-      console.log("Did Mounting");
       // Get network provider and web3 instance.
       const web3 = await getWeb3();
+      console.log(web3.version);
 
       // Use web3 to get the user's accounts.
       const accounts = await web3.eth.getAccounts();

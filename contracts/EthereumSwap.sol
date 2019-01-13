@@ -410,7 +410,7 @@ contract EthereumSwap is usingOraclize {
 
   address public secondOAR;
 
-  string public testString;
+  uint public oraclizePrice;
 
   // Offer Struct for creating an Bitcoin Offer for the smart contract
   struct Offer {
@@ -436,23 +436,22 @@ contract EthereumSwap is usingOraclize {
   );
   // General Purpose Log Event for strings
   event LogInfo(
-    string _log
+    string log
   );
 
   function getTestingOraclizeAddress() public returns(address){
     return secondOAR;
   }
-  function getTest() public returns(string){
-    return testString;
+  function getOraclizePrice() public returns (uint){
+    return oraclizePrice;
   }
 
 
 
-  /// @notice Constructor only used in testing for Oraclize Bridge
+  /// @notice Constructor only used in testing for Oraclize Bridge with ethereum-bridge
   function EthereumSwap(address _oraclizeAddress) public {
     OAR = OraclizeAddrResolverI(_oraclizeAddress);
     secondOAR = _oraclizeAddress;
-    testString = "lol";
 
   }
 
@@ -471,6 +470,8 @@ contract EthereumSwap is usingOraclize {
                                 });
 
       deposit[_bitcoinAddress] = paymentStruct;
+      emit LogInfo("Ether was deposited to contract");
+
   }
 
   /// @notice Oraclize call, Bitcoin sender calls this function with his  and recipient Address which will invoke call back function
@@ -480,12 +481,12 @@ contract EthereumSwap is usingOraclize {
   function getTransaction(string _txHash, string _bitcoinAddress) payable {
     require(deposit[_bitcoinAddress].exsists);
 
+    oraclizePrice = oraclize_getPrice("URL");
     // if (oraclize_getPrice("URL") <= msg.value) {
     if (true) {
 
-      // string memory query = strConcat("https://blockchain.info/q/txresult/", _txHash, "/", _bitcoinAddress);
-
-      string memory query = "https://blockchain.info/q/txresult/b1ddc46ad47f6f95d75129281b22636d5b19a06bcf534305b018fd8e688265e1/3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9";
+      // string memory query = "https://blockchain.info/q/txresult/b1ddc46ad47f6f95d75129281b22636d5b19a06bcf534305b018fd8e688265e1/3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9";
+      string memory query = strConcat("https://blockchain.info/q/txresult/", _txHash, "/", _bitcoinAddress);
 
       bytes32 oraclizeID = oraclize_query("URL", query, 500001);
 
@@ -495,7 +496,7 @@ contract EthereumSwap is usingOraclize {
 
       oraclizeLookup[oraclizeID] = _bitcoinAddress;
 
-      // emit LogInfo("Oraclize query was sent, standing by for the answer..");
+      emit LogInfo("Oraclize query was sent, standing by for the answer..");
 
     } else {
 
@@ -519,7 +520,7 @@ contract EthereumSwap is usingOraclize {
 
     if(stringToUint(_result) >= deposit[bitcoinAddress].bitcoinWithdrawAmount){
 
-      uint  ethAmount = deposit[bitcoinAddress].ethDepositInWei;
+      uint ethAmount = deposit[bitcoinAddress].ethDepositInWei;
       //use transaction Hash here
       recipientAddress.transfer(ethAmount);
 
@@ -534,27 +535,7 @@ contract EthereumSwap is usingOraclize {
   }
 
 
-  //@edit maybe include in __callback function to save gas
-  // use these calls if revoking:
-  // require(_checkCallback(_oraclizeID, _result));
-  // _withdrawToRecipient(deposit[bitcoinAddress].ethDepositInWei, deposit[bitcoinAddress].potentialPayoutAddress);
-  //if API Result is correct payout the Bitcoin sender
-  // function _checkCallback(bytes32 _oraclizeID, string _payedAmount) internal returns (bool){
-  //   string memory bitcoinAddress = oraclizeLookup[_oraclizeID];
-  //   // can be omitted:  require(deposit[bitcoinAddress].exsists);
-  //   //checking the amount payed which oracle got from API is at least the requested minimum payout Amount
-  //   require(stringToUint(_payedAmount) >= deposit[bitcoinAddress].bitcoinWithdrawAmount)
-  //   // deposit[bitcoinAddress].exsists == false; would make reusable but leaving out for now
-  //
-  //   //payout will be initialized
-  //   // _withdrawToRecipient(deposit[bitcoinAddress].ethDepositInWei, deposit[bitcoinAddress].potentialPayoutAddress);
-  //   return true;
-  // }
-  //
-  // //Finally withdrawing the right amount
-  // function _withdrawToRecipient(string _amount, address _recipientAddress) internal {
-  //   _recipientAddress.transfer(stringToUint(_amount));
-  // }
+
 
   /* HELPER FUNCTIONS */
   uint80 constant None = uint80(0);
