@@ -279,114 +279,271 @@ contract usingOraclize {
 
 }
 // </ORACLIZE_API>
-//   for (uint i=0; i< 10; i++) {
-//         uint goalsHT = parseInt(goalsHT_string)
-//         if(output[i].value === 100000 && output[i].addresses[0] === ){
-//         console.log('found')
-//         }
-//         console.log('nope')
-// })
 
-//they are using uints to store the necessary info strConcat
-//https://github.com/oraclize/ethereum-examples/blob/master/solidity/truffle-examples/bitcoin-balance/contracts/BitcoinAddressExample.sol
-//
+// <SafeMath_Lib>
+
+/**
+ * @title SafeMath
+ * @dev Math operations with safety checks that revert on error
+ */
+library SafeMath {
+    int256 constant private INT256_MIN = -2**255;
+
+    /**
+    * @dev Multiplies two unsigned integers, reverts on overflow.
+    */
+    function mul(uint256 a, uint256 b) internal pure returns (uint256) {
+        // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
+        // benefit is lost if 'b' is also tested.
+        // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
+        if (a == 0) {
+            return 0;
+        }
+
+        uint256 c = a * b;
+        require(c / a == b);
+
+        return c;
+    }
+
+    /**
+    * @dev Multiplies two signed integers, reverts on overflow.
+    */
+    function mul(int256 a, int256 b) internal pure returns (int256) {
+        // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
+        // benefit is lost if 'b' is also tested.
+        // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
+        if (a == 0) {
+            return 0;
+        }
+
+        require(!(a == -1 && b == INT256_MIN)); // This is the only case of overflow not detected by the check below
+
+        int256 c = a * b;
+        require(c / a == b);
+
+        return c;
+    }
+
+    /**
+    * @dev Integer division of two unsigned integers truncating the quotient, reverts on division by zero.
+    */
+    function div(uint256 a, uint256 b) internal pure returns (uint256) {
+        // Solidity only automatically asserts when dividing by 0
+        require(b > 0);
+        uint256 c = a / b;
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
+
+        return c;
+    }
+
+    /**
+    * @dev Integer division of two signed integers truncating the quotient, reverts on division by zero.
+    */
+    function div(int256 a, int256 b) internal pure returns (int256) {
+        require(b != 0); // Solidity only automatically asserts when dividing by 0
+        require(!(b == -1 && a == INT256_MIN)); // This is the only case of overflow
+
+        int256 c = a / b;
+
+        return c;
+    }
+
+    /**
+    * @dev Subtracts two unsigned integers, reverts on overflow (i.e. if subtrahend is greater than minuend).
+    */
+    function sub(uint256 a, uint256 b) internal pure returns (uint256) {
+        require(b <= a);
+        uint256 c = a - b;
+
+        return c;
+    }
+
+    /**
+    * @dev Subtracts two signed integers, reverts on overflow.
+    */
+    function sub(int256 a, int256 b) internal pure returns (int256) {
+        int256 c = a - b;
+        require((b >= 0 && c <= a) || (b < 0 && c > a));
+
+        return c;
+    }
+
+    /**
+    * @dev Adds two unsigned integers, reverts on overflow.
+    */
+    function add(uint256 a, uint256 b) internal pure returns (uint256) {
+        uint256 c = a + b;
+        require(c >= a);
+
+        return c;
+    }
+
+    /**
+    * @dev Adds two signed integers, reverts on overflow.
+    */
+    function add(int256 a, int256 b) internal pure returns (int256) {
+        int256 c = a + b;
+        require((b >= 0 && c >= a) || (b < 0 && c < a));
+
+        return c;
+    }
+
+    /**
+    * @dev Divides two unsigned integers and returns the remainder (unsigned integer modulo),
+    * reverts when dividing by zero.
+    */
+    function mod(uint256 a, uint256 b) internal pure returns (uint256) {
+        require(b != 0);
+        return a % b;
+    }
+}
+// </SafeMath_Lib>
 
 
-contract EthereumBridge is usingOraclize {
+/// @title Smart Escrow Contract for swapping eth to btc using oracliize
+/// @dev use ethereum-bridge for local testing https://github.com/oraclize/ethereum-bridge
+contract EthereumSwap is usingOraclize {
 
-  // uint public bitcoinWithdrawAmount;
-  // string public bitcoinWithdrawAddress;
+  // Implementing Safe Math Library
+  using SafeMath for uint;
+
+  address public secondOAR;
+
+  string public testString;
+
+  // Offer Struct for creating an Bitcoin Offer for the smart contract
   struct Offer {
       bool exsists;
-      string ethDepositInWei;
-      string bitcoinWithdrawAmount;
+      uint ethDepositInWei;
+      uint bitcoinWithdrawAmount;
       address potentialPayoutAddress;
       bytes32 oraclizeID;
     }
-  //checking payout with the string bitcoinAddress as key (solidity uses a sha3 hashmap)
+
+  // mapping for checking payout with the string bitcoinAddress as key
+  // note: (solidity uses a sha3 hashmap)
   mapping(string => Offer) deposit;
-  //checking oraclize
+
+  // mapping for checking the checking oraclize callback _oraclizeID => _result
   mapping(bytes32 => string) oraclizeLookup;
 
-  //oraclize ID?
-  // event payedOutEvent(
-  //       address indexed _winner,
-  //       uint indexed _winnerId
-  // );
-  // Constructor only used in testing for Oraclize Bridge
-  function EthereumBridge() public {
-        // owner = msg.sender;
-        // emit LogUpdate(owner, address(this).balance);
-        // Replace the next line with your version:
-        OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);
-        // oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS);
-        // update();
-      }
+  // Log event to notify UI and DB when user was sucessfull payed out
+  event PayedOutEvent(
+        address  _recipientAddress,
+        uint  _ethAmount,
+        string  _bitcoinAddress
+  );
+  // General Purpose Log Event for strings
+  event LogInfo(
+    string _log
+  );
 
-  // Deposited by sender of the bitcoin assigning the contract values
-  // depositing eth in contract with outputAddress and the needed amount in Satoshi for which eth can withdrawed
-  function depositEther(string _bitcoinAddress, string _bitcoinAmountinSatoshi) payable public {
-      // checking for duplicate key in mapping
-      // Omit this when developing for better testing
+  function getTestingOraclizeAddress() public returns(address){
+    return secondOAR;
+  }
+  function getTest() public returns(string){
+    return testString;
+  }
+
+
+
+  /// @notice Constructor only used in testing for Oraclize Bridge
+  function EthereumSwap(address _oraclizeAddress) public {
+    OAR = OraclizeAddrResolverI(_oraclizeAddress);
+    secondOAR = _oraclizeAddress;
+    testString = "lol";
+
+  }
+
+  /// @notice Deposited by sender how wants to get Bitcoin for his Ether assigning the contract values
+  /// @notice The Bitcoin Address should  be new and not have any prior Transacitions (checked by UI) and should not exsist in mapping!
+  /// @param _bitcoinAddress The Bitcoin Address to which a doner will pay money to
+  /// @param _bitcoinAmountinSatoshi amount in Satoshi for which eth can withdrawed
+  function depositEther(string _bitcoinAddress, uint _bitcoinAmountinSatoshi) payable public {
       // require(!deposit[_bitcoinAddress].exsists);
       Offer memory paymentStruct = Offer({
                                   exsists:true,
-                                  ethDepositInWei:uint2str(msg.value),
+                                  ethDepositInWei: msg.value,
                                   bitcoinWithdrawAmount:_bitcoinAmountinSatoshi,
                                   potentialPayoutAddress: None,
-                                  oraclizeID: stringToBytes32("0")}); //fix this
+                                  oraclizeID: stringToBytes32("0") //fix this with 0x0
+                                });
+
       deposit[_bitcoinAddress] = paymentStruct;
   }
 
-  //Bitcoin sender calls this function with his tx_hash and ricipientAddress which will invoke call back function
-  // make sure you take a new bitcoin address that does not have any past transactions so far
-  //payable because oraclize call
+  /// @notice Oraclize call, Bitcoin sender calls this function with his  and recipient Address which will invoke call back function
+  /// @notice payable because oraclize call needs gas and this is preventing fraud
+  /// @param _txHash The Bitcoin tx Hash prooving the doner payed money to it
+  /// @param _bitcoinAddress The Bitcoin Address to which a doner has payed money to
   function getTransaction(string _txHash, string _bitcoinAddress) payable {
-    //should require tx.hash.length == 64 or bytes(str).length ==
-    //require that it has been created or not payed out yet
     require(deposit[_bitcoinAddress].exsists);
-    //calling Oraclize API and assiging the right ID
-    // if (oraclize_getPrice("URL") > address(this).balance) {
-    //   // emit LogInfo("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
-    // } else {
-      // emit LogInfo("Oraclize query was sent, standing by for the answer..");
-      string memory query = strConcat("https://blockchain.info/q/txresult/", _txHash, "/", _bitcoinAddress);
-      bytes32 oraclizeID = oraclize_query("URL", query, 500000);
-      // assigning the message sender as potential payout
+
+    // if (oraclize_getPrice("URL") <= msg.value) {
+    if (true) {
+
+      // string memory query = strConcat("https://blockchain.info/q/txresult/", _txHash, "/", _bitcoinAddress);
+
+      string memory query = "https://blockchain.info/q/txresult/b1ddc46ad47f6f95d75129281b22636d5b19a06bcf534305b018fd8e688265e1/3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9";
+
+      bytes32 oraclizeID = oraclize_query("URL", query, 500001);
+
+      // testingOraclizeId = oraclizeID;
+
       deposit[_bitcoinAddress].potentialPayoutAddress = msg.sender;
-      //could use for double checking
-      deposit[_bitcoinAddress].oraclizeID = oraclizeID;
-      //making sure it can be looked up
+
       oraclizeLookup[oraclizeID] = _bitcoinAddress;
-    // }
+
+      // emit LogInfo("Oraclize query was sent, standing by for the answer..");
+
+    } else {
+
+      emit LogInfo("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+
+    }
   }
 
-  //Oraclize call back function invoking payout process
-  //change result to payed Amount
+  /// @notice Oraclize call back function invoking payout process
+  /// @notice payable because oraclize call needs gas and this is preventing fraud
+  /// @param _oraclizeID The byte represation of an Oraclize ID returned when query sent
+  /// @param _result Result of the API call, contating the value of transaction to address
   function __callback(bytes32 _oraclizeID, string _result) {
-    string memory bitcoinAddress = oraclizeLookup[_oraclizeID];
-    // address recipientAddress = deposit[bitcoinAddress].potentialPayoutAddress;
-    //testing
-    address recipientAddress = 0xc68598cd56FAf5896b7D7bAb0DE5545D1E9bd90E;
-    uint amount = stringToUint(deposit[bitcoinAddress].ethDepositInWei);
-    //only Oraclize allowed
     require(msg.sender == oraclize_cbAddress());
-    //check if correct
-    // require(_checkCallback(_oraclizeID, _result));
-    require(stringToUint(_result) >= stringToUint(deposit[bitcoinAddress].bitcoinWithdrawAmount));
-    //initialize payout
-    recipientAddress.transfer(amount);
-    // _withdrawToRecipient(deposit[bitcoinAddress].ethDepositInWei, deposit[bitcoinAddress].potentialPayoutAddress);
-    //emit event here
+
+    string memory bitcoinAddress = oraclizeLookup[_oraclizeID];
+
+    address recipientAddress = 0xc68598cd56FAf5896b7D7bAb0DE5545D1E9bd90E;
+    // address recipientAddress = deposit[bitcoinAddress].potentialPayoutAddress;
+    // require(stringToUint(_result) >= stringToUint(deposit[bitcoinAddress].bitcoinWithdrawAmount));
+
+    if(stringToUint(_result) >= deposit[bitcoinAddress].bitcoinWithdrawAmount){
+
+      uint  ethAmount = deposit[bitcoinAddress].ethDepositInWei;
+      //use transaction Hash here
+      recipientAddress.transfer(ethAmount);
+
+      deposit[bitcoinAddress].exsists = false;
+
+      emit PayedOutEvent(recipientAddress, ethAmount, bitcoinAddress);
+
+    } else {
+      emit LogInfo("The sended bitcoinAmount was too small or non exsisting ");
+    }
+
   }
+
 
   //@edit maybe include in __callback function to save gas
+  // use these calls if revoking:
+  // require(_checkCallback(_oraclizeID, _result));
+  // _withdrawToRecipient(deposit[bitcoinAddress].ethDepositInWei, deposit[bitcoinAddress].potentialPayoutAddress);
   //if API Result is correct payout the Bitcoin sender
   // function _checkCallback(bytes32 _oraclizeID, string _payedAmount) internal returns (bool){
   //   string memory bitcoinAddress = oraclizeLookup[_oraclizeID];
   //   // can be omitted:  require(deposit[bitcoinAddress].exsists);
   //   //checking the amount payed which oracle got from API is at least the requested minimum payout Amount
-  //   require(stringToUint(_payedAmount) >= stringToUint(deposit[bitcoinAddress].bitcoinWithdrawAmount));
+  //   require(stringToUint(_payedAmount) >= deposit[bitcoinAddress].bitcoinWithdrawAmount)
   //   // deposit[bitcoinAddress].exsists == false; would make reusable but leaving out for now
   //
   //   //payout will be initialized
@@ -425,6 +582,4 @@ contract EthereumBridge is usingOraclize {
             }
         }
     }
-  //oraclize json
-  // string memory query = strConcat("json(https://api.blockcypher.com/v1/btc/main/txs/", txHash, ").confidence");
 }
