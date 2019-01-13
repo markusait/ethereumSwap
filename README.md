@@ -3,13 +3,15 @@
 Swap ETH for BTC
 
 ## Getting Started
+installation:
 ```
-$ npm install
-$ npm install -g webpack webpack-cli
-$ npm run start
+npm install && npm run client-install    
 ```
 
-
+run server and client
+```
+npm run dev 
+```
 
 ## Using the Ethereum bridge for local Testing
 ```
