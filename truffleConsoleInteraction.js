@@ -11,8 +11,13 @@ web3.eth.getAccounts(function(e,a) { accounts=a; });
 instance.options.address = app.address
 
 
-instance.methods.depositEther("3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9","615525").send({from:accounts[0],value: 1000000000000000000, gas: 1500000}).then((res) => {console.log(res.events)}).catch(e => console.log(e))
+instance.methods.depositEther("3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9",615525).send({from:accounts[0],value: 1000000000000000000, gas: 1500000}).then((res) => {console.log(res.events)}).catch(e => console.log(e))
 
+tx: "d04f8780b597a5e2630d2fdcb954446d546d3a5a2df881d11237abde0f1dd4ee"
+
+address: "12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX"
+
+amount: 143500
 
 instance.events.LogInfo({fromBlock: 0, toBlock: 'latest'}).on('data', (event) => {console.log(event)}).on('changed', (event) =>{console.log(event)}).on('error', (error) =>{ console.error(error)});
 

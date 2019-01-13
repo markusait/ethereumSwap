@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {Link, Router, Route, IndexRoute, BrowserRouter} from 'react-router-dom'
-import EthereumBridge from "../../contractInterface/EthereumBridge.json";
+import EthereumSwap from "../../contractInterface/EthereumSwap.json";
 import getWeb3 from "../../utils/getWeb3";
 import {Icon, Tag} from 'react-materialize'
 import TruffleContract from 'truffle-contract'
@@ -35,9 +35,9 @@ class CreateContract extends Component {
       // Get the contract instance.
       const networkId = await web3.eth.net.getId();
       // for ganach networkId should be  5777
-      const deployedNetwork = EthereumBridge.networks[networkId];
+      const deployedNetwork = EthereumSwap.networks[networkId];
       // console.log(deployedNetwork.address);
-      const deployedContract = new web3.eth.Contract(EthereumBridge.abi, deployedNetwork && deployedNetwork.address);
+      const deployedContract = new web3.eth.Contract(EthereumSwap.abi, deployedNetwork && deployedNetwork.address);
       // const deployedContract = await instance.deployed()
       console.log(web3);
       console.log(networkId);
@@ -133,7 +133,7 @@ class CreateContract extends Component {
             <div className="col">
               <div id="contactCreation" className="advantages offset-l1  col s12 m4 card-panel hoverable">
                 <h5 className="center">
-                  Create a new Smart Escrow Contract
+                  Create a new Offer to get Bitcoins for your Ether
                 </h5>
                 <MarketLink />
                 <p className="light">
@@ -148,7 +148,6 @@ class CreateContract extends Component {
                           Bitcoin Address</label>
                       </div>
                     </div>
-
                     <div className="row">
                       <div className="input-field col s6">
                         <input id="amountSatoshi" name="bitcoinAmount" value={this.state.bitcoinAmount} onChange={this.handleChange} type="number" min="1" max="10000000000" className="validate"></input>

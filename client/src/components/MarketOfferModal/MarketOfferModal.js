@@ -1,118 +1,91 @@
-import React, {Component} from "react";
+import React, {Component} from "react"
 // import MarketOffers from '../MarketOffers/MarketOffers'
-import EthereumBridge from "../../contractInterface/EthereumBridge.json";
-import getWeb3 from "../../utils/getWeb3";
-import './MarketOfferModal.css';
-import axios from 'axios';
+import './MarketOfferModal.css'
 import img from '../../assets/index.jpeg'
-import Modal from 'react-modal';
+// import Modal from 'react-modal'
 
 class MarketOfferModal extends Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
-      //testing
-      // const randomString = Math.random().toString(36).substring(34)
-      // offersData: this.props.offer,
       bitcoinAddress: '3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9',
-      bitcoinTransactionHash: 'b1ddc46ad47f6f95d75129281b22636d5b19a06bcf534305b018fd8e688265e1',
-      bitcoinAmount: 615525,
-      ethAmount: 1000000000000000000,
-      web3: null,
-      networkId: null,
-      accounts: null,
-      // account = '0x0',
-      deployedContract: null,
-      deployedContractAddress: null,
-      redeemTxHash: null,
-      oraclizeApiPrice: 500000000000000000
+      bitcoinTransactionHash: 'b1ddc46ad47f6f95d75129281b22636d5b19a06bcf534305b018fd8e688265e1'
     }
   }
   componentWillMount = async () => {
     if (!this.props.show) {
-      console.log(this.props.id);
-      return null;
-    }
-    try {
-      //fetch db for Offers get offers data from constructor
-      // Get network provider and web3 instance.
-      const web3 = await getWeb3();
-      console.log('mounting');
-
-      // Use web3 to get the user's accounts.
-      const accounts = await web3.eth.getAccounts();
-      console.log(accounts);
-      // Get the contract instance.
-      const networkId = await web3.eth.net.getId();
-      // for ganach networkId should be  5777
-      const deployedNetwork = EthereumBridge.networks[networkId];
-      // console.log(deployedNetwork.address);
-      const deployedContract = new web3.eth.Contract(EthereumBridge.abi, deployedNetwork && deployedNetwork.address);
-
-      this.setState({web3, accounts, deployedContract, networkId, deployedContractAddress: deployedContract._address})
-    } catch (error) {
-      // alert(`Failed to load web3, accounts, or contract. Check console for details.`,);
-      console.error(error);
+      console.log(this.props.id)
+      return null
     }
   }
-  // this.writeDetailsToDB() with payed = true  and payer address
-  //should either get ID from function to process payment or
-  //what it has in state: oraclizeApiPrice, accouts[0], deployedContract (should later choose from Mainnet, my testnet and Ropsten )
-  //bitcoinTransactionHash and bitcoinAddress from state
-  //maybe just save the ID from the form(it should not render the mongodb but would be good for genereal stuff)
-  initializePayoutProcess = async (event) => {
-    event.preventDefault();
-    try {
-      const {accounts, bitcoinAddress, bitcoinTransactionHash, deployedContract, oraclizeApiPrice} = this.state;
-      const response = await deployedContract.methods.getTransaction(bitcoinTransactionHash, bitcoinAddress).send({from: accounts[0], value: oraclizeApiPrice, gas: 1500000})
-      console.log(response);
-      this.setState({redeemTxHash: response.transactionHash});
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
   handleChange = (event) => {
     const {value, name} = event.target
-    this.setState({[name]: value});
+    console.log(value,name);
+    this.setState({[name]: value})
   }
 
   render() {
     if (!this.props.show) {
-      return null;
+      return null
     }
-    console.log('rendering');
 
-    return (
-      <div className="modal">
-        <div className="modal-content">
-          <p>{JSON.stringify(this.props.web3.methods)}</p>
+    return (<div className="modal">
+      <div className="modal-content">
+        <p>
+          BitcoinAddress: {this.props.offer.bitcoinAddress}</p>
+        <p>
+          Amount BTC: {this.props.offer.bitcoinAmount}</p>
+        <p>
+          Amount to Pay: {this.props.offer.amountEth}</p>
+        <p>
+          Ethereum Address of contract: {this.props.offer.contractAddress}</p>
+        <p>
+          id: {this.props.offer._id}
+        </p>
+        <div className="row">
+          <div className="input-field col s12">
+            <input
+              id="bitcoinTransactionHash"
+              name="bitcoinTransactionHash"
+              value={this.state.bitcoinTransactionHash}
+              onChange={this.handleChange}
+              type="text"
+              className="validate"></input>
+            <label htmlFor="amountSatoshi">
+              Bitcoin Transaction Hash
+            </label>
+          </div>
+        </div>
+          <button onClick={() => {
+              this.props.initializePayout(this.props.index, this.state.bitcoinTransactionHash, this.props.offer.bitcoinAddress)
+            }} type="submit" value="initializePayout" id="initializePayout" className="btn waves-effect waves-light orange">initialize Payout
+          </button>
         </div>
         <div className="modal-footer">
           <button onClick={this.props.onHide} type="submit" value="Close" id="initContract" className="btn waves-effect waves-light orange">Close
           </button>
         </div>
-      {
-      //   <div>
-      //     <p>lol</p>
-      // </div>
-        // <div><p>lol</p>
-        //   <div className="backdrop" style={{
-        //     backdropStyle
-        //   }}>
-        //   <div className="modal" style={{
-        //       modalStyle
-        //     }}>
-        //     <p>Modal showing </p>
-        //     <div className="footer">
-        //       <button onClick={this.props.onClose}>
-        //         Close
-        //       </button>
-        //     </div>
-        //   </div>
-        // </div>
-      }
-    </div>)
+        {
+          //   <div>
+          //     <p>lol</p>
+          // </div>
+          // <div><p>lol</p>
+          //   <div className="backdrop" style={{
+          //     backdropStyle
+          //   }}>
+          //   <div className="modal" style={{
+          //       modalStyle
+          //     }}>
+          //     <p>Modal showing </p>
+          //     <div className="footer">
+          //       <button onClick={this.props.onClose}>
+          //         Close
+          //       </button>
+          //     </div>
+          //   </div>
+          // </div>
+        }
+      </div>)
   }
 }
-export default MarketOfferModal;
+export default MarketOfferModal

@@ -7,8 +7,9 @@ module.exports = {
   entry: ['babel-polyfill', path.join(__dirname, 'client/src', 'index.js')],
   devServer: {
     // publicPath: "/",
+    // historyApiFallback: true, might help with router problem
+    // hot: true,    crashes if used???
     contentBase: path.join(__dirname, 'client'),
-    // hot: true crashes if used???
   },
   output: {
     path: path.join(__dirname, 'dist'),

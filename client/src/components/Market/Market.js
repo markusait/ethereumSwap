@@ -1,40 +1,93 @@
-import React, {Component, Button} from "react";
+import React, {Component, Button} from "react"
 import {Link, Router, Route, IndexRoute, BrowserRouter} from 'react-router-dom'
 import MarketOfferModal from '../MarketOfferModal/MarketOfferModal'
-import './Market.css';
-import getWeb3 from "../../utils/getWeb3";
-import axios from 'axios';
+import EthereumSwap from "../../contractInterface/EthereumSwap.json"
+
+import './Market.css'
+import getWeb3 from "../../utils/getWeb3"
+import axios from 'axios'
 import img from '../../assets/index.jpeg'
 
 class Market extends Component {
   state = {
     offersData: null,
     activeModal: null,
-    web3: null
-  };
+    bitcoinAmount: 615525,
+    ethAmount: 1000000000000000000,
+    web3: null,
+    networkId: null,
+    accounts: null,
+    // account = '0x0',
+    deployedContract: null,
+    deployedContractAddress: null,
+    redeemTxHash: null,
+    oraclizeApiPrice: 500000000000000000
+  }
 
   componentWillMount = async () => {
     try {
+      //fetch db for Offers get offers data from constructor
       const offersData = await this.getOffersFromDB()
-      const web3 = await getWeb3();
-      this.setState({offersData: offersData, web3: web3})
+
+      // Get network provider and web3 instance.
+      const web3 = await getWeb3()
+
+      // Use web3 to get the user's accounts.
+      const accounts = await web3.eth.getAccounts()
+
+      // Get the contract instance.
+      const networkId = await web3.eth.net.getId()
+      // for ganach networkId should be  5777
+      const deployedNetwork = EthereumSwap.networks[networkId]
+      // console.log(deployedNetwork.address)
+      const deployedContract = new web3.eth.Contract(EthereumSwap.abi, deployedNetwork && deployedNetwork.address)
+
+      console.log(deployedNetwork.address);
+      console.log(deployedContract._address);
+      web3.eth.getBalance(deployedNetwork.address).then(res => console.log(res))
+      this.setState({offersData, web3, accounts, deployedContract, networkId, deployedContractAddress: deployedNetwork.address})
+
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
-  };
+  }
+  handleChange = (event) => {
+    const {value, name} = event.target
+    this.setState({[name]: value})
+  }
 
   getOffersFromDB = async () => {
     try {
       const response = await axios.get('/api/offers')
       // TODO: make this false once you fix it
-      let offerData = response.data.filter(data => data.payedOut == true)
+      // let offerData = response.data.filter(data => data.payedOut == true)
+      let offerData = response.data
+      console.log(response);
       return offerData
     } catch (e) {
       console.error(e)
     }
   }
+  // TODO:
+  // event.preventDefault() needed?
+  // this.writeDetailsToDB() with payed = true  and payer address
+  //should either get ID from function to process payment or
+  //what it has in state: oraclizeApiPrice, accouts[0], deployedContract (should later choose from Mainnet, my testnet and Ropsten )
+  //maybe just save the ID from the form(it should not render the mongodb but would be good for genereal stuff)
+  //** implement dbWrite() and getOffers()
+  initializePayoutProcess = async (index, bitcoinTransactionHash, bitcoinAddress) => {
+    try {
+      const {accounts, deployedContract, oraclizeApiPrice} = this.state
+      const response = await deployedContract.methods.getTransaction(bitcoinTransactionHash, bitcoinAddress).send({from: accounts[0], value: oraclizeApiPrice, gas: 1500000})
+      console.log(response)
+      this.setState({redeemTxHash: response.transactionHash})
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   openModal = (e, index) => {
-    console.log(index);
+    console.log(index)
     this.setState({activeModal: index})
   }
 
@@ -70,10 +123,10 @@ class Market extends Component {
                     </div>
                     <MarketOfferModal
                       offer={offer}
-                      id={index}
+                      index={index}
                       show={this.state.activeModal === index}
                       onHide={this.hideModal}
-                      web3={this.state.web3}
+                      initializePayout={this.initializePayoutProcess}
                       >
                     </MarketOfferModal>
                     {
@@ -114,4 +167,4 @@ class Market extends Component {
   }
 }
 
-export default Market;
+export default Market
