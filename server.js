@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const con = mongoose.createConnection('mongodb://localhost/postdb');
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 8080;
 
 const offers = require('./routes/api/offers');
 
