@@ -1,13 +1,13 @@
 import React, {Component} from "react";
-import {Link, }    from 'react-router-dom'
+import {Link} from 'react-router-dom'
 import EthereumSwap from "../../contractInterface/EthereumSwap.json";
 import getWeb3 from "../../utils/getWeb3";
 import './CreateOffer.css';
 import axios from 'axios';
-// import { addOffer } from '../../dbActions/offerAction';
+import {ToastContainer, toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 class CreateOffer extends Component {
-
   state = {
     bitcoinAddress: '3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9',
     bitcoinAmount: 615525,
@@ -35,8 +35,10 @@ class CreateOffer extends Component {
       // for ganach networkId should be  5777
       const deployedNetwork = EthereumSwap.networks[networkId];
       // console.log(deployedNetwork.address);
-      const deployedContract = new web3.eth.Contract(EthereumSwap.abi, deployedNetwork && deployedNetwork.address);
+      const deployedContract = new web3.eth.Contract(EthereumSwap.abi, deployedNetwork && deployedNetwork.address)
       // const deployedContract = await instance.deployed()
+
+      console.log(networkId);
 
       this.setState({web3, accounts, deployedContract, networkId, deployedContractAddress: deployedContract._address})
     } catch (error) {
@@ -47,6 +49,15 @@ class CreateOffer extends Component {
   handleChange = (event) => {
     const {value, name} = event.target
     this.setState({[name]: value})
+  }
+
+  notify = (error) => {
+    if (!error) {
+      toast("Transaction successfull")
+      toast.success("🦄 Transaction Successfull !", {position: toast.POSITION.TOP_CENTER})
+    } else {
+      toast.error("Transaction unsucsessfull please try again " + error)
+    }
   }
 
   // TODO: secify gas price and usage here
@@ -60,18 +71,21 @@ class CreateOffer extends Component {
 
       this.setState({offerTxHash: response.transactionHash, createdOffer: true});
 
+      console.log(response);
+
       this.writeDetailsToDB()
 
+      this.notify(null)
+
     } catch (e) {
+      this.notify(e)
       console.error(e)
     }
 
   }
 
-  writeDetailsToDB = async () => {
+  writeDetailsToDB = async (event) => {
     try {
-      console.log("writing to db");
-      // TODO: could add on payout oraclizeID
       const data = this.state;
       const offer = {
         contractAddress: data.deployedContractAddress,
@@ -83,25 +97,21 @@ class CreateOffer extends Component {
         offerTxHash: data.offerTxHash
       }
       const response = await axios.post('/api/offers', offer)
-      console.log(response);
-
     } catch (e) {
       console.error(e)
     }
   }
 
   render() {
-
-      // TODO: return a banner here with redirect to market option
-      // should also redirect with information so that the created offer is highlighted
-      // return ()
-      const MarketLink = () => {
-        if (this.state.createdOffer) {
+    const MarketLink = () => {
+      if (this.state.createdOffer) {
+        let txHash = this.state.offerTxHash
         return (<React.Fragment>
-          <Link to="/market">Go to MarketPlace</Link>
+          <Link to={"/market/" + txHash}>Go to MarketPlace</Link>
+          <p> {'this is your Transaction hash' + txHash} </p>
         </React.Fragment>)
       } else {
-        return (<React.Fragment>  </React.Fragment>)
+        return (<React.Fragment></React.Fragment>)
       }
     }
     return (<section className="market">
@@ -110,10 +120,11 @@ class CreateOffer extends Component {
           <div id="one" className="section">
             <div className="col">
               <div id="contactCreation" className="advantages offset-l1  col s12 m4 card-panel hoverable">
+                <ToastContainer autoClose={8000}/>
                 <h5 className="center">
                   Create a new Offer to get Bitcoins for your Ether
                 </h5>
-                <MarketLink />
+                <MarketLink/>
                 <p className="light">
                   Type in your Bitcoin Address and the amount of Ether or USD you want to set it free
                 </p>

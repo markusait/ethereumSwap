@@ -14,7 +14,7 @@ ReactDOM.render(
       <Switch>
         <Route exact path="/" component={App} />
         <Route exact path="/choose" component={Choose} />
-        <Route exact path="/market" component={Market} />
+        <Route path="/market" component={Market} />
         <Route exact path="/createOffer" component={CreateOffer} />
       </Switch>
   </Router>

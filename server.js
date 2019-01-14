@@ -46,5 +46,8 @@ if (false) {
       res.sendFile(path.join(__dirname, 'client/public/index.html'));
   })
 }
-
-app.listen(port, () => console.log(`Server started on port ${port}`));
+try {
+  app.listen(port, () => console.log(`Server started on port ${port}`));
+} catch(e){
+  console.log(e);
+}

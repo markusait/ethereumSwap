@@ -5,6 +5,17 @@
   justify-content: flex-start;
 }
 
+.dont-show{
+  display: none;
+}
+
+.highlight{
+  margin-bottom: -6rem !important;
+}
+
+.card-content {
+  margin-top: 6rem;
+}
 
 /* .offers {
     margin: 100px 100px 100px 100px;

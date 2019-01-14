@@ -10,7 +10,7 @@ npm install && npm run client-install
 
 run server and client
 ```
-npm run dev 
+npm run dev
 ```
 
 ## Using the Ethereum bridge for local Testing
@@ -18,4 +18,4 @@ npm run dev
 npm install -g ethereum-bridge
 ethereum-bridge -a 9 -H 127.0.0.1 -p 7545 --dev
 ```
-more (info)[https://github.com/oraclize/ethereum-bridge]
+more [info](https://github.com/oraclize/ethereum-bridge)

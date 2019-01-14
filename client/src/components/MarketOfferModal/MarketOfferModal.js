@@ -12,7 +12,6 @@ class MarketOfferModal extends Component {
   }
   componentWillMount = async () => {
     if (!this.props.show) {
-      console.log(this.props.id)
       return null
     }
   }
@@ -23,12 +22,11 @@ class MarketOfferModal extends Component {
   }
 
   render() {
-    console.log('Modal is rendering');
     if (!this.props.show) {
       return null
     }
 
-    return (<div className="modal">
+    return (<div className="modal advantages hoverable">
       <div className="modal-content">
         <p>
           BitcoinAddress: {this.props.offer.bitcoinAddress}</p>

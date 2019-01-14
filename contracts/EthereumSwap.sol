@@ -447,7 +447,7 @@ contract EthereumSwap is usingOraclize {
   }
 
 
-
+  /// ONLY USED FOR TESTING 
   /// @notice Constructor only used in testing for Oraclize Bridge with ethereum-bridge
   function EthereumSwap(address _oraclizeAddress) public {
     OAR = OraclizeAddrResolverI(_oraclizeAddress);
@@ -460,6 +460,7 @@ contract EthereumSwap is usingOraclize {
   /// @param _bitcoinAddress The Bitcoin Address to which a doner will pay money to
   /// @param _bitcoinAmountinSatoshi amount in Satoshi for which eth can withdrawed
   function depositEther(string _bitcoinAddress, uint _bitcoinAmountinSatoshi) payable public {
+      // ONLY USED FOR TESTING
       // require(!deposit[_bitcoinAddress].exsists);
       Offer memory paymentStruct = Offer({
                                   exsists:true,
