@@ -34,7 +34,6 @@ class Market extends Component {
       const offersData = await this.getOffersFromDB()
       console.log(offersData);
 
-      // Get network provider and web3 instance.
       const web3 = await getWeb3()
       console.log(web3);
 
@@ -59,11 +58,14 @@ class Market extends Component {
         networkId,
         deployedContractAddress,
         routeTx
-      })
+      },() => {this.afterSetStateFinished('state update finished');})
 
     } catch (error) {
       console.error(error)
     }
+  }
+  afterSetStateFinished = (string) => {
+    console.log(string);
   }
   handleChange = (event) => {
     const {value, name} = event.target
@@ -87,8 +89,7 @@ class Market extends Component {
       const response = await axios.get('/api/offers')
       // TODO: make this false once you fix it
       // let offerData = response.data.filter(data => data.payedOut == true)
-      let offerData = response.data
-      return offerData
+      return response.data
     } catch (e) {
       console.error(e)
     }
@@ -97,7 +98,6 @@ class Market extends Component {
   initializePayoutProcess = async (index, bitcoinTransactionHash, bitcoinAddress) => {
     try {
       const {accounts, deployedContract, oraclizeApiPrice} = this.state
-
       const response = await deployedContract.methods.getTransaction(bitcoinTransactionHash, bitcoinAddress).send({from: accounts[0], value: oraclizeApiPrice, gas: 1500000})
       console.log(response)
 
@@ -108,7 +108,6 @@ class Market extends Component {
   }
 
   openModal = (e, index) => {
-    console.log(index)
     this.setState({activeModal: index})
   }
 
@@ -117,7 +116,10 @@ class Market extends Component {
   }
 
   render() {
+
+
     const MarketOffers = ({offers}) => {
+      console.log(offers);
       if (offers) {
         return (<React.Fragment>
           {
