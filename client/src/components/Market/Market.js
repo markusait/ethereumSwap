@@ -58,7 +58,9 @@ class Market extends Component {
         networkId,
         deployedContractAddress,
         routeTx
-      },() => {this.afterSetStateFinished('state update finished');})
+      }, () => {
+        this.afterSetStateFinished('state update finished');
+      })
 
     } catch (error) {
       console.error(error)
@@ -75,14 +77,14 @@ class Market extends Component {
   //check if routed from creatOffer with a tx
   //if true highlight in the render object function
   checkRoutedFrom = () => {
-  if(this.props.location.pathname.length > 7){
-    const path = this.props.location.pathname
-    const tx = path.substring(8,path.length)
-    return tx
-  } else {
-    return null
+    if (this.props.location.pathname.length > 7) {
+      const path = this.props.location.pathname
+      const tx = path.substring(8, path.length)
+      return tx
+    } else {
+      return null
+    }
   }
-}
 
   getOffersFromDB = async () => {
     try {
@@ -100,11 +102,36 @@ class Market extends Component {
       const {accounts, deployedContract, oraclizeApiPrice} = this.state
       const response = await deployedContract.methods.getTransaction(bitcoinTransactionHash, bitcoinAddress).send({from: accounts[0], value: oraclizeApiPrice, gas: 1500000})
       console.log(response)
-
+      this.watchEvents()
       this.setState({redeemTxHash: response.transactionHash})
     } catch (e) {
       console.error(e)
     }
+  }
+
+  watchEvents = async () => {
+    console.log('watching for events');
+    const {deployedContract} = this.state
+    deployedContract.events.LogInfo({fromBlock: 'latest', toBlock: 'latest'})
+    .on('data', (event) => {
+      console.log(event)})
+    .on('error', (error) => {
+      console.error(error)
+    })
+    //acess data with returnedValues and (bitcoinAddress, ethAmount and recipient Address)
+    // promt toast with this data and the transaction hash (modify solidity)
+    // delete the contract from the Market placed or disable it (payedOut: true!!!!)
+    // show a loader which says waiting for transaction to be compled showing the first Log
+    // loader should resolve once the Payed out event occured and data is checked correctly
+
+
+    deployedContract.events.PayedOutEvent({fromBlock: 0, toBlock: 'latest'})
+    .on('data', (event) => {
+      console.log(event)})
+    .on('error', (error) => {
+      console.error(error)
+    })
+
   }
 
   openModal = (e, index) => {
@@ -117,7 +144,6 @@ class Market extends Component {
 
   render() {
 
-
     const MarketOffers = ({offers}) => {
       console.log(offers);
       if (offers) {
@@ -127,12 +153,18 @@ class Market extends Component {
               <div key={offer._id} className="container col s12 m6 l4">
 
                 <div className="advantages card-panel hoverable">
-                  <div className={this.state.routeTx === offer.offerTxHash ? 'center highlight' : 'dont-show'}>
-                  <a onClick={e => this.openModal(e, index)} className="btn-floating btn-small pulse orange"><i className="material-icons">arrow_drop_down</i></a>
-                  <p>this is your offer </p>
-                </div>
+                  <div className={this.state.routeTx === offer.offerTxHash
+                      ? 'center highlight'
+                      : 'dont-show'}>
+                    <a onClick={e => this.openModal(e, index)} className="btn-floating btn-small pulse orange">
+                      <i className="material-icons">arrow_drop_down</i>
+                    </a>
+                    <p>this is your offer
+                    </p>
+                  </div>
                   <div className="card-content">
-                    <p> BitcoinAddress: {offer.bitcoinAddress}</p>
+                    <p>
+                      BitcoinAddress: {offer.bitcoinAddress}</p>
                     <p>
                       Amount BTC: {offer.bitcoinAmount}</p>
                     <p>

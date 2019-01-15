@@ -412,6 +412,8 @@ contract EthereumSwap is usingOraclize {
 
   uint public oraclizePrice;
 
+  uint public minimumOfferValue = 100;
+
   // Offer Struct for creating an Bitcoin Offer for the smart contract
   struct Offer {
       bool exsists;
@@ -447,7 +449,7 @@ contract EthereumSwap is usingOraclize {
   }
 
 
-  /// ONLY USED FOR TESTING 
+  /// ONLY USED FOR TESTING
   /// @notice Constructor only used in testing for Oraclize Bridge with ethereum-bridge
   function EthereumSwap(address _oraclizeAddress) public {
     OAR = OraclizeAddrResolverI(_oraclizeAddress);
@@ -462,6 +464,8 @@ contract EthereumSwap is usingOraclize {
   function depositEther(string _bitcoinAddress, uint _bitcoinAmountinSatoshi) payable public {
       // ONLY USED FOR TESTING
       // require(!deposit[_bitcoinAddress].exsists);
+      // require (msg.value >= minimumOfferValue)
+      // TODO should require string length > 0 && <= bitcoinAddresslength
       Offer memory paymentStruct = Offer({
                                   exsists:true,
                                   ethDepositInWei: msg.value,

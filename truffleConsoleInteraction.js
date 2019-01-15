@@ -40,6 +40,7 @@ app.getTransaction("b1ddc46ad47f6f95d75129281b22636d5b19a06bcf534305b018fd8e6882
 
 
 web3.eth.getBalance(app.address)
+web3.eth.getBalance("0x75d79a33B620f1769631E66A3021fDdF34B45DfD")
 
 // app.methods.getTestingOraclizeId().call(function(err, res){console.log(res)})
 

@@ -6,7 +6,8 @@ module.exports = {
     development: {
       host: "127.0.0.1",
       port: 7545,  //using local ganach blockchain
-      network_id: "*" // Match any network id
+      network_id: "*", // Match any network id
+      from:"0xe87f722A65c55b7b625884c61d3B95030B6bef27"
     }
   },
   compilers: {
