@@ -33,24 +33,9 @@ class Market extends Component {
       const routeTx = await this.checkRoutedFrom()
       //fetch db for Offers get offers data from constructor
       const offersData = await this.getOffersFromDB()
-      console.log(offersData);
 
-      const  {web3, accounts, networkId, deployedNetwork, deployedContract } = await getWeb3Data()
-      // console.log(web3);
-      //
-      // // Use web3 to get the user's accounts.
-      // const accounts = await web3.eth.getAccounts()
-      //
-      // // Get the contract instance.
-      // const networkId = await web3.eth.net.getId()
-      // // for ganach networkId should be  5777
-      // const deployedNetwork = EthereumSwap.networks[networkId]
-      //
-      // const deployedContractAddress = deployedNetwork.address
-      // // console.log(deployedNetwork.address)
-      // const deployedContract = new web3.eth.Contract(EthereumSwap.abi, deployedNetwork && deployedContractAddress)
+      const  {web3, accounts, networkId, deployedNetwork, deployedContract, deployedContractAddress } = await getWeb3Data()
 
-      // web3.eth.getBalance(deployedNetwork.address).then(res => console.log(res))
       this.setState({
         offersData,
         web3,

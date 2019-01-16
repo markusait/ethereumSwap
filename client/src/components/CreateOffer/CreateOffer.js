@@ -25,21 +25,8 @@ class CreateOffer extends Component {
   componentDidMount = async () => {
     try {
       // Get network provider and web3 instance.
-      const  {web3, accounts, networkId, deployedNetwork, deployedContract } = await getWeb3Data()
-
-      // // Use web3 to get the user's accounts.
-      // const accounts = await web3.eth.getAccounts();
-      //
-      // // Get the contract instance.
-      // const networkId = await web3.eth.net.getId();
-      // // for ganach networkId should be  5777
-      // const deployedNetwork = EthereumSwap.networks[networkId];
-      // // console.log(deployedNetwork.address);
-      // const deployedContract = new web3.eth.Contract(EthereumSwap.abi, deployedNetwork && deployedNetwork.address)
-      // // const deployedContract = await instance.deployed()
-
-
-      this.setState({web3, accounts, deployedContract, networkId, deployedContractAddress: deployedContract._address})
+      const  {web3, accounts, networkId, deployedNetwork, deployedContract, deployedContractAddress } = await getWeb3Data()
+      this.setState({web3, accounts, deployedContract, networkId, deployedContractAddress })
     } catch (error) {
       console.error(error);
     }
@@ -102,6 +89,9 @@ class CreateOffer extends Component {
   }
 
   render() {
+    // if (!this.state.web3) {
+    //   return <div>Loading Web3, accounts, and contract...</div>;
+    // }
     const MarketLink = () => {
       if (this.state.createdOffer) {
         let txHash = this.state.offerTxHash

@@ -1,4 +1,5 @@
 import Web3 from "web3";
+import EthereumSwap from "../contractInterface/EthereumSwap.json";
 
 // IMPORTANT:
 // omitted window event listener here see here for more:
@@ -39,7 +40,7 @@ const getWeb3 = () =>
   });
 
 
-const getWeb3Data = () => {
+const getWeb3Data = async () => {
   const web3 = await getWeb3()
   // Use web3 to get the user's accounts.
   const accounts = await web3.eth.getAccounts();
@@ -53,7 +54,7 @@ const getWeb3Data = () => {
   // console.log(deployedNetwork.address);
   const deployedContract = new web3.eth.Contract(EthereumSwap.abi, deployedNetwork && deployedContractAddress)
   // const deployedContract = await instance.deployed()
-  return {web3, accounts, networkId, deployedNetwork, deployedContract }
+  return {web3, accounts, networkId, deployedNetwork, deployedContract, deployedContractAddress }
 
 }
 
