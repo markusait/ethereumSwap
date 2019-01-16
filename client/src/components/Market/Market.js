@@ -3,8 +3,9 @@ import MarketOfferModal from '../MarketOfferModal/MarketOfferModal'
 import EthereumSwap from "../../contractInterface/EthereumSwap.json"
 
 import './Market.css'
-import getWeb3 from "../../utils/getWeb3"
+import getWeb3Data from "../../utils/getWeb3"
 import axios from 'axios'
+// axios.defaults.baseURL = 'http://ethswap-backend.digitpay.de';
 // import img from '../../assets/index.jpeg'
 
 class Market extends Component {
@@ -34,20 +35,20 @@ class Market extends Component {
       const offersData = await this.getOffersFromDB()
       console.log(offersData);
 
-      const web3 = await getWeb3()
-      console.log(web3);
-
-      // Use web3 to get the user's accounts.
-      const accounts = await web3.eth.getAccounts()
-
-      // Get the contract instance.
-      const networkId = await web3.eth.net.getId()
-      // for ganach networkId should be  5777
-      const deployedNetwork = EthereumSwap.networks[networkId]
-
-      const deployedContractAddress = deployedNetwork.address
-      // console.log(deployedNetwork.address)
-      const deployedContract = new web3.eth.Contract(EthereumSwap.abi, deployedNetwork && deployedContractAddress)
+      const  {web3, accounts, networkId, deployedNetwork, deployedContract } = await getWeb3Data()
+      // console.log(web3);
+      //
+      // // Use web3 to get the user's accounts.
+      // const accounts = await web3.eth.getAccounts()
+      //
+      // // Get the contract instance.
+      // const networkId = await web3.eth.net.getId()
+      // // for ganach networkId should be  5777
+      // const deployedNetwork = EthereumSwap.networks[networkId]
+      //
+      // const deployedContractAddress = deployedNetwork.address
+      // // console.log(deployedNetwork.address)
+      // const deployedContract = new web3.eth.Contract(EthereumSwap.abi, deployedNetwork && deployedContractAddress)
 
       // web3.eth.getBalance(deployedNetwork.address).then(res => console.log(res))
       this.setState({
@@ -88,9 +89,10 @@ class Market extends Component {
 
   getOffersFromDB = async () => {
     try {
-      const response = await axios.get('/api/offers')
+      const response = await axios.get('/api/offers', {crossdomain: true})
       // TODO: make this false once you fix it
       // let offerData = response.data.filter(data => data.payedOut == true)
+      console.log(response);
       return response.data
     } catch (e) {
       console.error(e)
@@ -112,10 +114,9 @@ class Market extends Component {
   watchEvents = async () => {
     console.log('watching for events');
     const {deployedContract} = this.state
-    deployedContract.events.LogInfo({fromBlock: 'latest', toBlock: 'latest'})
-    .on('data', (event) => {
-      console.log(event)})
-    .on('error', (error) => {
+    deployedContract.events.LogInfo({fromBlock: 'latest', toBlock: 'latest'}).on('data', (event) => {
+      console.log(event)
+    }).on('error', (error) => {
       console.error(error)
     })
     //acess data with returnedValues and (bitcoinAddress, ethAmount and recipient Address)
@@ -124,11 +125,9 @@ class Market extends Component {
     // show a loader which says waiting for transaction to be compled showing the first Log
     // loader should resolve once the Payed out event occured and data is checked correctly
 
-
-    deployedContract.events.PayedOutEvent({fromBlock: 0, toBlock: 'latest'})
-    .on('data', (event) => {
-      console.log(event)})
-    .on('error', (error) => {
+    deployedContract.events.PayedOutEvent({fromBlock: 0, toBlock: 'latest'}).on('data', (event) => {
+      console.log(event)
+    }).on('error', (error) => {
       console.error(error)
     })
 

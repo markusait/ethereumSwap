@@ -58160,7 +58160,7 @@
     }
   },
   "schemaVersion": "3.0.1",
-  "updatedAt": "2019-01-15T12:37:07.717Z",
+  "updatedAt": "2019-01-16T18:50:54.601Z",
   "devdoc": {
     "methods": {
       "__callback(bytes32,string)": {

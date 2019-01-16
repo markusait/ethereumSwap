@@ -31,21 +31,19 @@ app.use('/api/offers', offers);
 
 
 
-app.get('*', function (req, res) {
+app.get('/', function (req, res) {
   app.use(express.static(path.join(__dirname, 'client/build')));
   res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
 });
 
 // Serve static assets if in production
-// if (process.env.NODE_ENV === 'production') {
-if (false) {
-  // Set static folder
-  app.use(express.static(path.join(__dirname, 'public')));
+//enable cors
+app.use(function(req, res, next) {
+   res.header("Access-Control-Allow-Origin", "*");
+   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-T      ype, Accept");
+   next();
+})
 
-  app.get('*', (req, res) => {
-      res.sendFile(path.join(__dirname, 'client/public/index.html'));
-  })
-}
 try {
   app.listen(port, () => console.log(`Server started on port ${port}`));
 } catch(e){

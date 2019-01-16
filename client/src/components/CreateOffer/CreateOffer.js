@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import {Link} from 'react-router-dom'
 import EthereumSwap from "../../contractInterface/EthereumSwap.json";
-import getWeb3 from "../../utils/getWeb3";
+import getWeb3Data from "../../utils/getWeb3";
 import './CreateOffer.css';
 import axios from 'axios';
 import {ToastContainer, toast} from 'react-toastify';
@@ -25,20 +25,19 @@ class CreateOffer extends Component {
   componentDidMount = async () => {
     try {
       // Get network provider and web3 instance.
-      const web3 = await getWeb3();
+      const  {web3, accounts, networkId, deployedNetwork, deployedContract } = await getWeb3Data()
 
-      // Use web3 to get the user's accounts.
-      const accounts = await web3.eth.getAccounts();
+      // // Use web3 to get the user's accounts.
+      // const accounts = await web3.eth.getAccounts();
+      //
+      // // Get the contract instance.
+      // const networkId = await web3.eth.net.getId();
+      // // for ganach networkId should be  5777
+      // const deployedNetwork = EthereumSwap.networks[networkId];
+      // // console.log(deployedNetwork.address);
+      // const deployedContract = new web3.eth.Contract(EthereumSwap.abi, deployedNetwork && deployedNetwork.address)
+      // // const deployedContract = await instance.deployed()
 
-      // Get the contract instance.
-      const networkId = await web3.eth.net.getId();
-      // for ganach networkId should be  5777
-      const deployedNetwork = EthereumSwap.networks[networkId];
-      // console.log(deployedNetwork.address);
-      const deployedContract = new web3.eth.Contract(EthereumSwap.abi, deployedNetwork && deployedNetwork.address)
-      // const deployedContract = await instance.deployed()
-
-      console.log(networkId);
 
       this.setState({web3, accounts, deployedContract, networkId, deployedContractAddress: deployedContract._address})
     } catch (error) {
