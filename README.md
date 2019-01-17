@@ -38,3 +38,12 @@ To run contract via local testnet (Ganache):
 
 - Get ganache running as directed above
 - Without the debugger from the console, `truffle test --network ganache`
+
+
+## Deploying to server
+
+using pm2 and nginx
+
+pm2 start server.js
+
+nginx config:

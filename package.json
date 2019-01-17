@@ -9,7 +9,7 @@
   "scripts": {
     "client-install": "npm install --prefix client",
     "start": "webpack-dev-server --mode development",
-    "build": "webpack",
+    "build": "cd client && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1",
     "client": "cd client && npm start",
     "server": "nodemon server.js",

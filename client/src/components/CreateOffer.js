@@ -2,7 +2,6 @@ import React, {Component} from "react";
 import {Link} from 'react-router-dom'
 import EthereumSwap from "../contractInterface/EthereumSwap.json";
 import getWeb3Data from "../utils/getWeb3";
-import './CreateOffer.css';
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, Main, Card, toast } from '../styles/index.js'
