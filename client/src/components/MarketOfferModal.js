@@ -1,6 +1,5 @@
 import React, {Component} from "react"
 import './MarketOfferModal.css'
-// import Modal from 'react-modal'
 
 class MarketOfferModal extends Component {
   constructor(props) {

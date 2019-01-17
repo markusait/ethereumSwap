@@ -26,17 +26,26 @@ mongoose
   .catch((err) => console.log(err));
 
 
-//Use Routes
+//API ROute
 app.use('/api/offers', offers);
 
 
+// app.get('*', function (req, res) {
+//   app.use(express.static(path.join(__dirname, 'client/build')));
+//   res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+// });
 
+//serving static files
 app.get('/', function (req, res) {
   app.use(express.static(path.join(__dirname, 'client/build')));
   res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
 });
 
-// Serve static assets if in production
+
+
+
+
+
 //enable cors
 app.use(function(req, res, next) {
    res.header("Access-Control-Allow-Origin", "*");

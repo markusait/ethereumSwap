@@ -1,11 +1,9 @@
 import React, {Component} from "react"
-import MarketOfferModal from '../MarketOfferModal/MarketOfferModal'
-import EthereumSwap from "../../contractInterface/EthereumSwap.json"
-
+import MarketOfferModal from './MarketOfferModal'
+import EthereumSwap from "../contractInterface/EthereumSwap.json"
 import './Market.css'
-import getWeb3Data from "../../utils/getWeb3"
+import getWeb3Data from "../utils/getWeb3"
 import axios from 'axios'
-// axios.defaults.baseURL = 'http://ethswap-backend.digitpay.de';
 // import img from '../../assets/index.jpeg'
 
 class Market extends Component {
@@ -33,10 +31,8 @@ class Market extends Component {
       const routeTx = await this.checkRoutedFrom()
       //fetch db for Offers get offers data from constructor
       const offersData = await this.getOffersFromDB()
-
       // Get network provider and web3 instance.
       const  {web3, accounts, networkId, deployedNetwork, deployedContract, deployedContractAddress } = await getWeb3Data()
-
       this.setState({
         offersData,
         web3,
@@ -47,11 +43,11 @@ class Market extends Component {
         deployedContractAddress,
         routeTx
       })
-
     } catch (error) {
       console.error(error)
     }
   }
+  
   handleChange = (event) => {
     const {value, name} = event.target
     this.setState({[name]: value})
@@ -168,16 +164,17 @@ class Market extends Component {
         return null
       }
     }
-
-    return (<div className="market-page">
-      <div className="inner-container">
+    return (
+      <div className="market-page">
+        <div className="inner-container">
         <section className="offers">
           <div className="row">
             <MarketOffers offers={this.state.offersData}/>
           </div>
         </section>
       </div>
-    </div>)
+    </div>
+  )
   }
 }
 

@@ -1,11 +1,11 @@
 import React, {Component} from "react";
 import {Link} from 'react-router-dom'
-import EthereumSwap from "../../contractInterface/EthereumSwap.json";
-import getWeb3Data from "../../utils/getWeb3";
+import EthereumSwap from "../contractInterface/EthereumSwap.json";
+import getWeb3Data from "../utils/getWeb3";
 import './CreateOffer.css';
 import axios from 'axios';
-import {ToastContainer, toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, Main, Card, toast } from '../styles/index.js'
 
 class CreateOffer extends Component {
   state = {
@@ -120,10 +120,12 @@ class CreateOffer extends Component {
         return (<React.Fragment></React.Fragment>)
       }
     }
-    return (<div className="market-page">
+    // <div className="advantages s12 m4 card-panel hoverable">
+    return (
+      <Main type={"create"}>
       <div className="container col">
-        <div className="advantages s12 m4 card-panel hoverable">
-          <ToastContainer autoClose={8000}/>
+      <Card className="hoverable">
+       <ToastContainer autoClose={8000}/>
           <h5 className="center">
             Create a new Offer to get Bitcoins for your Ether
           </h5>
@@ -156,9 +158,10 @@ class CreateOffer extends Component {
               </button>
             </form>
           </div>
-        </div>
+        </Card>
       </div>
-    </div>)
+    </Main>
+  )
   }
 }
 

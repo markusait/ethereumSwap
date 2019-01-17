@@ -1,19 +1,14 @@
-import * as v from './variables'
-import homePageStyles from './homePageStyles'
+import {Main, Header} from './homePageStyles'
+import {SplitDiv, CenterDiv} from './chooseStyles'
+import {Card} from './createOffer'
+import { ToastContainer, toast } from 'react-toastify';
 
-// const sharedStyles = {
-//   container: {
-//     flex: 1,
-//     backgroundColor: v.bgColor,
-//   },
-// }
-
-export default EStyleSheet.create({
-  ...sharedStyles,
-  ...headerStyles,
-  ...homeStyles,
-  ...typerStyles,
-  ...chooserStyles,
-  ...qrStyles,
-  ...transactionListStyles,
-})
+export {
+  Main,
+  Header,
+  SplitDiv,
+  CenterDiv,
+  Card,
+  ToastContainer,
+  toast
+}

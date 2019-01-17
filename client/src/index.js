@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './styles/index.css';
+import './styles/main.css';
 import Home from './components/Home';
-import Choose from './components/Choose/Choose';
-import Market from './components/Market/Market';
-import CreateOffer from './components/CreateOffer/CreateOffer';
+import Choose from './components/Choose';
+import Market from './components/Market';
+import CreateOffer from './components/CreateOffer';
 import * as serviceWorker from './serviceWorker';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 
@@ -14,8 +14,8 @@ ReactDOM.render(
       <Switch>
         <Route exact path="/" component={Home} />
         <Route exact path="/choose" component={Choose} />
-        <Route path="/market" component={Market} />
         <Route exact path="/createOffer" component={CreateOffer} />
+        <Route path="/market" component={Market} />
       </Switch>
   </Router>
 , document.getElementById('root'));

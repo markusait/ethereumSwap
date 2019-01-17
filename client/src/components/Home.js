@@ -1,12 +1,12 @@
 import React, {Component} from "react";
 import {Link} from 'react-router-dom'
-import {Main, Header} from '../styles/homePageStyles'
+import {Main, Header} from '../styles/index'
 
 class Home extends Component {
 
   render() {
     return (
-      <Main>
+      <Main type={"main"}>
         <Header>
           Welcome to the Bitcoin Ethereum Bridge
         </Header>
