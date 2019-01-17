@@ -1,18 +1,15 @@
 import React, {Component} from "react";
-import EthereumBridge from "./contractInterface/EthereumBridge.json";
-import getWeb3 from "./utils/getWeb3";
 import {Link} from 'react-router-dom'
+import {Main, Header} from '../styles/homePageStyles'
 
-import "./App.css";
-
-class App extends Component {
+class Home extends Component {
 
   render() {
-    return (<section className="page">
-      <div className="App">
-        <h1 className="text-large">
+    return (
+      <Main>
+        <Header>
           Welcome to the Bitcoin Ethereum Bridge
-        </h1>
+        </Header>
         <p>
           You can exchange Ether and Bitcoin with anyone in the most decentralized way for free!</p>
         <div >
@@ -20,9 +17,9 @@ class App extends Component {
             Get Started
           </Link>
         </div>
-      </div>
-    </section>);
+      </Main>
+  );
   }
 }
 
-export default App;
+export default Home;

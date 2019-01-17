@@ -1,18 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
+import './styles/index.css';
+import Home from './components/Home';
 import Choose from './components/Choose/Choose';
 import Market from './components/Market/Market';
 import CreateOffer from './components/CreateOffer/CreateOffer';
 import * as serviceWorker from './serviceWorker';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 
 
 ReactDOM.render(
     <Router>
       <Switch>
-        <Route exact path="/" component={App} />
+        <Route exact path="/" component={Home} />
         <Route exact path="/choose" component={Choose} />
         <Route path="/market" component={Market} />
         <Route exact path="/createOffer" component={CreateOffer} />

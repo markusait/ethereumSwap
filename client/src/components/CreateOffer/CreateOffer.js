@@ -18,6 +18,7 @@ class CreateOffer extends Component {
     // account = '0x0',
     deployedContract: null,
     deployedContractAddress: null,
+    deployedNetwork: null,
     offerTxHash: null,
     createdOffer: false
   };
@@ -25,8 +26,22 @@ class CreateOffer extends Component {
   componentDidMount = async () => {
     try {
       // Get network provider and web3 instance.
-      const  {web3, accounts, networkId, deployedNetwork, deployedContract, deployedContractAddress } = await getWeb3Data()
-      this.setState({web3, accounts, deployedContract, networkId, deployedContractAddress })
+      const {
+        web3,
+        accounts,
+        networkId,
+        deployedNetwork,
+        deployedContract,
+        deployedContractAddress
+      } = await getWeb3Data()
+      this.setState({
+        web3,
+        accounts,
+        networkId,
+        deployedContract,
+        deployedNetwork,
+        deployedContractAddress
+      })
     } catch (error) {
       console.error(error);
     }
@@ -61,7 +76,7 @@ class CreateOffer extends Component {
 
       this.writeDetailsToDB()
 
-      this.notify(null)
+      this.notify()
 
     } catch (e) {
       this.notify(e)
@@ -97,58 +112,53 @@ class CreateOffer extends Component {
         let txHash = this.state.offerTxHash
         return (<React.Fragment>
           <Link to={"/market/" + txHash}>Go to MarketPlace</Link>
-          <p> {'this is your Transaction hash' + txHash} </p>
+          <p>
+            {'this is your Transaction hash' + txHash}
+          </p>
         </React.Fragment>)
       } else {
         return (<React.Fragment></React.Fragment>)
       }
     }
-    return (<section className="market">
-      <div className="market-page">
-        <div className="container">
-          <div id="one" className="section">
-            <div className="col">
-              <div id="contactCreation" className="advantages offset-l1  col s12 m4 card-panel hoverable">
-                <ToastContainer autoClose={8000}/>
-                <h5 className="center">
-                  Create a new Offer to get Bitcoins for your Ether
-                </h5>
-                <MarketLink/>
-                <p className="light">
-                  Type in your Bitcoin Address and the amount of Ether or USD you want to set it free
-                </p>
-                <div className="row">
-                  <form onSubmit={this.depositToContract} id="contractForm" className="col s12">
-                    <div className="row">
-                      <div className="chips-addresses input-field col s12">
-                        <input name="bitcoinAddress" value={this.state.bitcoinAddress} onChange={this.handleChange} id="bitcoinAddress" type="text" className="validate"/>
-                        <label htmlFor="bitcoinAddress">
-                          Bitcoin Address</label>
-                      </div>
-                    </div>
-                    <div className="row">
-                      <div className="input-field col s6">
-                        <input id="amountSatoshi" name="bitcoinAmount" value={this.state.bitcoinAmount} onChange={this.handleChange} type="number" min="1" max="10000000000" className="validate"></input>
-                        <label htmlFor="amountSatoshi">
-                          Amount BTC in Satoshi
-                        </label>
-                      </div>
-                      <div className="input-field col s6">
-                        <input id="ethAmount" name="ethAmount" value={this.state.ethAmount} onChange={this.handleChange} type="number" min="1" max="100000000000000000000" className="validate"></input>
-                        <label htmlFor="ethAmount">How much Ether (in Wei) is the BTC worth for you</label>
-                      </div>
-                    </div>
-                    <button type="submit" value="Submit" id="initContract" className="btn waves-effect waves-light orange">Submit
-                    </button>
-                  </form>
-                  <div></div>
+    return (<div className="market-page">
+      <div className="container col">
+        <div className="advantages s12 m4 card-panel hoverable">
+          <ToastContainer autoClose={8000}/>
+          <h5 className="center">
+            Create a new Offer to get Bitcoins for your Ether
+          </h5>
+          <MarketLink/>
+          <p>
+            Type in your Bitcoin Address and the amount of Ether or USD you want to set it free
+          </p>
+          <div className="row">
+            <form onSubmit={this.depositToContract} id="contractForm" className="col s12">
+              <div className="row">
+                <div className="chips-addresses input-field col s12">
+                  <input name="bitcoinAddress" value={this.state.bitcoinAddress} onChange={this.handleChange} id="bitcoinAddress" type="text" className="validate"/>
+                  <label htmlFor="bitcoinAddress">
+                    Bitcoin Address</label>
                 </div>
               </div>
-            </div>
+              <div className="row">
+                <div className="input-field col s6">
+                  <input id="amountSatoshi" name="bitcoinAmount" value={this.state.bitcoinAmount} onChange={this.handleChange} type="number" min="1" max="10000000000" className="validate"></input>
+                  <label htmlFor="amountSatoshi">
+                    Amount BTC in Satoshi
+                  </label>
+                </div>
+                <div className="input-field col s6">
+                  <input id="ethAmount" name="ethAmount" value={this.state.ethAmount} onChange={this.handleChange} type="number" min="1" max="100000000000000000000" className="validate"></input>
+                  <label htmlFor="ethAmount">How much Ether (in Wei) is the BTC worth for you</label>
+                </div>
+              </div>
+              <button type="submit" value="Submit" id="initContract" className="btn waves-effect waves-light orange">Submit
+              </button>
+            </form>
           </div>
         </div>
       </div>
-    </section>)
+    </div>)
   }
 }
 

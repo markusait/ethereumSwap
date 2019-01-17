@@ -34,6 +34,7 @@ class Market extends Component {
       //fetch db for Offers get offers data from constructor
       const offersData = await this.getOffersFromDB()
 
+      // Get network provider and web3 instance.
       const  {web3, accounts, networkId, deployedNetwork, deployedContract, deployedContractAddress } = await getWeb3Data()
 
       this.setState({
@@ -42,18 +43,14 @@ class Market extends Component {
         accounts,
         deployedContract,
         networkId,
+        deployedNetwork,
         deployedContractAddress,
         routeTx
-      }, () => {
-        this.afterSetStateFinished('state update finished');
       })
 
     } catch (error) {
       console.error(error)
     }
-  }
-  afterSetStateFinished = (string) => {
-    console.log(string);
   }
   handleChange = (event) => {
     const {value, name} = event.target
@@ -109,7 +106,6 @@ class Market extends Component {
     // delete the contract from the Market placed or disable it (payedOut: true!!!!)
     // show a loader which says waiting for transaction to be compled showing the first Log
     // loader should resolve once the Payed out event occured and data is checked correctly
-
     deployedContract.events.PayedOutEvent({fromBlock: 0, toBlock: 'latest'}).on('data', (event) => {
       console.log(event)
     }).on('error', (error) => {
