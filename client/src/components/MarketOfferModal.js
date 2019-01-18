@@ -9,14 +9,8 @@ class MarketOfferModal extends Component {
       bitcoinTransactionHash: 'b1ddc46ad47f6f95d75129281b22636d5b19a06bcf534305b018fd8e688265e1'
     }
   }
-  componentWillMount = async () => {
-    if (!this.props.show) {
-      return null
-    }
-  }
   handleChange = (event) => {
     const {value, name} = event.target
-    console.log(value,name);
     this.setState({[name]: value})
   }
 
@@ -61,26 +55,6 @@ class MarketOfferModal extends Component {
           <button onClick={this.props.onHide} type="submit" value="Close" id="initContract" className="btn waves-effect waves-light orange">Close
           </button>
         </div>
-        {
-          //   <div>
-          //     <p>lol</p>
-          // </div>
-          // <div><p>lol</p>
-          //   <div className="backdrop" style={{
-          //     backdropStyle
-          //   }}>
-          //   <div className="modal" style={{
-          //       modalStyle
-          //     }}>
-          //     <p>Modal showing </p>
-          //     <div className="footer">
-          //       <button onClick={this.props.onClose}>
-          //         Close
-          //       </button>
-          //     </div>
-          //   </div>
-          // </div>
-        }
       </div>)
   }
 }

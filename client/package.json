@@ -31,5 +31,5 @@
     "not ie <= 11",
     "not op_mini all"
   ],
-  "proxy": "http://ethswap.digitpay.de"
+  "proxy": "http://localhost:8080"
 }

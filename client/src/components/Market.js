@@ -11,7 +11,8 @@ class Market extends Component {
     super(props)
     this.state = {
       offersData: null,
-      activeModal: null,
+      showModal: false,
+      openModalIndex: null,
       bitcoinAmount: 615525,
       ethAmount: 1000000000000000000,
       web3: null,
@@ -31,8 +32,17 @@ class Market extends Component {
       const routeTx = await this.checkRoutedFrom()
       //fetch db for Offers get offers data from constructor
       const offersData = await this.getOffersFromDB()
+
       // Get network provider and web3 instance.
-      const  {web3, accounts, networkId, deployedNetwork, deployedContract, deployedContractAddress } = await getWeb3Data()
+      const {
+        web3,
+        accounts,
+        networkId,
+        deployedNetwork,
+        deployedContract,
+        deployedContractAddress
+      } = await getWeb3Data()
+
       this.setState({
         offersData,
         web3,
@@ -47,7 +57,7 @@ class Market extends Component {
       console.error(error)
     }
   }
-  
+
   handleChange = (event) => {
     const {value, name} = event.target
     this.setState({[name]: value})
@@ -92,7 +102,7 @@ class Market extends Component {
   watchEvents = async () => {
     console.log('watching for events');
     const {deployedContract} = this.state
-    deployedContract.events.LogInfo({fromBlock: 'latest', toBlock: 'latest'}).on('data', (event) => {
+    deployedContract.events.LogInfo({fromBlock: 'latest', toBlock: 'pending'}).on('data', (event) => {
       console.log(event)
     }).on('error', (error) => {
       console.error(error)
@@ -102,8 +112,21 @@ class Market extends Component {
     // delete the contract from the Market placed or disable it (payedOut: true!!!!)
     // show a loader which says waiting for transaction to be compled showing the first Log
     // loader should resolve once the Payed out event occured and data is checked correctly
-    deployedContract.events.PayedOutEvent({fromBlock: 0, toBlock: 'latest'}).on('data', (event) => {
+    deployedContract.events.PayedOutEvent({fromBlock: 'latest', toBlock: 'pending'}).on('data', (event) => {
       console.log(event)
+      // const bitcoinAddress = event.returnValues._bitcoinAddress
+      // const ethAmount = event.returnValues._ethAmount
+      // const recipientAddress = event.returnValues._recipientAddress
+      // console.log(bitcoinAddress,ethAmount,recipientAddress);
+      //save this is MongoDB as well
+      const contracCallTxHash = event.transactionHash
+      this.state.web3.eth.getTransactionReceipt(contracCallTxHash).then((result) => {
+        console.log(result);
+        if (result.status) {
+          console.log("sucess");
+        }
+      }).catch(e => console.log(e))
+      //post request modifiy
     }).on('error', (error) => {
       console.error(error)
     })
@@ -111,70 +134,68 @@ class Market extends Component {
   }
 
   openModal = (e, index) => {
-    this.setState({activeModal: index})
+    this.setState({showModal: true, openModalIndex: index})
   }
 
   hideModal = () => {
-    this.setState({activeModal: null})
+    this.setState({showModal: false})
   }
 
   render() {
+    //waiting for offers data to be loaded
+    if (!this.state.offersData)  return (<p>Loading</p>)
 
-    const MarketOffers = ({offers}) => {
-      console.log(offers);
-      if (offers) {
-        return (<React.Fragment>
-          {
-            offers.map((offer, index) => (<React.Fragment>
-              <div key={offer._id} className="container col s12 m6 l4">
+      const MarketOffers = ({offers}) => {
+          return (<React.Fragment>
+            {
+              offers.map((offer, index) => (<React.Fragment>
+                <div key={offer._id} className="container col s12 m6 l4">
 
-                <div className="advantages card-panel hoverable">
-                  <div className={this.state.routeTx === offer.offerTxHash
-                      ? 'center highlight'
-                      : 'dont-show'}>
-                    <a onClick={e => this.openModal(e, index)} className="btn-floating btn-small pulse orange">
-                      <i className="material-icons">arrow_drop_down</i>
-                    </a>
-                    <p>this is your offer
-                    </p>
-                  </div>
-                  <div className="card-content">
-                    <p>
-                      BitcoinAddress: {offer.bitcoinAddress}</p>
-                    <p>
-                      Amount BTC: {offer.bitcoinAmount}</p>
-                    <p>
-                      Amount to Pay: {offer.amountEth}</p>
-                    <p>
-                      Ethereum Address of contract: {offer.contractAddress}</p>
-                    <p>
-                      id: {offer._id}
-                    </p>
-                    <div>
-                      <button id={offer._id} onClick={e => this.openModal(e, index)}>View Details</button>
+                  <div className="advantages card-panel hoverable">
+                    <div className={this.state.routeTx === offer.offerTxHash
+                        ? 'center highlight'
+                        : 'dont-show'}>
+                      <a onClick={e => this.openModal(e, index)} className="btn-floating btn-small pulse orange">
+                        <i className="material-icons">arrow_drop_down</i>
+                      </a>
+                      <p>this is your offer
+                      </p>
                     </div>
-                    <MarketOfferModal offer={offer} index={index} show={this.state.activeModal === index} onHide={this.hideModal} initializePayout={this.initializePayoutProcess}></MarketOfferModal>
+                    <div className="card-content">
+                      <p>
+                        BitcoinAddressz: {offer.bitcoinAddress}</p>
+                      <p>
+                        Amount BTC: {offer.bitcoinAmount}</p>
+                      <p>
+                        Amount to Pay: {offer.amountEth}</p>
+                      <p>
+                        Ethereum Address of contract: {offer.contractAddress}</p>
+                      <p>
+                        id: {offer._id}
+                      </p>
+                      <div>
+                        <button id={offer._id} onClick={e => this.openModal(e, index)}>View Details</button>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </React.Fragment>))
-          }
-        </React.Fragment>)
-      } else {
-        return null
-      }
-    }
-    return (
-      <div className="market-page">
+              </React.Fragment>))
+            }
+          </React.Fragment>)
+        }
+
+      return (
+        <div className="market-page">
         <div className="inner-container">
-        <section className="offers">
-          <div className="row">
-            <MarketOffers offers={this.state.offersData}/>
-          </div>
-        </section>
+          <section className="offers">
+            <div className="row">
+              <MarketOffers offers={this.state.offersData}/>
+              <MarketOfferModal offer={this.state.offersData[this.state.openModalIndex]} show={this.state.showModal} onHide={this.hideModal} initializePayout={this.initializePayoutProcess}></MarketOfferModal>
+            </div>
+          </section>
+        </div>
       </div>
-    </div>
-  )
+      )
   }
 }
 
