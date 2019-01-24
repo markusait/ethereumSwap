@@ -1,6 +1,7 @@
 import {Main, Header} from './homePageStyles'
 import {SplitDiv, CenterDiv} from './chooseStyles'
-import {Card} from './createOffer'
+import {Card, CardAction} from './createOffer'
+import { Grid } from './marketStyles'
 import { ToastContainer, toast } from 'react-toastify';
 
 export {
@@ -10,5 +11,7 @@ export {
   CenterDiv,
   Card,
   ToastContainer,
-  toast
+  Grid,
+  toast,
+  CardAction
 }

@@ -1,6 +1,7 @@
 const path = require("path");
 let HDWalletProvider = require("truffle-hdwallet-provider");
 const mnemonic = require('./config.js').mnemonic;
+const infuraAPIKey = require('./config.js').infuraAPIKey;
 
 module.exports = {
 
@@ -8,12 +9,11 @@ module.exports = {
     development: {
       host: "127.0.0.1",
       port: 7545, //using local ganach blockchain
-      network_id: "*", // Match any network id
-      from: "0xe87f722A65c55b7b625884c61d3B95030B6bef27"
+      network_id: "*" // Match any network id
     },
     ropsten: {
       provider: function() {
-        return new HDWalletProvider(mnemonic, "https://ropsten.infura.io/3cad50878c924727bcc2cc0fb99cf3960")
+        return new HDWalletProvider(mnemonic, `https://ropsten.infura.io/${infuraAPIKey}`)
       },
       network_id: 3
     }
@@ -23,9 +23,7 @@ module.exports = {
       version: "0.4.25",
     }
   },
-  //not sure if needed
+  // webpckConfig see  <http://truffleframework.com/docs/advanced/configuration>
   // build: "webpack",
-  // See <http://truffleframework.com/docs/advanced/configuration>
-  // to customize your Truffle configuration!
   contracts_build_directory: path.join(__dirname, "client/src/contractInterface")
 };

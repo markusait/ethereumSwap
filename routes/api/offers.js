@@ -36,6 +36,19 @@ router.post('/', (req, res) => {
     console.error(e)
   });
 });
+// @route   PUT api/offers/:id
+// @desc    Update an Offer
+// @access  Public
+router.put('/:id', function (req, res) {
+  const updateId = req.params.id
+  var query = {'_id': updateId};
+  // const newTxHash = req.body.offerTxHash
+  Offer.findOneAndUpdate(query, {"contractAddress": 'PutTestWorked!'}, {upsert:true}, function(err, doc){
+    if (err) return res.status(404).json({ success: false });
+    return res.json({ success: true });
+  });
+})
+
 
 // @route   DELETE api/offers/:id
 // @desc    Delete A Offer

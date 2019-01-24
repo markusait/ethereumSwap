@@ -2,11 +2,12 @@ import styled from 'styled-components';
 
 
 const Main = styled.div `
-  text-align:  ${props => props.type==="main" ? "center;" : "auto;"}
-  height: 100vh;
+  position:  ${props => props.type==="market" ? "auto;" : "fixed;"}
+  height:  ${props => props.type==="market" ? "auto;" : "100vh;"}
+  text-align:  ${props => props.type==="home" ? "center;" : "auto;"}
   background: ${props => {
     switch(props.type){
-      case "main":
+      case "home":
         return "linear-gradient(to bottom, #f09819, #edde5d);"
         break
       case "create":
@@ -20,7 +21,6 @@ const Main = styled.div `
   };
 
   top:0;
-  position: fixed;
   width: 100%;
 `;
 

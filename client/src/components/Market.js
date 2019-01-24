@@ -1,18 +1,21 @@
 import React, {Component} from "react"
 import MarketOfferModal from './MarketOfferModal'
+import MarketOffersGrid from './MarketOffersGrid'
 import EthereumSwap from "../contractInterface/EthereumSwap.json"
-import './Market.css'
 import getWeb3Data from "../utils/getWeb3"
 import axios from 'axios'
-// import img from '../../assets/index.jpeg'
+import {Grid, Card, Main, ToastContainer, toast } from '../styles/index'
+import {Preloader} from 'react-materialize'
 
 class Market extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      offersData: null,
+      loading: false,
       showModal: false,
+      offersData: null,
       openModalIndex: null,
+      payoutOfferId:null,
       bitcoinAmount: 615525,
       ethAmount: 1000000000000000000,
       web3: null,
@@ -58,6 +61,66 @@ class Market extends Component {
     }
   }
 
+  getOffersFromDB = async () => {
+    try {
+      const response = await axios.get('/api/offers', {crossdomain: true})
+      return response.data
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  modifyOfferFromDB = async (contractCallTxHash, recipientAddress) => {
+    try {
+      const updateData = {"payedOut": true}
+      const response = await axios.put(`/api/offers/${this.state.payoutOfferId}`, updateData)
+      console.log(response)
+      return response
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  initializePayoutProcess = async (index, bitcoinTransactionHash, bitcoinAddress) => {
+    try {
+      //run this from watch events
+      // this.modifyOfferFromDB()
+      const payoutOfferId = this.state.offersData[index]['_id']
+      const {accounts, deployedContract, oraclizeApiPrice} = this.state
+      const response = await deployedContract.methods.getTransaction(bitcoinTransactionHash, bitcoinAddress).send({from: accounts[0], value: oraclizeApiPrice, gas: 1500000})
+      console.log(response)
+
+      this.setState({redeemTxHash: response.transactionHash, loading: true, payoutOfferId: payoutOfferId})
+      this.watchEvents()
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  watchEvents = async () => {
+    const {deployedContract} = this.state
+    deployedContract.events.LogInfo({fromBlock: 'latest', toBlock: 'pending'}).on('data', (event) => {
+      console.log(event)
+      //if (log evenet === error message )
+      //notify(Error)
+    }).on('error', (error) => {
+      console.error(error)
+    })
+
+    //acess data with returnedValues and (bitcoinAddress, ethAmount and recipient Address)
+    deployedContract.events.PayedOutEvent({fromBlock: 'latest', toBlock: 'pending'}).on('data', (event) => {
+      const bitcoinAddress = event.returnValues._bitcoinAddress
+      const ethAmount = event.returnValues._ethAmount
+      const recipientAddress = event.returnValues._recipientAddress
+      const contractCallTxHash = event.transactionHash
+      // console.log(contractCallTxHash, bitcoinAddress,ethAmount,recipientAddress);
+      this.notify(contractCallTxHash, recipientAddress, ethAmount, bitcoinAddress )
+      this.modifyOfferFromDB(contractCallTxHash, recipientAddress)
+      this.setState({loading: false})
+    }).on('error', (error) => {
+      console.error(error)
+    })
+  }
   handleChange = (event) => {
     const {value, name} = event.target
     this.setState({[name]: value})
@@ -66,73 +129,18 @@ class Market extends Component {
   //check if routed from creatOffer with a tx
   //if true highlight in the render object function
   checkRoutedFrom = () => {
-    if (this.props.location.pathname.length > 7) {
-      const path = this.props.location.pathname
-      const tx = path.substring(8, path.length)
-      return tx
-    } else {
-      return null
+    let path = this.props.location.pathname
+    return path.length > 7 ? path.substring(8, path.length) : null
+  }
+
+  notify = (contractCallTxHash, recipientAddress, ethAmount, bitcoinAddress ) => {
+    contractCallTxHash ?
+      toast.success(`🦄 Transaction Successfull ! ${contractCallTxHash}`, {position: toast.POSITION.TOP_CENTER})
+    :
+      toast.error("Transaction unsucsessfull please try again ")
     }
-  }
 
-  getOffersFromDB = async () => {
-    try {
-      const response = await axios.get('/api/offers', {crossdomain: true})
-      // TODO: make this false once you fix it
-      // let offerData = response.data.filter(data => data.payedOut == true)
-      console.log(response);
-      return response.data
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  initializePayoutProcess = async (index, bitcoinTransactionHash, bitcoinAddress) => {
-    try {
-      const {accounts, deployedContract, oraclizeApiPrice} = this.state
-      const response = await deployedContract.methods.getTransaction(bitcoinTransactionHash, bitcoinAddress).send({from: accounts[0], value: oraclizeApiPrice, gas: 1500000})
-      console.log(response)
-      this.watchEvents()
-      this.setState({redeemTxHash: response.transactionHash})
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  watchEvents = async () => {
-    console.log('watching for events');
-    const {deployedContract} = this.state
-    deployedContract.events.LogInfo({fromBlock: 'latest', toBlock: 'pending'}).on('data', (event) => {
-      console.log(event)
-    }).on('error', (error) => {
-      console.error(error)
-    })
-    //acess data with returnedValues and (bitcoinAddress, ethAmount and recipient Address)
-    // promt toast with this data and the transaction hash (modify solidity)
-    // delete the contract from the Market placed or disable it (payedOut: true!!!!)
-    // show a loader which says waiting for transaction to be compled showing the first Log
-    // loader should resolve once the Payed out event occured and data is checked correctly
-    deployedContract.events.PayedOutEvent({fromBlock: 'latest', toBlock: 'pending'}).on('data', (event) => {
-      console.log(event)
-      // const bitcoinAddress = event.returnValues._bitcoinAddress
-      // const ethAmount = event.returnValues._ethAmount
-      // const recipientAddress = event.returnValues._recipientAddress
-      // console.log(bitcoinAddress,ethAmount,recipientAddress);
-      //save this is MongoDB as well
-      const contracCallTxHash = event.transactionHash
-      this.state.web3.eth.getTransactionReceipt(contracCallTxHash).then((result) => {
-        console.log(result);
-        if (result.status) {
-          console.log("sucess");
-        }
-      }).catch(e => console.log(e))
-      //post request modifiy
-    }).on('error', (error) => {
-      console.error(error)
-    })
-
-  }
-
+  //put payoutOfferId to initializePayoutProcess
   openModal = (e, index) => {
     this.setState({showModal: true, openModalIndex: index})
   }
@@ -143,59 +151,28 @@ class Market extends Component {
 
   render() {
     //waiting for offers data to be loaded
-    if (!this.state.offersData)  return (<p>Loading</p>)
+    if (!this.state.offersData)
+      return ( <Preloader size='big'/>)
 
-      const MarketOffers = ({offers}) => {
-          return (<React.Fragment>
-            {
-              offers.map((offer, index) => (<React.Fragment>
-                <div key={offer._id} className="container col s12 m6 l4">
-
-                  <div className="advantages card-panel hoverable">
-                    <div className={this.state.routeTx === offer.offerTxHash
-                        ? 'center highlight'
-                        : 'dont-show'}>
-                      <a onClick={e => this.openModal(e, index)} className="btn-floating btn-small pulse orange">
-                        <i className="material-icons">arrow_drop_down</i>
-                      </a>
-                      <p>this is your offer
-                      </p>
-                    </div>
-                    <div className="card-content">
-                      <p>
-                        BitcoinAddressz: {offer.bitcoinAddress}</p>
-                      <p>
-                        Amount BTC: {offer.bitcoinAmount}</p>
-                      <p>
-                        Amount to Pay: {offer.amountEth}</p>
-                      <p>
-                        Ethereum Address of contract: {offer.contractAddress}</p>
-                      <p>
-                        id: {offer._id}
-                      </p>
-                      <div>
-                        <button id={offer._id} onClick={e => this.openModal(e, index)}>View Details</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </React.Fragment>))
-            }
-          </React.Fragment>)
-        }
-
-      return (
-        <div className="market-page">
-        <div className="inner-container">
-          <section className="offers">
-            <div className="row">
-              <MarketOffers offers={this.state.offersData}/>
-              <MarketOfferModal offer={this.state.offersData[this.state.openModalIndex]} show={this.state.showModal} onHide={this.hideModal} initializePayout={this.initializePayoutProcess}></MarketOfferModal>
-            </div>
-          </section>
-        </div>
-      </div>
-      )
+    return (
+    <Main type={"market"}>
+      <Grid>
+        <ToastContainer autoClose={8000}/>
+        <MarketOffersGrid
+          offers={this.state.offersData}
+          openModal={this.openModal}
+          routeTx={this.state.routeTx}/>
+        <MarketOfferModal
+          offer={this.state.offersData[this.state.openModalIndex]}
+          index={this.state.openModalIndex}
+          show={this.state.showModal}
+          loading={this.state.loading}
+          onHide={this.hideModal}
+          redeemTxHash={this.state.redeemTxHash}
+          initializePayout={this.initializePayoutProcess}/>
+      </Grid>
+    </Main>
+  )
   }
 }
 

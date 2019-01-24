@@ -16,7 +16,7 @@ class Choose extends Component {
       </SplitDiv>
 
       <SplitDiv>
-        <CenterDiv>
+        <CenterDiv right>
           <h1>Buy Ether for Bitcoins</h1>
           <p>Find an exsisting smart contract to open up your funds</p>
           <Link to="/market">Go to MarketPlace</Link>
