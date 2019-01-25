@@ -25,8 +25,8 @@ To run contract via local testnet (Ganache):
 2. In second terminal window: `ethereum-bridge -a 9 -H 127.0.0.1 -p 7545 --dev`
 3. It will mention to put this line in the constructor of your smart contract
 `OAR = OraclizeAddrResolverI(0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475);`
-instead put the ethereum address `0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475` (which will be a different one each time) into the constructor argument of `2_deploy_contracts.js` which truffle uses to migrate.
-4. run `truffle migrate --reset` to deploy the contract to the blockchain 
+instead put the ethereum address `0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475` (which will be a different one each time) into the config.js folder as `oraclizeConnectorAddress: 0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475` which is used in `2_deploy_contracts.js` for the constructor which truffle uses to migrate.
+4. run `truffle migrate --reset` to deploy the contract to the blockchain
 
   (you can also install it globally and run it npm install -g ethereum-bridge)
   more [info](https://github.com/oraclize/ethereum-bridge)

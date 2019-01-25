@@ -34,7 +34,6 @@ class MarketOfferModal extends Component {
       )
     }
     }
-
     return (<div className="modal advantages hoverable">
       <div className="modal-content">
         <p>

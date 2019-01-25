@@ -17,6 +17,10 @@ h5 {
   margin: 2rem !important;
 }
 
+.blur{
+  filter: blur(1.5px);
+}
+
 .card-image {
   margin-left: -2px;
   margin-right: -2px;

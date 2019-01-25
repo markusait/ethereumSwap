@@ -102,7 +102,9 @@ class Market extends Component {
     deployedContract.events.LogInfo({fromBlock: 'latest', toBlock: 'pending'}).on('data', (event) => {
       console.log(event)
       //if (log evenet === error message )
+      //if LOGMESSAGE = The sended bitcoinAmount was too small or non exsisting  then notif error
       //notify(Error)
+
     }).on('error', (error) => {
       console.error(error)
     })
@@ -155,23 +157,23 @@ class Market extends Component {
       return ( <Preloader size='big'/>)
 
     return (
-    <Main type={"market"}>
-      <Grid>
-        <ToastContainer autoClose={8000}/>
-        <MarketOffersGrid
-          offers={this.state.offersData}
-          openModal={this.openModal}
-          routeTx={this.state.routeTx}/>
-        <MarketOfferModal
-          offer={this.state.offersData[this.state.openModalIndex]}
-          index={this.state.openModalIndex}
-          show={this.state.showModal}
-          loading={this.state.loading}
-          onHide={this.hideModal}
-          redeemTxHash={this.state.redeemTxHash}
-          initializePayout={this.initializePayoutProcess}/>
-      </Grid>
-    </Main>
+      <Main type={"market"}>
+        <Grid>
+          <ToastContainer autoClose={8000}/>
+          <MarketOffersGrid
+            offers={this.state.offersData}
+            openModal={this.openModal}
+            routeTx={this.state.routeTx}/>
+          <MarketOfferModal
+            offer={this.state.offersData[this.state.openModalIndex]}
+            index={this.state.openModalIndex}
+            show={this.state.showModal}
+            loading={this.state.loading}
+            onHide={this.hideModal}
+            redeemTxHash={this.state.redeemTxHash}
+            initializePayout={this.initializePayoutProcess}/>
+        </Grid>
+      </Main>
   )
   }
 }

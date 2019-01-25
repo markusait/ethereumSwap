@@ -7,22 +7,31 @@ import metamask from '../assets/metamask.png'
 class MarketOffersGrid extends Component {
   constructor(props) {
     super(props)
+  }
 
+  defineComponentstate(offer){
+      console.log(offer);
+      if(offer.payedOut) return "payedOut hoverable"
+      if(this.props.routeTx === offer.offerTxHash) return "blur hoverable"
+      return "normal hoverable"
   }
   render() {
         // //fix pulse hoverabl bug
         // <Card className={this.props.routeTx === offer.offerTxHash
         //     ? 'hoverable pulse'
         //     : 'hoverable center'}>
+        // <Card offer="true" type={
+        //     () => {
+        //       if(offer.payedOut) return "payedOut"
+        //       if(this.props.routeTx === offer.offerTxHash) return "route"
+        //       return "normal"
+        //   }} className="hoverable" >
+
+
         return (<React.Fragment>
           {
             this.props.offers.map((offer, index) => (<React.Fragment>
-          <Card offer="true" type={
-              () => {
-                if(offer.payedOut) return "payedOut"
-                if(this.props.routeTx === offer.offerTxHash) return "route"
-                return "normal"
-            }} className="hoverable" >
+          <Card offer="true" className={this.defineComponentstate(offer)} >
                 <div class="card-image">
                   <Blockies
                         seed={offer.bitcoinAddress}

@@ -1,5 +1,6 @@
 var EthereumSwap = artifacts.require("./EthereumSwap.sol");
+let oraclizeConnectorAddress = require('../config.js').oraclizeConnectorAddress;
 
 module.exports = function(deployer) {
-  deployer.deploy(EthereumSwap, "0x5def2f6bbfe3defbfdee0a2c64b81506347633b0");
+  deployer.deploy(EthereumSwap, oraclizeConnectorAddress);
 };
