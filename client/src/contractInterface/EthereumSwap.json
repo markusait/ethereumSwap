@@ -58155,12 +58155,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x518d7204b00F26D1033293309043CDcA8e694Eb6",
-      "transactionHash": "0x2b0a81016c3da49d1b9236984879a0f9a892f77f92840686b9b563410ccaa6b6"
+      "address": "0xFFd0312896c07F1425AcFad2bfC1Ceab5030A480",
+      "transactionHash": "0xba66e7f9b8439d5f5df83902ccb9e0f777cf62c529f331eefe9e3f489f0f0f91"
     }
   },
   "schemaVersion": "3.0.1",
-  "updatedAt": "2019-01-28T09:58:18.284Z",
+  "updatedAt": "2019-01-24T22:57:00.174Z",
   "devdoc": {
     "methods": {
       "__callback(bytes32,string)": {

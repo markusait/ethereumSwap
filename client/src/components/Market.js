@@ -102,8 +102,16 @@ class Market extends Component {
     const {deployedContract} = this.state
     //Error Event
     deployedContract.events.LogInfo({fromBlock: 'latest', toBlock: 'pending'}).on('data', (event) => {
+<<<<<<< HEAD
       console.log(event.returnValues.log)
       this.notify(event.returnValues.log)
+=======
+      console.log(event)
+      //if (log evenet === error message )
+      //if LOGMESSAGE = The sended bitcoinAmount was too small or non exsisting  then notif error
+      //notify(Error)
+
+>>>>>>> 4d404d9... debugging and frontend changes
     }).on('error', (error) => {
       console.error(error)
     })
@@ -154,8 +162,12 @@ class Market extends Component {
           <MarketOffersGrid
             offers={this.state.offersData}
             openModal={this.openModal}
+<<<<<<< HEAD
             routeTx={this.state.routeTx}
             />
+=======
+            routeTx={this.state.routeTx}/>
+>>>>>>> 4d404d9... debugging and frontend changes
           <MarketOfferModal
             offer={this.state.offersData[this.state.openModalIndex]}
             index={this.state.openModalIndex}
