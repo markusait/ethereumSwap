@@ -1383,21 +1383,12 @@
     "5777": {
       "events": {},
       "links": {},
-<<<<<<< HEAD
-      "address": "0xB39d9F77bF5EEe8E3F20f24947c7EfB62aFf08FD",
-      "transactionHash": "0x41c84d968c8b8b529331be1d4354ac47599f4da9a04183470f4a23234961fddc"
+      "address": "0x492E26d464fe8f4c004E1742F2AFF6FEbf718B10",
+      "transactionHash": "0x268b4d0b7ffb500b2bb23d85c8adf93094b85184d365d7e3fbe2ee8ce5624242"
     }
   },
   "schemaVersion": "3.0.1",
-  "updatedAt": "2019-01-24T22:57:01.052Z",
-=======
-      "address": "0xeFD3f64643F1dea58a85E434FB4A7D761244B6DF",
-      "transactionHash": "0x8c8b45eb95035618b739b2763e30c5e04235cdf5baefaa59762b9e857f39712a"
-    }
-  },
-  "schemaVersion": "3.0.1",
-  "updatedAt": "2019-01-28T17:16:14.036Z",
->>>>>>> 149d549... readme and home cahnges
+  "updatedAt": "2019-01-28T17:55:30.926Z",
   "devdoc": {
     "methods": {}
   },

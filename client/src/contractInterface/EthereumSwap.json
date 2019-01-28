@@ -57993,21 +57993,12 @@
     "5777": {
       "events": {},
       "links": {},
-<<<<<<< HEAD
-      "address": "0xFFd0312896c07F1425AcFad2bfC1Ceab5030A480",
-      "transactionHash": "0xba66e7f9b8439d5f5df83902ccb9e0f777cf62c529f331eefe9e3f489f0f0f91"
+      "address": "0x34B32d9D68e757124aac015a085e0526d0e16Dd6",
+      "transactionHash": "0x3b533f4c37e10cd797389dd9f249f45ae793e8b93267b56237f2c5bb5f2a3c7f"
     }
   },
   "schemaVersion": "3.0.1",
-  "updatedAt": "2019-01-24T22:57:00.174Z",
-=======
-      "address": "0xd499d1dd6D3B2cB1bb183027240f3881B802A3ba",
-      "transactionHash": "0x5707830e1873fe356125e0a7110daeb4c8a5dd16372a61108870acc0a32cff98"
-    }
-  },
-  "schemaVersion": "3.0.1",
-  "updatedAt": "2019-01-28T17:16:14.068Z",
->>>>>>> 149d549... readme and home cahnges
+  "updatedAt": "2019-01-28T17:55:30.961Z",
   "devdoc": {
     "methods": {
       "__callback(bytes32,string)": {

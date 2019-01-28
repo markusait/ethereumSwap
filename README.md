@@ -45,6 +45,7 @@ Make sure to the correct host in the truffle.js when doing so.
 2. Spin up the Ethereum Bridge for local testing with oraclize. Open a terminal window and run
 
         ethereum-bridge -a 9 -H 127.0.0.1 -p 7545 --dev
+        node bridge -a 9 -H 127.0.0.1 -p 8545 --dev
 
 
   It will mention to put this line in the constructor of your smart contract
@@ -74,11 +75,10 @@ Make sure to the correct host in the truffle.js when doing so.
 - using pm2 and nginx you can start both back and front end on Port 8080 or proccess.env port with
 
       pm2 start server.js
-
 nginx config:
 
 ---
-##Description
+## About the Exchange
 
 This App uses a Ethereum Smart Escrow Contract and Blockexplorer API lookups to exchange ether for Bitcoin and potentially to other currencies. The Offers displayed by this App are managed by an that uses [Oraclize](http://www.oraclize.it/) to make API calls.
 

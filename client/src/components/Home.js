@@ -21,23 +21,23 @@ class Home extends Component {
       <Card className="main-card">
         <h3>How it works
         </h3>
-        <ul class="collapsible">
+        <ul className="collapsible">
           <li>
-            <div class="collapsible-header">
+            <div className="collapsible-header">
               <p>1. Download Meta Mask</p>
             </div>
-            <div class="collapsible-body">
+            <div className="collapsible-body">
               <a href="https://metamask.io/" target="_blank" rel="noopener noreferrer">
                 <img src={metamask} alt="MetaMask" className="MetaMask"/>
               </a>
             </div>
           </li>
           <li>
-            <div class="collapsible-header">
+            <div className="collapsible-header">
               <p>2. Connect to the Ropsten Testnet or use my blockchain instance
               </p>
             </div>
-            <div class="collapsible-body">
+            <div className="collapsible-body">
               <p>
                 connect to &nbsp;
                 <a href="http://ethblockchain.digitpay.de" target="_blank" rel="noopener noreferrer">
@@ -48,20 +48,20 @@ class Home extends Component {
             </div>
           </li>
           <li>
-            <div class="collapsible-header">
+            <div className="collapsible-header">
               3. Create a new Offer on the Escrow Contract
             </div>
-            <div class="collapsible-body">
+            <div className="collapsible-body">
               Add a value (e.g 1 ETH), a Bitcoin Address (e.g 3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9) and a minimum redeem value: (e.g 615525).
               <br/>
               For security reasons only use Bitcoin Addresses with no prior transactions.
             </div>
           </li>
           <li>
-            <div class="collapsible-header">
+            <div className="collapsible-header">
               4. Send the appropriate Amount to the Bitcoin Address (Mainnet only)
             </div>
-            <div class="collapsible-body">
+            <div className="collapsible-body">
               <p>The amount is designated in Satoshi only and transactions are only checked in the Bitcoin Mainnet as of now.
                 <br/>
                 You can find the transaction for this example
@@ -70,10 +70,10 @@ class Home extends Component {
             </div>
           </li>
           <li>
-            <div class="collapsible-header">
+            <div className="collapsible-header">
               5. Redeem the offer by entereing the transaction Hash for the Offer in the markt page
             </div>
-            <div class="collapsible-body">
+            <div className="collapsible-body">
               <p>
                 This Transaction will take around 30 seconds until you are payed out by the contract
               </p>
