@@ -1,6 +1,5 @@
 import React, {Component} from "react";
 import {Link} from 'react-router-dom'
-import EthereumSwap from "../contractInterface/EthereumSwap.json";
 import getWeb3Data from "../utils/getWeb3";
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
@@ -68,8 +67,6 @@ class CreateOffer extends Component {
 
       this.setState({offerTxHash: response.transactionHash, createdOffer: true});
 
-      console.log(response);
-
       this.writeDetailsToDB()
 
       this.notify()
@@ -116,7 +113,7 @@ class CreateOffer extends Component {
     // <div className="advantages s12 m4 card-panel hoverable">
     return (
       <Main type={"create"}>
-      <div className="container col">
+      <div className="container col createCard-container">
       <Card className="hoverable">
        <ToastContainer autoClose={8000}/>
           <h5 className="center">

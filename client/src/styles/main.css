@@ -17,7 +17,22 @@ h5 {
   margin: 2rem !important;
 }
 
+<<<<<<< HEAD
 .blur{
+=======
+.main-wrap{
+  width: 75%;
+  margin-left: 12.5%;
+}
+.main-card{
+    padding-right: 1.5rem;
+}
+.createCard-container {
+  margin-top: 15rem;
+}
+
+.blur {
+>>>>>>> 149d549... readme and home cahnges
   filter: blur(1.5px);
 }
 
@@ -28,7 +43,15 @@ h5 {
   transition: box-shadow .25s;
 }
 
+<<<<<<< HEAD
 p {
+=======
+.MetaMask{
+  width:300px;
+}
+
+/* p {
+>>>>>>> 149d549... readme and home cahnges
   line-height: 2rem;
 }
 
