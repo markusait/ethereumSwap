@@ -4,7 +4,7 @@ import EthereumSwap from "../contractInterface/EthereumSwap.json";
 import getWeb3Data from "../utils/getWeb3";
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer, Main, Card, toast } from '../styles/index.js'
+import {ToastContainer, Main, Card, toast} from '../styles/index.js'
 import {Row} from 'react-materialize'
 
 class CreateOffer extends Component {
@@ -63,8 +63,11 @@ class CreateOffer extends Component {
   // TODO: secify gas price and usage here
   //Could also use vars to make stateless (but input maintains state anyways)
   depositToContract = async (event) => {
-    event.preventDefault();
     try {
+      this.watchEvents()
+
+      event.preventDefault()
+
       const {accounts, bitcoinAddress, bitcoinAmount, ethAmount, deployedContract} = this.state;
 
       const response = await deployedContract.methods.depositEther(bitcoinAddress, bitcoinAmount.toString()).send({from: accounts[0], value: ethAmount, gas: 1500000})
@@ -81,7 +84,16 @@ class CreateOffer extends Component {
       this.notify(e)
       console.error(e)
     }
+  }
 
+  watchEvents = async () => {
+    const {deployedContract} = this.state
+    deployedContract.events.LogInfo({fromBlock: 'latest', toBlock: 'pending'}).on('data', (event) => {
+      console.log(event.returnValues.log)
+      //if (event.returnValues.log === error message )
+    }).on('error', (error) => {
+      console.error(error)
+    })
   }
 
   writeDetailsToDB = async (event) => {
@@ -120,11 +132,10 @@ class CreateOffer extends Component {
       }
     }
     // <div className="advantages s12 m4 card-panel hoverable">
-    return (
-      <Main type={"create"}>
+    return (<Main type={"create"}>
       <div className="container col">
-      <Card className="hoverable">
-       <ToastContainer autoClose={8000}/>
+        <Card className="hoverable">
+          <ToastContainer autoClose={8000}/>
           <h5 className="center">
             Create a new Offer to get Bitcoins for your Ether
           </h5>
@@ -159,8 +170,7 @@ class CreateOffer extends Component {
           </Row>
         </Card>
       </div>
-    </Main>
-  )
+    </Main>)
   }
 }
 

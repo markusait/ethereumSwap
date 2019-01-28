@@ -1,6 +1,21 @@
 #  Ethereum Swap - [ethswap.digitpay.de](http://ethswap.digitpay.de)
+---
+Build your own decentralized market place and swap Ether for any Cryptocurrency you like!
 
-Build your own descentralized market place and swap Ether for any Cryptocurrency you like!
+This App uses a Ethereum Smart Escrow Contract and Blockexplorer API lookups to exchange ether for Bitcoin and potentially to other currencies. The Offers displayed by this App are managed by an that uses [Oraclize](http://www.oraclize.it/) to make API calls.
+
+The very principle is that users can proof to the smart contract that they have conducted the right form of payment which entitles them to receive the locked up Ether.
+
+**Who you need to trust:**
+- The smart contract itself, since it has not underwent security audits and should not be used in production
+- The application server, to display the data correctly
+- Oraclize services, you can find out more about them [here](http://www.oraclize.it/)
+- Blockexplorer API, currently using Blockchain.info API (please note that downtime is not a problem because proof of tx can be submitted each time )
+
+As of now the only possible option is to use the [Blockchain](https://blockchain.info/q/txresult/b1ddc46ad47f6f95d75129281b22636d5b19a06bcf534305b018fd8e688265e1/3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9) info API, which allows to look up the exact amount of a given Transaction to a Bitcoin Address. Please note that this is one major constrain of this approach. You should only use Addresses with no prior transactions and you should only use APIs that output the amount transfered as a single string or number. Any form of JSON Parsing will be expensive.
+
+
+Theoretically, one could also swap real world currencies for Ether if buyer and seller agree upon a certain
 Swap ETH for BTC
 
 ## Installation:

@@ -10,28 +10,24 @@ class MarketOffersGrid extends Component {
   }
 
   defineComponentstate(offer){
-      console.log(offer);
       if(offer.payedOut) return "payedOut hoverable"
-      if(this.props.routeTx === offer.offerTxHash) return "blur hoverable"
+      if(this.props.routeTx === offer.offerTxHash) return "routeTx hoverable"
       return "normal hoverable"
   }
   render() {
-        // //fix pulse hoverabl bug
-        // <Card className={this.props.routeTx === offer.offerTxHash
-        //     ? 'hoverable pulse'
-        //     : 'hoverable center'}>
-        // <Card offer="true" type={
-        //     () => {
-        //       if(offer.payedOut) return "payedOut"
-        //       if(this.props.routeTx === offer.offerTxHash) return "route"
-        //       return "normal"
-        //   }} className="hoverable" >
-
+    if(this.props.offers.length < 10) return <p>not here yet</p>
+        const StatusText = ({offer}) => {
+          const status = this.defineComponentstate(offer)
+          if(status === "payedOut hoverable" ) return <p className="markedContract">This contract is alredy payed out!</p>
+          if(status === "routeTx hoverable") return <p className="markedContract">This is your Contract!</p>
+          return <React.Fragment> </React.Fragment>
+        }
 
         return (<React.Fragment>
           {
             this.props.offers.map((offer, index) => (<React.Fragment>
           <Card offer="true" className={this.defineComponentstate(offer)} >
+              <StatusText offer={offer}/>
                 <div class="card-image">
                   <Blockies
                         seed={offer.bitcoinAddress}

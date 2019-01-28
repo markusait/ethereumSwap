@@ -36,6 +36,14 @@ const offerSchema = new Schema({
       default: false,
       required: false
     },
+    payedOutTransactionHash:{
+      type: String,
+      required: false
+    },
+    recipientAddress:{
+      type:String,
+      required: false
+    },
     date : {
       type: Date,
       default: Date.now,

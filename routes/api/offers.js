@@ -8,7 +8,6 @@ const Offer = require('../../models/Offer');
 // @desc    Get All Offers
 // @access  Public
 router.get('/', (req, res) => {
-  // res.json({"hi":"hi"})
   Offer.find()
     .sort({ date: -1 })
     .then(offers => res.json(offers));
@@ -18,15 +17,16 @@ router.get('/', (req, res) => {
 // @desc    Create An Offer
 // @access  Public
 router.post('/', (req, res) => {
+  const data = req.body
   const newOffer = new Offer({
-    contractAddress: req.body.contractAddress,
-    contractNetworkId: req.body.contractNetworkId,
-    ownerAddress: req.body.ownerAddress,
-    amountEth: req.body.amountEth,
-    bitcoinAddress: req.body.bitcoinAddress,
-    bitcoinAmount: req.body.bitcoinAmount,
-    offerTxHash: req.body.offerTxHash,
-    date: req.body.date
+    contractAddress: data.contractAddress,
+    contractNetworkId: data.contractNetworkId,
+    ownerAddress: data.ownerAddress,
+    amountEth: data.amountEth,
+    bitcoinAddress: data.bitcoinAddress,
+    bitcoinAmount: data.bitcoinAmount,
+    offerTxHash: data.offerTxHash,
+    date: data.date
   });
 
   newOffer.save()
@@ -40,10 +40,10 @@ router.post('/', (req, res) => {
 // @desc    Update an Offer
 // @access  Public
 router.put('/:id', function (req, res) {
-  const updateId = req.params.id
-  var query = {'_id': updateId};
-  // const newTxHash = req.body.offerTxHash
-  Offer.findOneAndUpdate(query, {"contractAddress": 'PutTestWorked!'}, {upsert:true}, function(err, doc){
+  const query = {'_id': req.params.id}
+  const updateData = {bitcoinAmount,payedOut, payedOutTransactionHash, recipientAddress} = req.body
+  console.log(updateData);
+  Offer.findOneAndUpdate(query, updateData, {upsert:true}, (err, doc) =>{
     if (err) return res.status(404).json({ success: false });
     return res.json({ success: true });
   });

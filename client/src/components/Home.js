@@ -16,31 +16,18 @@ class Home extends Component {
           <a href="http://ethblockchain.digitpay.de" target="_blank">http://ethblockchain.digitpay.de</a>
           for testing
         </p>
-        <p>Please note that this Project is in a Testing phase and should not be used in production as of know</p>
+        <p>Please note that this Project is in a Testing phase and <b>should not</b> be used in production as of know</p>
         <p>Download Meta Mask</p>
         <a href="https://metamask.io/" target="_blank">
           <img src={metamask} alt="MetaMask"/>
         </a>
         <br></br>
-        <Link to="/choose">
+      <Link to="/choose">
           Get Started
         </Link>
+
       </div>
       <div>
-
-
-          <h1>FAQ</h1>
-          <h5>Why?</h5>
-          <h5>Whom do I need to trust?</h5>
-          <p>There are three services you need to trust</p>
-          <li>
-            This Server</li>
-          <li>The Smart Contract which holds the funds
-          </li>
-          <li>Oraclize services (find out more about them
-            <a href="http://www.oraclize.it/"></a>)</li>
-          <li>Blockchain.info API (please note that downtime is not a problem because proof of tx can be submitted each time )</li>
-
       </div>
       </Main>
       );

@@ -10,6 +10,7 @@ class MarketOfferModal extends Component {
   }
 
   handleChange = (event) => {
+    console.log(this.props.offer);
     const {value, name} = event.target
     this.setState({[name]: value})
   }
@@ -18,21 +19,25 @@ class MarketOfferModal extends Component {
     if (!this.props.show) {
       return null
     }
-    const Payout = () => {
-      if(!this.props.loading){ return (
-        <button onClick={() => {
+    const Status = () => {
+      if (this.props.offer.payedOut) {
+        return (<div>
+          <p>This Contract was payed out already
+          </p>
+        </div>)
+      }
+      if (!this.props.loading) {
+        return (<button onClick={() => {
             this.props.initializePayout(this.props.index, this.state.bitcoinTransactionHash, this.props.offer.bitcoinAddress)
           }} type="submit" value="initializePayout" id="initializePayout" className="btn waves-effect waves-light orange">initialize Payout
-        </button>
-      )} else {
-      return (
-        <div>
-        <Preloader size='big'/>
-        <p>Please wait while your transaction is beeing processed</p>
-        <p>you can view the status of your transaction here {this.props.redeemTxHash}</p>
-        </div>
-      )
-    }
+        </button>)
+      } else {
+        return (<div>
+          <Preloader size='big'/>
+          <p>Please wait while your transaction is beeing processed</p>
+          <p>you can view the status of your transaction here {this.props.redeemTxHash}</p>
+        </div>)
+      }
     }
     return (<div className="modal advantages hoverable">
       <div className="modal-content">
@@ -48,32 +53,29 @@ class MarketOfferModal extends Component {
           PayedOut: {this.props.offer.payedOut}
         </p>
         <p>
-          Recipient Address:
+          Transaction Hash of offer: {this.props.offer.offerTxHash}
         </p>
-        <p></p>
+        <p>
+          PayedOutTransactionHash:  {this.props.offer.payedOutTransactionHash}
+        </p>
+        <p>
+          RecipientAddress:  {this.props.offer.recipientAddress}
+        </p>
         <div className="row">
           <div className="input-field col s12">
-            <input
-              id="bitcoinTransactionHash"
-              name="bitcoinTransactionHash"
-              value={this.state.bitcoinTransactionHash}
-              onChange={this.handleChange}
-              maxLength="64"
-              type="text"
-              className="validate">
-            </input>
+            <input id="bitcoinTransactionHash" name="bitcoinTransactionHash" value={this.state.bitcoinTransactionHash} onChange={this.handleChange} maxLength="64" type="text" className="validate"></input>
             <label htmlFor="amountSatoshi">
               Bitcoin Transaction Hash
             </label>
           </div>
         </div>
-          <Payout />
-        </div>
-        <div className="modal-footer">
-          <button onClick={this.props.onHide} type="submit" value="Close" id="initContract" className="btn waves-effect waves-light orange">Close
-          </button>
-        </div>
-      </div>)
+        <Status/>
+      </div>
+      <div className="modal-footer">
+        <button onClick={this.props.onHide} type="submit" value="Close" id="initContract" className="btn waves-effect waves-light orange">Close
+        </button>
+      </div>
+    </div>)
   }
 }
 export default MarketOfferModal

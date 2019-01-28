@@ -19,8 +19,6 @@ instance.methods.depositEther("3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9",615525).send(
 
 instance.methods.getOraclizePrice().call()
 
-
-
 instance.methods.getTransaction("b1ddc46ad47f6f95d75129281b22636d5b19a06bcf534305b018fd8e688265e1","3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9").send({from:accounts[0],value: 500000000000000000, gas: 1500000}).then((res) => {console.log(res.events)}).catch(e => console.log(e))
 
 

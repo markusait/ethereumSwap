@@ -41,7 +41,6 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "babel-loader": "^8.0.4",
     "babel-polyfill": "^6.26.0",
     "bignumber.js": "^8.0.2",
     "copy-webpack-plugin": "^4.6.0",
