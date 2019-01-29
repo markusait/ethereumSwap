@@ -490,7 +490,6 @@ contract EthereumSwap is usingOraclize {
     // if (oraclize_getPrice("URL") <= msg.value) {
     if (true) {
 
-      // string memory query = "https://blockchain.info/q/txresult/b1ddc46ad47f6f95d75129281b22636d5b19a06bcf534305b018fd8e688265e1/3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9";
       string memory query = strConcat("https://blockchain.info/q/txresult/", _txHash, "/", _bitcoinAddress);
 
       bytes32 oraclizeID = oraclize_query("URL", query, 500001);

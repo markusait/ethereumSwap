@@ -4,6 +4,7 @@ truffle migrate --reset
 truffle console
 //Getting a copy of the smart contract asynchronously (app = EthereumBridge.deploy() does not work )
 EthereumSwap.deployed().then((instance) => {app = instance})
+
 const instance = new web3.eth.Contract(JSON.parse(JSON.stringify(app.abi),app.address));
 //Using web3!!! in truffle console
 web3.eth.getAccounts(function(e,a) { accounts=a; });
@@ -15,11 +16,11 @@ offer = {tx: "d04f8780b597a5e2630d2fdcb954446d546d3a5a2df881d11237abde0f1dd4ee",
       amount: 143500
 }
 
-instance.methods.depositEther("3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9",615525).send({from:accounts[0],value: 1000000000000000000, gas: 1500000}).then((res) => {console.log(res.events)}).catch(e => console.log(e))
+instance.methods.depositEther("3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9",615525).send({from:accounts[0],value: 1000000000000000000, gas: 3500000}).then((res) => {console.log(res.events)}).catch(e => console.log(e))
 
 instance.methods.getOraclizePrice().call()
 
-instance.methods.getTransaction("b1ddc46ad47f6f95d75129281b22636d5b19a06bcf534305b018fd8e688265e1","3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9").send({from:accounts[0],value: 500000000000000000, gas: 1500000}).then((res) => {console.log(res.events)}).catch(e => console.log(e))
+instance.methods.getTransaction("b1ddc46ad47f6f95d75129281b22636d5b19a06bcf534305b018fd8e688265e1","3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9").send({from:accounts[0],value: 500000000000000000, gas: 3500000}).then((res) => {console.log(res.events)}).catch(e => console.log(e))
 
 
 
@@ -82,9 +83,5 @@ app.myMethod(123).estimateGas({from: '0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe
     ...
 });
 
-
-
-//test
-app.ping.call(1)
 
 // for big numbers use .toNumber()

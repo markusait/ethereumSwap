@@ -42,15 +42,11 @@ Make sure to the correct host in the truffle.js when doing so.
         ganache-cli --accounts 10 --port 7545
 
 
-2. Spin up the Ethereum Bridge for local testing with oraclize. Open a terminal window and run
+2. Spin up the Ethereum Bridge for local testing with oraclize. Open a terminal window and run the following command. Then copy the OAR address in the `config.js` file as such: `oraclizeConnectorAddress: 0xyourOARAddress`. You can also run the command with the `--oar` flag to use the same connector contract each time. More about ethreum-bridge [here](https://github.com/oraclize/ethereum-bridge)
 
         ethereum-bridge -a 9 -H 127.0.0.1 -p 7545 --dev
-        node bridge -a 9 -H 127.0.0.1 -p 8545 --dev
-
-
-  It will mention to put this line in the constructor of your smart contract
-  instead put the ethereum address (which will be a different one each time) into the config.js folder as `oraclizeConnectorAddress: 0x6f485C8BF6fc43eA212E93BBF8ce046C7f1cb475` which is used in `2_deploy_contracts.js` for the constructor which truffle uses to migrate. You can also run the command with the `--oar` flag to use the same contract each time. More about ethreum-bridge [here](https://github.com/oraclize/ethereum-bridge)
-
+        #or if not installed globally
+        node bridge -a 9 -H 127.0.0.1 -p 7545 --dev
 
 3. Compile and deploy the contract to the blockchain. More info  [here](https://github.com/oraclize/ethereum-bridge)  
 
@@ -78,18 +74,28 @@ Make sure to the correct host in the truffle.js when doing so.
 nginx config:
 
 ---
-## About the Exchange
+## Overview
 
-This App uses a Ethereum Smart Escrow Contract and Blockexplorer API lookups to exchange ether for Bitcoin and potentially to other currencies. The Offers displayed by this App are managed by an that uses [Oraclize](http://www.oraclize.it/) to make API calls.
+![Overview](/client/public/overview.jpg)
 
-The very principle is that users can proof to the smart contract that they have conducted the right form of payment which entitles them to receive the locked up Ether.
+As you can see the way this exchange works is that Bob locks up his Ether in a smart contract. Alice sees that Offer in the Marketplace and pays the equivalent amount to Bob's Bitcoin address. After that she submits the transaction hash to the smart contract which conducts and [Oraclize](http://www.oraclize.it/) API call to check if the transaction is valid. If the submitted amount is >= Bob's minimum value (of 1 BTC here) the smart contract sends the funds to Alice.
 
-**Who you need to trust:**
-- The smart contract itself, since it has not underwent security audits and should not be used in production
-- The application server, to display the data correctly
-- Oraclize services, you can find out more about them [here](http://www.oraclize.it/)
-- Blockexplorer API, currently using Blockchain.info API (please note that downtime is not a problem because proof of tx can be submitted each time )
+The very principle is that **users can proof to the smart contract** that they have conducted the right form of payment which entitles them to receive the locked up Ether. Theoretically, one could also swap real world currencies for Ether or any other ERC20 Token. Any public API can be used for this lookup but one should be aware that any form of JSON Parsing will cost alot of gas and hence will be expensive.
 
-The smart contract uses the  [Blockchain Info APi](https://blockchain.info/q/txresult/b1ddc46ad47f6f95d75129281b22636d5b19a06bcf534305b018fd8e688265e1/3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9) which allows to look up the exact amount of a given Transaction to a Bitcoin Address as a String. But any public API can be used but be aware that any form of JSON Parsing will cost alot of gas and hence be expensive.
+###Who users need to trust
 
-Theoretically, one could also swap real world currencies for Ether if buyer and seller agree upon a certain way to proof this to the contract.
+Of cause this service is also not completely trustless. There are 4 parties a user who exchanges value has to trust:
+1. Oraclize services to display the data correctly, you can find out more about them [here](https://ethereum.stackexchange.com/questions/2/how-can-an-ethereum-contract-get-data-from-a-website/2336#2336)
+2. The Blockexplorer API, the contract is currently using Blockchain.info API (please note that downtime is not a problem because proof of tx can be submitted at anytime)
+3. The smart contract itself, since it has not underwent security audits and should not be used in production
+4. The application server, to display the data correctly
+
+###Further Development and Features
+
+- [ ] using ipfs to store the smart contract data
+- [ ] Enhance Security
+  - [ ] Apply Open zepplin audit tools
+  - [ ] More detailed Tests
+  - [ ] Guaranteeing Atomicity and Real Time data to avoid that a contracts are payed out too early
+- [ ] BTC USD preis sync in input field
+- [ ] Value redeem option with mapping of address => msg.value

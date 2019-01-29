@@ -1,6 +1,6 @@
 const EthereumSwap = artifacts.require("./EthereumSwap.sol");
 web3.eth.getAccounts((e,a) => { accounts=a; });
-const oraclizeConnectorAddress = require('../config.js').oraclizeConnectorAddress;
+const oraclizeConnectorAddress = require('../config.js').oraclizeResolverAddress;
 const BigNumber = require('bignumber.js');
 const gasPrice = web3.utils.toWei('0.00001','ether')
 const gas = '1500000'

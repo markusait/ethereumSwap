@@ -9,7 +9,7 @@ class Home extends Component {
       <Header>
         Welcome to EtherSwap, a decentralized exchange based on Oraclize
       </Header>
-      <h5>
+      <h5 class="light">
         Exchange Ether and Bitcoin with anyone in the most decentralized way for free!
         <br/>
         <br/>
@@ -43,7 +43,7 @@ class Home extends Component {
                 <a href="http://ethblockchain.digitpay.de" target="_blank" rel="noopener noreferrer">
                   http://ethblockchain.digitpay.de
                 </a>
-                &nbsp; and use this private key: d60984ec931d45517e170c1a1e48a9ca041a6b9803e4d7cebc1704d8f478b5d0 for testing
+                &nbsp; and use this private key: f0afc4913d6d4b6e46adfaf3509dd516fa76760bc500dd6e023bb8ecc9832545 for testing
               </p>
             </div>
           </li>

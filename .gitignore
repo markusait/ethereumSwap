@@ -18,6 +18,9 @@ client/build/
 .env.test.local
 .env.production.local
 
+#contracts
+client/src/contractInterface/
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
