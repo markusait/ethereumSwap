@@ -2,14 +2,14 @@ import React, {Component} from "react";
 import {Link} from 'react-router-dom'
 import getWeb3Data from "../utils/getWeb3";
 import axios from 'axios';
-import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer, Main, Card, toast } from '../styles/index.js'
-import {Row} from 'react-materialize'
+// import 'react-toastify/dist/ReactToastify.css';
+import {ToastContainer, Main, Card, toast, Row} from '../styles/index.js'
 
 class CreateOffer extends Component {
   state = {
-    bitcoinAddress: '3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9',
-    bitcoinAmount: 615525,
+    stellar: false,
+    cryptoAddress: '3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9',
+    cryptoAmount: 615525,
     ethAmount: 1000000000000000000,
     web3: null,
     networkId: null,
@@ -44,9 +44,17 @@ class CreateOffer extends Component {
       console.error(error);
     }
   };
-
+  // TODO: Bitcoin Stellar switch here
+  //const value = target.type === 'checkbox'
+  //  ? target.checked
+  //  : target.value;
   handleChange = (event) => {
-    const {value, name} = event.target
+    const target = event.target
+    const value = target.type === 'checkbox'
+      ? target.checked
+      : target.value
+    const name = target.name
+    console.log(name,value);
     this.setState({[name]: value})
   }
 
@@ -61,9 +69,9 @@ class CreateOffer extends Component {
   depositToContract = async (event) => {
     event.preventDefault();
     try {
-      const {accounts, bitcoinAddress, bitcoinAmount, ethAmount, deployedContract} = this.state;
+      const {accounts, cryptoAddress, cryptoAmount, ethAmount, deployedContract, stellar} = this.state;
 
-      const response = await deployedContract.methods.depositEther(bitcoinAddress, bitcoinAmount.toString()).send({from: accounts[0], value: ethAmount, gas: 1500000})
+      const response = await deployedContract.methods.depositEther(cryptoAddress, cryptoAmount.toString(), ~~stellar).send({from: accounts[0], value: ethAmount, gas: 1500000})
 
       this.setState({offerTxHash: response.transactionHash, createdOffer: true});
 
@@ -86,9 +94,10 @@ class CreateOffer extends Component {
         contractNetworkId: data.networkId,
         ownerAddress: data.accounts[0],
         amountEth: data.ethAmount,
-        bitcoinAddress: data.bitcoinAddress,
-        bitcoinAmount: data.bitcoinAmount,
-        offerTxHash: data.offerTxHash
+        cryptoAddress: data.cryptoAddress,
+        cryptoAmount: data.cryptoAmount,
+        offerTxHash: data.offerTxHash,
+        curreny: ~~data.stellar
       }
       const response = await axios.post('/api/offers', offer)
     } catch (e) {
@@ -99,59 +108,74 @@ class CreateOffer extends Component {
   render() {
     const MarketLink = () => {
       if (this.state.createdOffer) {
-        let txHash = this.state.offerTxHash
         return (<React.Fragment>
-          <Link to={"/market/" + txHash}>Go to MarketPlace</Link>
+          <Link to={"/market/" + this.state.offerTxHash}>Go to MarketPlace</Link>
           <p>
-            {'this is your Transaction hash' + txHash}
+            {'this is your Transaction hash' + this.state.offerTxHash}
           </p>
         </React.Fragment>)
       } else {
         return (<React.Fragment></React.Fragment>)
       }
     }
-    // <div className="advantages s12 m4 card-panel hoverable">
-    return (
-      <Main type={"create"}>
+    const CryptoAddressLabel = () =>  {
+      console.log(this.state.stellar);
+      return(
+        <label htmlFor="cryptoAddress"> {this.state.stellar ? "Stellar Address" : "Bitcoin Address"}  </label>
+    )
+    }
+    return (<Main type="create">
       <div className="container col createCard-container">
-      <Card className="hoverable">
-       <ToastContainer autoClose={8000}/>
+        <Card className="hoverable">
+          <ToastContainer autoClose={8000}/>
           <h5 className="center">
             Create a new Offer to get Bitcoins for your Ether
           </h5>
           <MarketLink/>
-          <p>
+          <p className="center">
             Type in your Bitcoin Address and the amount of Ether or USD you want to set it free
           </p>
           <Row>
             <form onSubmit={this.depositToContract} id="contractForm" className="col s12">
               <Row>
-                <div className="chips-addresses input-field col s12">
-                  <input name="bitcoinAddress" value={this.state.bitcoinAddress} onChange={this.handleChange} id="bitcoinAddress" type="text" className="validate"/>
-                  <label htmlFor="bitcoinAddress">
-                    Bitcoin Address</label>
-                </div>
-              </Row>
-              <Row>
-                <div className="input-field col s6">
-                  <input id="amountSatoshi" name="bitcoinAmount" value={this.state.bitcoinAmount} onChange={this.handleChange} type="number" min="1" max="10000000000" className="validate"></input>
-                  <label htmlFor="amountSatoshi">
-                    Amount BTC in Satoshi
-                  </label>
-                </div>
-                <div className="input-field col s6">
-                  <input id="ethAmount" name="ethAmount" value={this.state.ethAmount} onChange={this.handleChange} type="number" min="1" max="100000000000000000000" className="validate"></input>
-                  <label htmlFor="ethAmount">How much Ether (in Wei) is the BTC worth for you</label>
-                </div>
-              </Row>
-              <button type="submit" value="Submit" id="initContract" className="btn waves-effect waves-light orange">Submit
-              </button>
-            </form>
-          </Row>
-        </Card>
-      </div>
-    </Main>
-  )
+                <div className="center switch">
+                  <label>
+                    Bitcoin
+                    <input type="checkbox" value={this.state.stellar} onChange={this.handleChange}/>
+                      <span class="lever"></span>
+                      Stellar
+                    </label>
+                  </div>
+
+                </Row>
+                <Row>
+                  <div className="chips-addresses input-field col s12">
+                    <input name="cryptoAddress" value={this.state.cryptoAddress} onChange={this.handleChange} id="cryptoAddress" type="text" className="validate"/>
+                      <CryptoAddressLabel/>
+                  </div>
+                </Row>
+                <Row>
+                  <div className="input-field col s6">
+                    <input id="amountSatoshi" name="cryptoAmount" value={this.state.cryptoAmount} onChange={this.handleChange} type="number" min="1" max="10000000000" className="validate"></input>
+                    <label htmlFor="amountSatoshi">
+                      Amount BTC in Satoshi
+                    </label>
+                  </div>
+                  <div className="input-field col s6">
+                    <input id="ethAmount" name="ethAmount" value={this.state.ethAmount} onChange={this.handleChange} type="number" min="1" max="100000000000000000000" className="validate"></input>
+                    <label htmlFor="ethAmount">
+                      How much Ether (in Wei) is the BTC worth for you
+                    </label>
+                  </div>
+                </Row>
+                <button type="submit" value="Submit" id="initContract" className="btn waves-effect waves-light orange">Submit
+                </button>
+              </form>
+            </Row>
+          </Card>
+        </div>
+      </Main>
+      )
   }
 }
 

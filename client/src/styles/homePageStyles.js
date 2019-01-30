@@ -1,10 +1,10 @@
 import styled from 'styled-components';
 
 
+// position:  ${props => props.type==="market"  || props.type ==="home" ? "auto;" : "fixed;"}
 const Main = styled.div `
-  position:  ${props => props.type==="market"  || props.type ==="home" ? "auto;" : "fixed;"}
-  height:  ${props => props.type==="market" ? "auto;" : "100vh;"}
   text-align:  ${props => props.type==="home" ? "center;" : "auto;"}
+  height:  ${props => props.type==="home" ? "auto;" : "100vh;"}
   background: ${props => {
     switch(props.type){
       case "home":
@@ -23,13 +23,6 @@ const Main = styled.div `
   top:0;
   width: 100%;
 `;
-// font-family: LLCircular,sans-serif;
-// font-size: 60px;
-// font-weight: 600;
-// font-style: normal;
-// font-stretch: normal;
-// padding: 100px 0 20px;
-// color: white;
 
 
 const Header = styled.h1 `

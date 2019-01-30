@@ -1,24 +1,31 @@
 import React, {Component} from "react";
 import {Link} from 'react-router-dom'
-import {Main, Header, Card} from '../styles/index'
-import metamask from '../assets/metamask.png'
+import {Main, Header, Card, Metamask, BitcoinImg, StellarImg, EtherImg} from '../styles/index'
+
+
 class Home extends Component {
 
   render() {
-    return (<Main type={"home"}>
+    return (
+      <Main type="home">
+        <div className="homewrap">
       <Header>
         Welcome to EtherSwap, a decentralized exchange based on Oraclize
       </Header>
       <h5 class="light">
-        Exchange Ether and Bitcoin with anyone in the most decentralized way for free!
+        Exchange Ether, Bitcoin and Stellar with anyone in the most decentralized way for free!
         <br/>
-        <br/>
+
         <Link to="/choose">
             Get Started now
         </Link>
-        </h5>
+      </h5>
+          <img src={StellarImg} alt="Stellar" className="headerImg"/>
+          <img src={EtherImg} alt="ether" className="headerImg"/>
+          <img src={BitcoinImg} alt="Bitcoin" className="headerImg"/>
+
       <div className="main-wrap">
-      <Card className="main-card">
+      <Card type="main">
         <h3>How it works
         </h3>
         <ul className="collapsible">
@@ -27,8 +34,8 @@ class Home extends Component {
               <p>1. Download Meta Mask</p>
             </div>
             <div className="collapsible-body">
-              <a href="https://metamask.io/" target="_blank" rel="noopener noreferrer">
-                <img src={metamask} alt="MetaMask" className="MetaMask"/>
+              <a href="https://Metamask.io/" target="_blank" rel="noopener noreferrer">
+                <img src={Metamask} alt="MetaMask" className="MetaMask"/>
               </a>
             </div>
           </li>
@@ -54,12 +61,12 @@ class Home extends Component {
             <div className="collapsible-body">
               Add a value (e.g 1 ETH), a Bitcoin Address (e.g 3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9) and a minimum redeem value: (e.g 615525).
               <br/>
-              For security reasons only use Bitcoin Addresses with no prior transactions.
+              For security reasons only use Bitcoin or Stellar Addresses with no prior transactions.
             </div>
           </li>
           <li>
             <div className="collapsible-header">
-              4. Send the appropriate Amount to the Bitcoin Address (Mainnet only)
+              4. Send the appropriate Amount to the Bitcoin or Stellar Address (Mainnet only)
             </div>
             <div className="collapsible-body">
               <p>The amount is designated in Satoshi only and transactions are only checked in the Bitcoin Mainnet as of now.
@@ -82,11 +89,12 @@ class Home extends Component {
         </ul>
       </Card>
       </div>
-      <p>Please note that this Project is in a Testing phase and
-        &nbsp;<b>should not</b>&nbsp;
-        be used in production as of now</p>
+      </div>
     </Main>);
   }
 }
 
+// <p>Please note that this Project is in a Testing phase and
+//   &nbsp;<b>should not</b>&nbsp;
+//   be used in production as of now</p>
 export default Home;

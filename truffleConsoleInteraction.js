@@ -8,7 +8,6 @@ EthereumSwap.deployed().then((instance) => {app = instance})
 const instance = new web3.eth.Contract(JSON.parse(JSON.stringify(app.abi),app.address));
 //Using web3!!! in truffle console
 web3.eth.getAccounts(function(e,a) { accounts=a; });
-//sending amount to contract
 instance.options.address = app.address
 
 offer = {tx: "d04f8780b597a5e2630d2fdcb954446d546d3a5a2df881d11237abde0f1dd4ee",
@@ -16,12 +15,17 @@ offer = {tx: "d04f8780b597a5e2630d2fdcb954446d546d3a5a2df881d11237abde0f1dd4ee",
       amount: 143500
 }
 
-instance.methods.depositEther("3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9",615525).send({from:accounts[0],value: 1000000000000000000, gas: 3500000}).then((res) => {console.log(res.events)}).catch(e => console.log(e))
+instance.methods.depositEther("3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9",615525,2).send({from:accounts[0],value: 1000000000000000000, gas: 3500000}).then((res) => {console.log(res.events)}).catch(e => console.log(e))
+
+instance.methods.depositEther("GDRK2CMWPHEEHRY6RUBVKXW4FH3KGXVN5ZLZIVKNVCIYIPBASWPAMRQW",3759900000,2).send({from:accounts[0],value: 1000000000000000000, gas: 3500000}).then((res) => {console.log(res.events)}).catch(e => console.log(e))
+
+
 
 instance.methods.getOraclizePrice().call()
-
+//btc
 instance.methods.getTransaction("b1ddc46ad47f6f95d75129281b22636d5b19a06bcf534305b018fd8e688265e1","3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9").send({from:accounts[0],value: 500000000000000000, gas: 3500000}).then((res) => {console.log(res.events)}).catch(e => console.log(e))
-
+//lumens
+instance.methods.getTransaction("95488874020802561","GDRK2CMWPHEEHRY6RUBVKXW4FH3KGXVN5ZLZIVKNVCIYIPBASWPAMRQW").send({from:accounts[0],value: 500000000000000000, gas: 3500000}).then((res) => {console.log(res.events)}).catch(e => console.log(e))
 
 
 
@@ -41,7 +45,7 @@ app.getTransaction("b1ddc46ad47f6f95d75129281b22636d5b19a06bcf534305b018fd8e6882
 
 
 web3.eth.getBalance(app.address)
-web3.eth.getBalance("0x75d79a33B620f1769631E66A3021fDdF34B45DfD")
+web3.eth.getBalance(accounts[0])
 
 // app.methods.getTestingOraclizeId().call(function(err, res){console.log(res)})
 

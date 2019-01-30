@@ -1,5 +1,5 @@
 import React, {Component} from "react"
-import {Preloader} from 'react-materialize'
+import { Preloader, Button } from '../styles/index'
 
 class MarketOfferModal extends Component {
   constructor(props) {
@@ -18,28 +18,35 @@ class MarketOfferModal extends Component {
     if (!this.props.show) {
       return null
     }
-    const Payout = () => {
-      if(!this.props.loading){ return (
-        <button onClick={() => {
-            this.props.initializePayout(this.props.index, this.state.bitcoinTransactionHash, this.props.offer.bitcoinAddress)
+    const Status = () => {
+      if (this.props.offer.payedOut) {
+        return (<div>
+          <p>This Contract was payed out already
+          </p>
+        </div>)
+      }
+      if (!this.props.loading) {
+        return (<button onClick={() => {
+            this.props.initializePayout(this.props.index, this.state.bitcoinTransactionHash, this.props.offer.cryptoAddress)
           }} type="submit" value="initializePayout" id="initializePayout" className="btn waves-effect waves-light orange">initialize Payout
-        </button>
-      )} else {
-      return (
-        <div>
-        <Preloader size='big'/>
-        <p>Please wait while your transaction is beeing processed</p>
-        <p>you can view the status of your transaction here {this.props.redeemTxHash}</p>
-        </div>
-      )
-    }
+        </button>)
+      } else {
+        return (<div>
+          <Preloader size='big'/>
+          <p>Please wait while your transaction is beeing processed</p>
+          <p>you can view the status of your transaction here {this.props.redeemTxHash}</p>
+        </div>)
+      }
     }
     return (<div className="modal advantages hoverable">
       <div className="modal-content">
         <p>
-          BitcoinAddress: {this.props.offer.bitcoinAddress}</p>
+          Currency: {this.props.offer.currency}
+        </p>
         <p>
-          Amount BTC: {this.props.offer.bitcoinAmount}</p>
+          CryptoAddress: {this.props.offer.cryptoAddress}</p>
+        <p>
+          Amount : {this.props.offer.cryptoAmount}</p>
         <p>
           Amount to Pay: {this.props.offer.amountEth}</p>
         <p>
@@ -48,32 +55,32 @@ class MarketOfferModal extends Component {
           PayedOut: {this.props.offer.payedOut}
         </p>
         <p>
-          Recipient Address:
+          Transaction Hash of offer: {this.props.offer.offerTxHash}
         </p>
-        <p></p>
+        <p>
+          PayedOutTransactionHash:  {this.props.offer.payedOutTransactionHash}
+        </p>
+        <p>
+          RecipientAddress:  {this.props.offer.recipientAddress}
+        </p>
+        <p>
+
+        </p>
         <div className="row">
           <div className="input-field col s12">
-            <input
-              id="bitcoinTransactionHash"
-              name="bitcoinTransactionHash"
-              value={this.state.bitcoinTransactionHash}
-              onChange={this.handleChange}
-              maxLength="64"
-              type="text"
-              className="validate">
-            </input>
+            <input id="bitcoinTransactionHash" name="bitcoinTransactionHash" value={this.state.bitcoinTransactionHash} onChange={this.handleChange} maxLength="64" type="text" className="validate"></input>
             <label htmlFor="amountSatoshi">
               Bitcoin Transaction Hash
             </label>
           </div>
         </div>
-          <Payout />
-        </div>
-        <div className="modal-footer">
-          <button onClick={this.props.onHide} type="submit" value="Close" id="initContract" className="btn waves-effect waves-light orange">Close
-          </button>
-        </div>
-      </div>)
+        <Status/>
+      </div>
+      <div className="modal-footer">
+        <Button onClick={this.props.onHide} type="submit" value="Close" id="initContract" className="btn waves-effect waves-light orange">Close
+        </Button>
+      </div>
+    </div>)
   }
 }
 export default MarketOfferModal

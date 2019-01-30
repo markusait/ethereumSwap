@@ -19,11 +19,11 @@ const offerSchema = new Schema({
       type: Number,
       required: false
     },
-    bitcoinAddress: {
+    cryptoAddress: {
       type: String,
       required: false
     },
-    bitcoinAmount:{
+    cryptoAmount:{
       type: Number,
       required: false
     },
@@ -41,6 +41,10 @@ const offerSchema = new Schema({
       required: false
     },
     recipientAddress:{
+      type:String,
+      required: false
+    },
+    currency:{
       type:String,
       required: false
     },

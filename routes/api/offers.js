@@ -17,17 +17,19 @@ router.get('/', (req, res) => {
 // @desc    Create An Offer
 // @access  Public
 router.post('/', (req, res) => {
-  const data = req.body
-  const newOffer = new Offer({
-    contractAddress: data.contractAddress,
-    contractNetworkId: data.contractNetworkId,
-    ownerAddress: data.ownerAddress,
-    amountEth: data.amountEth,
-    bitcoinAddress: data.bitcoinAddress,
-    bitcoinAmount: data.bitcoinAmount,
-    offerTxHash: data.offerTxHash,
-    date: data.date
-  });
+  // const data = req.body
+  // const newOffer = new Offer({
+  //   contractAddress: data.contractAddress,
+  //   contractNetworkId: data.contractNetworkId,
+  //   ownerAddress: data.ownerAddress,
+  //   amountEth: data.amountEth,
+  //   cryptoAddress: data.cryptoAddress,
+  //   cryptoAmount: data.cryptoAmount,
+  //   offerTxHash: data.offerTxHash,
+  //   date: data.date
+  //   currency: data.currency
+  // });
+  const newOffer = new Offer(req.body)
 
   newOffer.save()
   .then(offer => res.json(offer))
@@ -41,7 +43,7 @@ router.post('/', (req, res) => {
 // @access  Public
 router.put('/:id', function (req, res) {
   const query = {'_id': req.params.id}
-  const updateData = {bitcoinAmount,payedOut, payedOutTransactionHash, recipientAddress} = req.body
+  const updateData = {cryptoAmount,payedOut, payedOutTransactionHash, recipientAddress} = req.body
   console.log(updateData);
   Offer.findOneAndUpdate(query, updateData, {upsert:true}, (err, doc) =>{
     if (err) return res.status(404).json({ success: false });

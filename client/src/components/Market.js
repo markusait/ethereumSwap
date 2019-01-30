@@ -4,8 +4,7 @@ import MarketOffersGrid from './MarketOffersGrid'
 import EthereumSwap from "../contractInterface/EthereumSwap.json"
 import getWeb3Data from "../utils/getWeb3"
 import axios from 'axios'
-import {Grid, Card, Main, ToastContainer, toast } from '../styles/index'
-import {Preloader} from 'react-materialize'
+import {Grid, Card, Main, ToastContainer, toast, Preloader } from '../styles/index'
 
 class Market extends Component {
   constructor(props) {
@@ -16,7 +15,7 @@ class Market extends Component {
       offersData: null,
       openModalIndex: null,
       payoutOfferId:null,
-      bitcoinAmount: 615525,
+      cryptoAmount: 615525,
       ethAmount: 1000000000000000000,
       web3: null,
       networkId: null,
@@ -81,13 +80,13 @@ class Market extends Component {
     }
   }
 
-  initializePayoutProcess = async (index, bitcoinTransactionHash, bitcoinAddress) => {
+  initializePayoutProcess = async (index, bitcoinTransactionHash, cryptoAddress) => {
     try {
       //run this from watch events
       // this.modifyOfferFromDB()
       const payoutOfferId = this.state.offersData[index]['_id']
       const {accounts, deployedContract, oraclizeApiPrice} = this.state
-      const response = await deployedContract.methods.getTransaction(bitcoinTransactionHash, bitcoinAddress).send({from: accounts[0], value: oraclizeApiPrice, gas: 1500000})
+      const response = await deployedContract.methods.getTransaction(bitcoinTransactionHash, cryptoAddress).send({from: accounts[0], value: oraclizeApiPrice, gas: 1500000})
 
       this.setState({redeemTxHash: response.transactionHash, loading: true, payoutOfferId})
       this.watchEvents()
@@ -148,7 +147,7 @@ class Market extends Component {
       return ( <Preloader size='big'/>)
 
     return (
-      <Main type={"market"}>
+      <Main type="market">
         <Grid>
           <ToastContainer autoClose={8000}/>
           <MarketOffersGrid

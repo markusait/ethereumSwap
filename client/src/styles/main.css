@@ -12,6 +12,42 @@
   border-bottom: 1px solid #e49b2e !important;
   box-shadow: 0 1px 0 0 #e49b2e !important;
 }
+nav {
+  background-color: #ffa726 !important;
+}
+
+.headerImg{
+  width:125px;
+  margin: 20px 0px 15px 20px;
+}
+html, body {
+  height: 100vh;
+}
+.homewrap{
+      overflow: hidden;
+}
+
+/* .radioBtn{
+  position: inherit !important;
+  opacity: 1 !important;
+} */
+.switch label .lever:after{
+  background-color: orange !important;
+}
+.switch label .lever{
+  background-color: orange !important;
+}
+.switch label input[type=checkbox]:checked+.lever:after {
+    background-color: skyblue !important;
+}
+.switch label input[type=checkbox]:checked+.lever {
+    background-color: skyblue !important;
+}
+
+.btn-floating.btn-large {
+    z-index: 0;
+}
+
 
 h5 {
   margin: 2rem !important;
@@ -28,7 +64,7 @@ h5 {
     padding-right: 1.5rem;
 }
 .createCard-container {
-  margin-top: 15rem;
+  padding-top: 15rem;
 }
 
 .blur {
@@ -133,3 +169,5 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+@media only screen and (max-width: 600px)

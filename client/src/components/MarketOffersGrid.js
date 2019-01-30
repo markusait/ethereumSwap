@@ -1,7 +1,5 @@
 import React, {Component} from "react"
-import {Card, CardAction } from '../styles/index'
-import Blockies from 'react-blockies';
-import metamask from '../assets/metamask.png'
+import {Blockies, Card, CardAction, Button} from '../styles/index'
 
 
 class MarketOffersGrid extends Component {
@@ -15,7 +13,7 @@ class MarketOffersGrid extends Component {
       return "normal hoverable"
   }
   render() {
-    if(this.props.offers.length < 10) return <p>not here yet</p>
+    // if(this.props.offers.length == 0) return <p>not here yet</p>
         const StatusText = ({offer}) => {
           const status = this.defineComponentstate(offer)
           if(status === "payedOut hoverable" ) return <p className="markedContract">This contract is alredy payed out!</p>
@@ -26,11 +24,11 @@ class MarketOffersGrid extends Component {
         return (<React.Fragment>
           {
             this.props.offers.map((offer, index) => (<React.Fragment>
-          <Card offer="true" className={this.defineComponentstate(offer)} >
+          <Card key={index} offer="true" className={this.defineComponentstate(offer)} >
               <StatusText offer={offer}/>
                 <div className="card-image">
                   <Blockies
-                        seed={offer.bitcoinAddress}
+                        seed={offer.cryptoAddress}
                         size={100}
                         scale={3}
                         bgColor="#FF7F00"
@@ -38,11 +36,12 @@ class MarketOffersGrid extends Component {
                   />
                    </div>
                   <p>
-                    Amount BTC to claim: {offer.bitcoinAmount}</p>
+                    Amount to claim: {offer.cryptoAmount} {offer.curreny ? "Lumens": "Bitcoin"}
+                  </p>
                   <p>
-                    Amount to Pay: {offer.amountEth}</p>
+                    Amount to Pay: {offer.amountEth} </p>
                 <CardAction>
-                  <button id={offer._id} onClick={e => this.props.openModal(e, index)}>View Details</button>
+                  <Button floating large waves='light' icon='remove_red_eye' className="orange marketBtn" id={offer._id} onClick={e => this.props.openModal(e, index)}>View Details</Button>
                 </CardAction>
             </Card>
             </React.Fragment>))

@@ -42,7 +42,6 @@ const getWeb3 = () =>
 
 const getWeb3Data = async () => {
   const web3 = await getWeb3()
-  console.log(web3);
   // Use web3 to get the user's accounts.
   const accounts = await web3.eth.getAccounts();
 

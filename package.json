@@ -10,7 +10,7 @@
     "full-install": "npm install && cd client && npm install",
     "build": "cd client && npm run build",
     "client": "cd client && npm start",
-    "server": "nodemon server.js",
+    "server": "node server.js",
     "serve": "cd client &&  serve -s build",
     "dev": "concurrently \"npm run client\" \"npm run server\""
   },
