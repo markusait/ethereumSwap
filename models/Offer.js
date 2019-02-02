@@ -24,7 +24,7 @@ const offerSchema = new Schema({
       required: false
     },
     cryptoAmount:{
-      type: Number,
+      type: String,
       required: false
     },
     offerTxHash:{

@@ -20,14 +20,15 @@
     "i": "^0.3.6",
     "json-loader": "^0.5.7",
     "prettier": "1.15.3",
-    "truffle-contract": "^3.0.4",
-    "web3": "^0.20.5"
+    "truffle-contract": "^3.0.4"
   },
   "dependencies": {
     "bignumber.js": "^8.0.2",
     "ethereum-bridge": "^0.6.1",
     "express": "^4.16.4",
     "mongoose": "^5.4.2",
-    "truffle-hdwallet-provider": "^1.0.2"
+    "truffle": "^5.0.3",
+    "truffle-hdwallet-provider": "^1.0.2",
+    "web3": "^1.0.0-beta.37"
   }
 }

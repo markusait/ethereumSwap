@@ -80,13 +80,13 @@ class Market extends Component {
     }
   }
 
-  initializePayoutProcess = async (index, bitcoinTransactionHash, cryptoAddress) => {
+  initializePayoutProcess = async (index, cryptoTransactionHash, cryptoAddress) => {
     try {
-      //run this from watch events
-      // this.modifyOfferFromDB()
+      console.log(index, cryptoTransactionHash, cryptoAddress);
       const payoutOfferId = this.state.offersData[index]['_id']
       const {accounts, deployedContract, oraclizeApiPrice} = this.state
-      const response = await deployedContract.methods.getTransaction(bitcoinTransactionHash, cryptoAddress).send({from: accounts[0], value: oraclizeApiPrice, gas: 1500000})
+      console.log(deployedContract, this.state.web3);
+      const response = await deployedContract.methods.getTransaction(cryptoTransactionHash, cryptoAddress).send({from: accounts[0], value: oraclizeApiPrice, gas: 1500000})
 
       this.setState({redeemTxHash: response.transactionHash, loading: true, payoutOfferId})
       this.watchEvents()
@@ -96,6 +96,8 @@ class Market extends Component {
   }
 
   watchEvents = async () => {
+    //run this from watch events
+    // this.modifyOfferFromDB()
     const {deployedContract} = this.state
     //Error Event
     deployedContract.events.LogInfo({fromBlock: 'latest', toBlock: 'pending'}).on('data', (event) => {
@@ -162,7 +164,7 @@ class Market extends Component {
             loading={this.state.loading}
             onHide={this.hideModal}
             redeemTxHash={this.state.redeemTxHash}
-            initializePayout={this.initializePayoutProcess}/>
+            initializePayoutProcess={this.initializePayoutProcess}/>
         </Grid>
       </Main>
   )

@@ -35,7 +35,6 @@ app.get('/', function (req, res) {
 });
 
 
-
 //enabling CORS
 app.use(function(req, res, next) {
    res.header("Access-Control-Allow-Origin", "*");
@@ -45,3 +44,5 @@ app.use(function(req, res, next) {
 
 //Listening on port
 app.listen(port, () => console.log(`Server started on port ${port}`));
+
+process.on('SIGINT', () => { console.log("Bye bye!"); process.exit(); });

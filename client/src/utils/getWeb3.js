@@ -17,6 +17,7 @@ const getWeb3 = () =>
           // Acccounts now exposed
           resolve(web3);
         } catch (error) {
+          console.log('no erro');
           reject(error);
         }
       }
@@ -24,16 +25,15 @@ const getWeb3 = () =>
       else if (window.web3) {
         // Use Mist/MetaMask's provider.
         const web3 = window.web3;
-        console.log("Injected web3 detected.");
         resolve(web3);
       }
       // Fallback to localhost; use dev console port by default...
       else {
+        console.log("why");
         const provider = new Web3.providers.HttpProvider(
-          "http://127.0.0.1:9545"
+          "http://127.0.0.1:7545"
         );
         const web3 = new Web3(provider);
-        console.log("No web3 instance injected, using Local web3.");
         resolve(web3);
       }
 
@@ -53,6 +53,7 @@ const getWeb3Data = async () => {
   const deployedContractAddress = deployedNetwork.address
   // console.log(deployedNetwork.address);
   const deployedContract = new web3.eth.Contract(EthereumSwap.abi, deployedNetwork && deployedContractAddress)
+  console.log(deployedContract);
   // const deployedContract = await instance.deployed()
   return {web3, accounts, networkId, deployedNetwork, deployedContract, deployedContractAddress }
 

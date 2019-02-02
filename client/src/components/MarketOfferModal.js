@@ -5,7 +5,7 @@ class MarketOfferModal extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      bitcoinTransactionHash: 'b1ddc46ad47f6f95d75129281b22636d5b19a06bcf534305b018fd8e688265e1'
+      cryptoTransactionHash: 'b1ddc46ad47f6f95d75129281b22636d5b19a06bcf534305b018fd8e688265e1'
     }
   }
 
@@ -27,7 +27,7 @@ class MarketOfferModal extends Component {
       }
       if (!this.props.loading) {
         return (<button onClick={() => {
-            this.props.initializePayout(this.props.index, this.state.bitcoinTransactionHash, this.props.offer.cryptoAddress)
+            this.props.initializePayoutProcess(this.props.index, this.state.cryptoTransactionHash, this.props.offer.cryptoAddress)
           }} type="submit" value="initializePayout" id="initializePayout" className="btn waves-effect waves-light orange">initialize Payout
         </button>)
       } else {
@@ -68,7 +68,7 @@ class MarketOfferModal extends Component {
         </p>
         <div className="row">
           <div className="input-field col s12">
-            <input id="bitcoinTransactionHash" name="bitcoinTransactionHash" value={this.state.bitcoinTransactionHash} onChange={this.handleChange} maxLength="64" type="text" className="validate"></input>
+            <input id="cryptoTransactionHash" name="cryptoTransactionHash" value={this.state.cryptoTransactionHash} onChange={this.handleChange} maxLength="64" type="text" className="validate"></input>
             <label htmlFor="amountSatoshi">
               Bitcoin Transaction Hash
             </label>
