@@ -1,5 +1,7 @@
-#  Ethereum Swap - [http://ethswap-backend.digitpay.de](http://ethswap-backend.digitpay.de)
+#  Ethereum Swap - [http:/etherswaps.co](http://etherswaps.co)
 ---
+![Market](/client/src/assets/EtherswapsMarketGrid.png)
+
 ## Quickstart
 
 ### Install prerequisites
@@ -70,26 +72,26 @@ nginx config:
 ---
 ## Overview
 
-![Overview](/client/public/overview.jpg)
+![Overview](/client/src/assets/overview.jpg)
 
 As you can see the way this exchange works is that Bob locks up his Ether in a smart contract. Alice sees that Offer in the Marketplace and pays the equivalent amount to Bob's Bitcoin address. After that she submits the transaction hash to the smart contract which conducts and [Oraclize](http://www.oraclize.it/) API call to check if the transaction is valid. If the submitted amount is >= Bob's minimum value (of 1 BTC here) the smart contract sends the funds to Alice.
 
 The very principle is that **users can proof to the smart contract** that they have conducted the right form of payment which entitles them to receive the locked up Ether. Theoretically, one could also swap real world currencies for Ether or any other ERC20 Token. Any public API can be used for this lookup but one should be aware that any form of JSON Parsing will cost alot of gas and hence will be expensive.
 
-###Who users need to trust
+__Who users need to trust__
 
-Of cause this service is also not completely trustless. There are 4 parties a user who exchanges value has to trust:
+Of cause this service is also not completely trust less. There are 4 parties a user who exchanges value has to trust:
 1. Oraclize services to display the data correctly, you can find out more about them [here](https://ethereum.stackexchange.com/questions/2/how-can-an-ethereum-contract-get-data-from-a-website/2336#2336)
-2. The Blockexplorer API, the contract is currently using Blockchain.info API (please note that downtime is not a problem because proof of tx can be submitted at anytime)
+2. The Blockexplorer API, the contract is currently using Blockchain.info API (please note that downtime is not a problem because proof of TX can be submitted at anytime)
 3. The smart contract itself, since it has not underwent security audits and should not be used in production
 4. The application server, to display the data correctly
 
-###Further Development and Features
+__Further Development and Features__
 
-- [ ] using ipfs to store the smart contract data
+- [ ] Using ipfs to store the smart contract data
 - [ ] Enhance Security
   - [ ] Apply Open zepplin audit tools
   - [ ] More detailed Tests
   - [ ] Guaranteeing Atomicity and Real Time data to avoid that a contracts are payed out too early
 - [ ] BTC USD preis sync in input field
-- [ ] Value redeem option with mapping of address => msg.value
+- [ ] Frontend Value redeem option with mapping of address => msg.value

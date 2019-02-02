@@ -146,7 +146,7 @@ class Market extends Component {
       return ( <Preloader size='big'/>)
 
     return (
-      <Main type="market">
+      <Main type={this.state.offersData < 5 ? "home" : "market"}>
         <Grid>
           <ToastContainer autoClose={8000}/>
           <MarketOffersGrid
