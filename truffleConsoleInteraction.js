@@ -20,8 +20,10 @@ instance.methods.depositEther("3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9","615525",0).s
 instance.methods.depositEther("GDRK2CMWPHEEHRY6RUBVKXW4FH3KGXVN5ZLZIVKNVCIYIPBASWPAMRQW","375.9900000",1).send({from:accounts[0],value: 1000000000000000000, gas: 3500000}).then((res) => {console.log(res.events)}).catch(e => console.log(e))
 
 
+web3.eth.getBalance(app.address)
 
-instance.methods.getOraclizePrice().call()
+
+
 //btc
 instance.methods.getTransaction("b1ddc46ad47f6f95d75129281b22636d5b19a06bcf534305b018fd8e688265e1","3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9").send({from:accounts[0],value: 500000000000000000, gas: 3500000}).then((res) => {console.log(res.events)}).catch(e => console.log(e))
 //lumens

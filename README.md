@@ -4,31 +4,25 @@
 
 ### Install prerequisites
 
-1. Install the Truffle framework:
+1. Install the Truffle framework, Ganache CLI and Ethereum Bridge
 
-       npm install -g truffle
+       npm install -g truffle ganache-cli ethereum-bridge
 
-2. Install the Ganache CLI:
-
-       npm install -g ganache-cli
-
-3. Install Node
-
-       npm install -g nodemon
-
-4. Install the Ethereum bridge for testing
-
-       npm install -g ethereum-bridge
-
-5. Install the [MetaMask plugin](https://metamask.io/) for your web browser
+2. Install the [MetaMask plugin](https://metamask.io/) for your web browser
 
 ### Install dependencies:
 
 Finally you can install the dependencies
 
-    npm run client-install  && npm install
+    npm run full-install
 
-Then create a `config.js` file with a [`mongoURI`](https://mlab.com/) & `oraclizeConnectorAddress`
+Then create a `config.js` file with a [`mongoURI`](https://mlab.com/) & `oraclizeConnectorAddress` like this
+
+    module.exports = {
+      mongoURI: "",
+      oraclizeConnectorAddress: ""
+    }
+
 
 (if you want to deploy to ropsten or mainnet also put your `mnemonic` and `infuraAPIKey` in there )
 

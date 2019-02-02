@@ -17,7 +17,7 @@ ReactDOM.render(
           <Navbar brand='Etherswaps' right>
             <NavItem><Link to="/choose"> Getting started </Link></NavItem>
             <NavItem><Link to="/createOffer">Create an Offer </Link></NavItem>
-            <NavItem><Link to="/market"><Icon>view_module</Icon></Link></NavItem>
+            <NavItem><NavItem><Link to="/market"><Icon>view_module</Icon></Link></NavItem></NavItem>
           </Navbar>
         <Route exact path="/" component={Home} />
         <Route exact path="/choose" component={Choose} />

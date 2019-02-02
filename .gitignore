@@ -18,6 +18,8 @@ client/build/
 .env.test.local
 .env.production.local
 
+test.js
+
 #contracts
 client/src/contractInterface/
 

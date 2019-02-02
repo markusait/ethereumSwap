@@ -45,7 +45,7 @@ const offerSchema = new Schema({
       required: false
     },
     currency:{
-      type:String,
+      type: String,
       required: false
     },
     date : {

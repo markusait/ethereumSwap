@@ -4,7 +4,7 @@ import styled from 'styled-components';
 // position:  ${props => props.type==="market"  || props.type ==="home" ? "auto;" : "fixed;"}
 const Main = styled.div `
   text-align:  ${props => props.type==="home" ? "center;" : "auto;"}
-  height:  ${props => props.type==="home"  || props.type==="market"? "auto;" : "100vh;"}
+  height:  ${props => props.type==="home" ? "auto;" : "100vh;"}
   background: ${props => {
     switch(props.type){
       case "home":

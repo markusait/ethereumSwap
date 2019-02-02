@@ -1,6 +1,6 @@
 {
-  "name": "ethereumBridge",
-  "version": "1.0.0",
+  "name": "EthereumSwap",
+  "version": "0.1.0",
   "description": "",
   "main": "truffle.js",
   "directories": {
@@ -14,7 +14,7 @@
     "serve": "cd client &&  serve -s build",
     "dev": "concurrently \"npm run client\" \"npm run server\""
   },
-  "author": "",
+  "author": "Markus Saitmacher",
   "license": "ISC",
   "devDependencies": {
     "i": "^0.3.6",

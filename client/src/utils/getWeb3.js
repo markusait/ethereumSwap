@@ -17,7 +17,6 @@ const getWeb3 = () =>
           // Acccounts now exposed
           resolve(web3);
         } catch (error) {
-          console.log('no erro');
           reject(error);
         }
       }
@@ -29,7 +28,6 @@ const getWeb3 = () =>
       }
       // Fallback to localhost; use dev console port by default...
       else {
-        console.log("why");
         const provider = new Web3.providers.HttpProvider(
           "http://127.0.0.1:7545"
         );
@@ -51,10 +49,9 @@ const getWeb3Data = async () => {
   const deployedNetwork = EthereumSwap.networks[networkId];
 
   const deployedContractAddress = deployedNetwork.address
-  // console.log(deployedNetwork.address);
+
   const deployedContract = new web3.eth.Contract(EthereumSwap.abi, deployedNetwork && deployedContractAddress)
-  console.log(deployedContract);
-  // const deployedContract = await instance.deployed()
+
   return {web3, accounts, networkId, deployedNetwork, deployedContract, deployedContractAddress }
 
 }

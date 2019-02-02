@@ -20,7 +20,7 @@
   "deployedBytecode": "0x",
   "sourceMap": "",
   "deployedSourceMap": "",
-  "source": "pragma solidity ^0.4.0;//please import oraclizeAPI_pre0.4.sol when solidity < 0.4.0\n\ncontract OraclizeI {\n    address public cbAddress;\n    function query(uint _timestamp, string _datasource, string _arg) payable returns (bytes32 _id);\n    function query_withGasLimit(uint _timestamp, string _datasource, string _arg, uint _gaslimit) payable returns (bytes32 _id);\n    function query2(uint _timestamp, string _datasource, string _arg1, string _arg2) payable returns (bytes32 _id);\n    function query2_withGasLimit(uint _timestamp, string _datasource, string _arg1, string _arg2, uint _gaslimit) payable returns (bytes32 _id);\n    function getPrice(string _datasource) returns (uint _dsprice);\n    function getPrice(string _datasource, uint gaslimit) returns (uint _dsprice);\n    function useCoupon(string _coupon);\n    function setProofType(byte _proofType);\n    function setConfig(bytes32 _config);\n    function setCustomGasPrice(uint _gasPrice);\n}\ncontract OraclizeAddrResolverI {\n    function getAddress() returns (address _addr);\n}\ncontract usingOraclize {\n    uint constant day = 60*60*24;\n    uint constant week = 60*60*24*7;\n    uint constant month = 60*60*24*30;\n    byte constant proofType_NONE = 0x00;\n    byte constant proofType_TLSNotary = 0x10;\n    byte constant proofStorage_IPFS = 0x01;\n    uint8 constant networkID_auto = 0;\n    uint8 constant networkID_mainnet = 1;\n    uint8 constant networkID_testnet = 2;\n    uint8 constant networkID_morden = 2;\n    uint8 constant networkID_consensys = 161;\n\n    OraclizeAddrResolverI OAR;\n\n    OraclizeI oraclize;\n    modifier oraclizeAPI {\n        if(address(OAR)==0) oraclize_setNetwork(networkID_auto);\n        oraclize = OraclizeI(OAR.getAddress());\n        _;\n    }\n    modifier coupon(string code){\n        oraclize = OraclizeI(OAR.getAddress());\n        oraclize.useCoupon(code);\n        _;\n    }\n\n    function oraclize_setNetwork(uint8 networkID) internal returns(bool){\n        if (getCodeSize(0x1d3b2638a7cc9f2cb3d298a3da7a90b67e5506ed)>0){ //mainnet\n            OAR = OraclizeAddrResolverI(0x1d3b2638a7cc9f2cb3d298a3da7a90b67e5506ed);\n            return true;\n        }\n        if (getCodeSize(0xc03a2615d5efaf5f49f60b7bb6583eaec212fdf1)>0){ //ropsten testnet\n            OAR = OraclizeAddrResolverI(0xc03a2615d5efaf5f49f60b7bb6583eaec212fdf1);\n            return true;\n        }\n        if (getCodeSize(0x20e12a1f859b3feae5fb2a0a32c18f5a65555bbf)>0){ //ether.camp ide\n            OAR = OraclizeAddrResolverI(0x20e12a1f859b3feae5fb2a0a32c18f5a65555bbf);\n            return true;\n        }\n        if (getCodeSize(0x93bbbe5ce77034e3095f0479919962a903f898ad)>0){ //norsborg testnet\n            OAR = OraclizeAddrResolverI(0x93bbbe5ce77034e3095f0479919962a903f898ad);\n            return true;\n        }\n        if (getCodeSize(0x51efaf4c8b3c9afbd5ab9f4bbc82784ab6ef8faa)>0){ //browser-solidity\n            OAR = OraclizeAddrResolverI(0x51efaf4c8b3c9afbd5ab9f4bbc82784ab6ef8faa);\n            return true;\n        }\n        return false;\n    }\n\n    function __callback(bytes32 myid, string result) {\n        __callback(myid, result, new bytes(0));\n    }\n    function __callback(bytes32 myid, string result, bytes proof) {\n    }\n\n    function oraclize_getPrice(string datasource) oraclizeAPI internal returns (uint){\n        return oraclize.getPrice(datasource);\n    }\n    function oraclize_getPrice(string datasource, uint gaslimit) oraclizeAPI internal returns (uint){\n        return oraclize.getPrice(datasource, gaslimit);\n    }\n\n    function oraclize_query(string datasource, string arg) oraclizeAPI internal returns (bytes32 id){\n        uint price = oraclize.getPrice(datasource);\n        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price\n        return oraclize.query.value(price)(0, datasource, arg);\n    }\n    function oraclize_query(uint timestamp, string datasource, string arg) oraclizeAPI internal returns (bytes32 id){\n        uint price = oraclize.getPrice(datasource);\n        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price\n        return oraclize.query.value(price)(timestamp, datasource, arg);\n    }\n    function oraclize_query(uint timestamp, string datasource, string arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){\n        uint price = oraclize.getPrice(datasource, gaslimit);\n        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price\n        return oraclize.query_withGasLimit.value(price)(timestamp, datasource, arg, gaslimit);\n    }\n    function oraclize_query(string datasource, string arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){\n        uint price = oraclize.getPrice(datasource, gaslimit);\n        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price\n        return oraclize.query_withGasLimit.value(price)(0, datasource, arg, gaslimit);\n    }\n    function oraclize_query(string datasource, string arg1, string arg2) oraclizeAPI internal returns (bytes32 id){\n        uint price = oraclize.getPrice(datasource);\n        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price\n        return oraclize.query2.value(price)(0, datasource, arg1, arg2);\n    }\n    function oraclize_query(uint timestamp, string datasource, string arg1, string arg2) oraclizeAPI internal returns (bytes32 id){\n        uint price = oraclize.getPrice(datasource);\n        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price\n        return oraclize.query2.value(price)(timestamp, datasource, arg1, arg2);\n    }\n    function oraclize_query(uint timestamp, string datasource, string arg1, string arg2, uint gaslimit) oraclizeAPI internal returns (bytes32 id){\n        uint price = oraclize.getPrice(datasource, gaslimit);\n        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price\n        return oraclize.query2_withGasLimit.value(price)(timestamp, datasource, arg1, arg2, gaslimit);\n    }\n    function oraclize_query(string datasource, string arg1, string arg2, uint gaslimit) oraclizeAPI internal returns (bytes32 id){\n        uint price = oraclize.getPrice(datasource, gaslimit);\n        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price\n        return oraclize.query2_withGasLimit.value(price)(0, datasource, arg1, arg2, gaslimit);\n    }\n    function oraclize_cbAddress() oraclizeAPI internal returns (address){\n        return oraclize.cbAddress();\n    }\n    function oraclize_setProof(byte proofP) oraclizeAPI internal {\n        return oraclize.setProofType(proofP);\n    }\n    function oraclize_setCustomGasPrice(uint gasPrice) oraclizeAPI internal {\n        return oraclize.setCustomGasPrice(gasPrice);\n    }\n    function oraclize_setConfig(bytes32 config) oraclizeAPI internal {\n        return oraclize.setConfig(config);\n    }\n\n    function getCodeSize(address _addr) constant internal returns(uint _size) {\n        assembly {\n            _size := extcodesize(_addr)\n        }\n    }\n\n\n    function parseAddr(string _a) internal returns (address){\n        bytes memory tmp = bytes(_a);\n        uint160 iaddr = 0;\n        uint160 b1;\n        uint160 b2;\n        for (uint i=2; i<2+2*20; i+=2){\n            iaddr *= 256;\n            b1 = uint160(tmp[i]);\n            b2 = uint160(tmp[i+1]);\n            if ((b1 >= 97)&&(b1 <= 102)) b1 -= 87;\n            else if ((b1 >= 48)&&(b1 <= 57)) b1 -= 48;\n            if ((b2 >= 97)&&(b2 <= 102)) b2 -= 87;\n            else if ((b2 >= 48)&&(b2 <= 57)) b2 -= 48;\n            iaddr += (b1*16+b2);\n        }\n        return address(iaddr);\n    }\n\n\n    function strCompare(string _a, string _b) internal returns (int) {\n        bytes memory a = bytes(_a);\n        bytes memory b = bytes(_b);\n        uint minLength = a.length;\n        if (b.length < minLength) minLength = b.length;\n        for (uint i = 0; i < minLength; i ++)\n            if (a[i] < b[i])\n                return -1;\n            else if (a[i] > b[i])\n                return 1;\n        if (a.length < b.length)\n            return -1;\n        else if (a.length > b.length)\n            return 1;\n        else\n            return 0;\n   }\n\n    function indexOf(string _haystack, string _needle) internal returns (int)\n    {\n        bytes memory h = bytes(_haystack);\n        bytes memory n = bytes(_needle);\n        if(h.length < 1 || n.length < 1 || (n.length > h.length))\n            return -1;\n        else if(h.length > (2**128 -1))\n            return -1;\n        else\n        {\n            uint subindex = 0;\n            for (uint i = 0; i < h.length; i ++)\n            {\n                if (h[i] == n[0])\n                {\n                    subindex = 1;\n                    while(subindex < n.length && (i + subindex) < h.length && h[i + subindex] == n[subindex])\n                    {\n                        subindex++;\n                    }\n                    if(subindex == n.length)\n                        return int(i);\n                }\n            }\n            return -1;\n        }\n    }\n    function strConcat(string _a, string _b, string _c, string _d, string _e, string _f) internal returns (string){\n      string memory firstPart = strConcat(_a,_b,_c,_d,_e);\n\n      bytes memory _bfirstPart = bytes(firstPart);\n      bytes memory _bf = bytes(_f);\n\n      string memory abcdef = new string(_bfirstPart.length + _bf.length);\n      bytes memory babcdef = bytes(abcdef);\n      uint k = 0;\n\n      for (uint i = 0; i < _bfirstPart.length; i++) babcdef[k++] = _bfirstPart[i];\n      for (i = 0; i < _bf.length; i++) babcdef[k++] = _bf[i];\n      return string(babcdef);\n  }\n\n    function strConcat(string _a, string _b, string _c, string _d, string _e) internal returns (string){\n        bytes memory _ba = bytes(_a);\n        bytes memory _bb = bytes(_b);\n        bytes memory _bc = bytes(_c);\n        bytes memory _bd = bytes(_d);\n        bytes memory _be = bytes(_e);\n        string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);\n        bytes memory babcde = bytes(abcde);\n        uint k = 0;\n        for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];\n        for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];\n        for (i = 0; i < _bc.length; i++) babcde[k++] = _bc[i];\n        for (i = 0; i < _bd.length; i++) babcde[k++] = _bd[i];\n        for (i = 0; i < _be.length; i++) babcde[k++] = _be[i];\n        return string(babcde);\n    }\n\n    function strConcat(string _a, string _b, string _c, string _d) internal returns (string) {\n        return strConcat(_a, _b, _c, _d, \"\");\n    }\n\n    function strConcat(string _a, string _b, string _c) internal returns (string) {\n        return strConcat(_a, _b, _c, \"\", \"\");\n    }\n\n    function strConcat(string _a, string _b) internal returns (string) {\n        return strConcat(_a, _b, \"\", \"\", \"\");\n    }\n\n    // parseInt\n    function parseInt(string _a) internal returns (uint) {\n        return parseInt(_a, 0);\n    }\n\n    // parseInt(parseFloat*10^_b)\n    function parseInt(string _a, uint _b) internal returns (uint) {\n        bytes memory bresult = bytes(_a);\n        uint mint = 0;\n        bool decimals = false;\n        for (uint i=0; i<bresult.length; i++){\n            if ((bresult[i] >= 48)&&(bresult[i] <= 57)){\n                if (decimals){\n                   if (_b == 0) break;\n                    else _b--;\n                }\n                mint *= 10;\n                mint += uint(bresult[i]) - 48;\n            } else if (bresult[i] == 46) decimals = true;\n        }\n        if (_b > 0) mint *= 10**_b;\n        return mint;\n    }\n\n    function uint2str(uint i) internal returns (string){\n        if (i == 0) return \"0\";\n        uint j = i;\n        uint len;\n        while (j != 0){\n            len++;\n            j /= 10;\n        }\n        bytes memory bstr = new bytes(len);\n        uint k = len - 1;\n        while (i != 0){\n            bstr[k--] = byte(48 + i % 10);\n            i /= 10;\n        }\n        return string(bstr);\n    }\n\n\n\n}\n// </ORACLIZE_API>\n\n// <SafeMath_Lib>\n\n/**\n * @title SafeMath\n * @dev Math operations with safety checks that revert on error\n */\nlibrary SafeMath {\n    int256 constant private INT256_MIN = -2**255;\n\n    /**\n    * @dev Multiplies two unsigned integers, reverts on overflow.\n    */\n    function mul(uint256 a, uint256 b) internal pure returns (uint256) {\n        // Gas optimization: this is cheaper than requiring 'a' not being zero, but the\n        // benefit is lost if 'b' is also tested.\n        // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522\n        if (a == 0) {\n            return 0;\n        }\n\n        uint256 c = a * b;\n        require(c / a == b);\n\n        return c;\n    }\n\n    /**\n    * @dev Multiplies two signed integers, reverts on overflow.\n    */\n    function mul(int256 a, int256 b) internal pure returns (int256) {\n        // Gas optimization: this is cheaper than requiring 'a' not being zero, but the\n        // benefit is lost if 'b' is also tested.\n        // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522\n        if (a == 0) {\n            return 0;\n        }\n\n        require(!(a == -1 && b == INT256_MIN)); // This is the only case of overflow not detected by the check below\n\n        int256 c = a * b;\n        require(c / a == b);\n\n        return c;\n    }\n\n    /**\n    * @dev Integer division of two unsigned integers truncating the quotient, reverts on division by zero.\n    */\n    function div(uint256 a, uint256 b) internal pure returns (uint256) {\n        // Solidity only automatically asserts when dividing by 0\n        require(b > 0);\n        uint256 c = a / b;\n        // assert(a == b * c + a % b); // There is no case in which this doesn't hold\n\n        return c;\n    }\n\n    /**\n    * @dev Integer division of two signed integers truncating the quotient, reverts on division by zero.\n    */\n    function div(int256 a, int256 b) internal pure returns (int256) {\n        require(b != 0); // Solidity only automatically asserts when dividing by 0\n        require(!(b == -1 && a == INT256_MIN)); // This is the only case of overflow\n\n        int256 c = a / b;\n\n        return c;\n    }\n\n    /**\n    * @dev Subtracts two unsigned integers, reverts on overflow (i.e. if subtrahend is greater than minuend).\n    */\n    function sub(uint256 a, uint256 b) internal pure returns (uint256) {\n        require(b <= a);\n        uint256 c = a - b;\n\n        return c;\n    }\n\n    /**\n    * @dev Subtracts two signed integers, reverts on overflow.\n    */\n    function sub(int256 a, int256 b) internal pure returns (int256) {\n        int256 c = a - b;\n        require((b >= 0 && c <= a) || (b < 0 && c > a));\n\n        return c;\n    }\n\n    /**\n    * @dev Adds two unsigned integers, reverts on overflow.\n    */\n    function add(uint256 a, uint256 b) internal pure returns (uint256) {\n        uint256 c = a + b;\n        require(c >= a);\n\n        return c;\n    }\n\n    /**\n    * @dev Adds two signed integers, reverts on overflow.\n    */\n    function add(int256 a, int256 b) internal pure returns (int256) {\n        int256 c = a + b;\n        require((b >= 0 && c >= a) || (b < 0 && c < a));\n\n        return c;\n    }\n\n    /**\n    * @dev Divides two unsigned integers and returns the remainder (unsigned integer modulo),\n    * reverts when dividing by zero.\n    */\n    function mod(uint256 a, uint256 b) internal pure returns (uint256) {\n        require(b != 0);\n        return a % b;\n    }\n}\n// </SafeMath_Lib>\n\n\n//test txs\n//https://testnet.steexp.com/tx/f282160d542c42c1f8b15cf0c3872a7b29c088e0890113e78e06c8e4b6492ebc\n//https://horizon.stellar.org/operations/95488874020802561\n//https://horizon.stellar.org/operations/95488770941542401\n\n//test query\n//http://app.oraclize.it/home/test_query#VVJMKEdFVCk=:anNvbihodHRwczovL2hvcml6b24uc3RlbGxhci5vcmcvb3BlcmF0aW9ucy85NTQ4ODc3MDk0MTU0MjQwMSkuW3RvLGFtb3VudCx0eXBlLGFzc2V0X3R5cGVd\n\n\n\n/// @title Smart Escrow Contract for swapping eth to btc using oracliize\n/// @dev use ethereum-bridge for local testing https://github.com/oraclize/ethereum-bridge\ncontract EthereumSwap is usingOraclize {\n\n  // Implementing Safe Math Library\n  using SafeMath for uint;\n\n  address public bridgeConnector;\n\n  uint public oraclizePrice;\n\n  uint public minimumOfferValue = 100;\n\n  bytes32 public oraclizeID;\n\n  string public oraclizeResult;\n\n\n\n  // Offer Struct for creating an Bitcoin Offer for the smart contract\n  struct Offer {\n      bool exsists;\n      uint ethDepositInWei;\n      string cryptoWithdrawAmount;\n      address potentialPayoutAddress;\n      uint assetType;\n    }\n\n  // mapping for checking payout with the string cryptoAddress as key\n  // note: (solidity uses a sha3 hashmap)\n  mapping(string => Offer) deposit;\n\n  // mapping for checking the checking oraclize callback _oraclizeID => _result\n  mapping(bytes32 => string) private oraclizeLookup;\n\n  // Log event to notify UI and DB when user was sucessfull payed out\n  event PayedOutEvent(\n        address  _recipientAddress,\n        uint  _ethAmount,\n        string  _cryptoAddress\n  );\n  // General Purpose Log Event for strings\n  event LogInfo(\n    string log\n  );\n\n  event LogInfoBytes(\n      bytes32 log\n  );\n\n  function getTestingOraclizeAddress() public returns(address){\n    return bridgeConnector;\n  }\n\n  function getOraclizePrice() public returns (uint){\n    return oraclizePrice;\n  }\n\n\n  /// @notice Constructor only used in testing for Oraclize Bridge with ethereum-bridge\n  function EthereumSwap(address _oraclizeAddress) public {\n    OAR = OraclizeAddrResolverI(_oraclizeAddress);\n    bridgeConnector = _oraclizeAddress;\n  }\n\n  /// @notice Deposited by sender how wants to get Bitcoin for his Ether assigning the contract values\n  /// @notice The Bitcoin Address should  be new and not have any prior Transacitions (checked by UI) and should not exsist in mapping!\n  /// @notice should require string length > 0 && <= cryptoAddresslength and msg.value >= minimumOfferValue\n  /// @param _cryptoAddress The Bitcoin Address to which a doner will pay money to\n  /// @param _cryptoWithdrawAmount amount in smallest possible nomination of the crypto asset for which eth can withdrawed\n  function depositEther(string _cryptoAddress, string _cryptoWithdrawAmount, uint _assetType) payable public {\n      // require(!deposit[_cryptoAddress].exsists);\n      Offer memory paymentStruct = Offer({\n                                  exsists:true,\n                                  ethDepositInWei: msg.value,\n                                  cryptoWithdrawAmount: _cryptoWithdrawAmount,\n                                  potentialPayoutAddress: None,\n                                  assetType: _assetType\n                                });\n\n      deposit[_cryptoAddress] = paymentStruct;\n\n      emit LogInfo(\"Ether was deposited to contract\");\n  }\n\n  /// @notice Oraclize call, Bitcoin sender calls this function with his  and recipient Address which will invoke call back function\n  /// @notice payable because oraclize call needs gas and this is preventing fraud\n  /// @notice assetTypes: 0 == Bitcoin, 1 == Lumens\n  /// @param _txHash The Bitcoin tx Hash prooving the doner payed money to it or the Lumens operation Code\n  /// @param _cryptoAddress The Crypto Address to which a doner has payed money to\n  function getTransaction(string _txHash, string _cryptoAddress) payable {\n    require(deposit[_cryptoAddress].exsists);\n\n    string memory query;\n\n    // oraclizePrice = oraclize_getPrice(\"URL\");\n    // if (oraclize_getPrice(\"URL\") <= msg.value) {\n\n    // Bitcoin\n    if (deposit[_cryptoAddress].assetType == 0) {\n      query = strConcat(\"https://blockchain.info/q/txresult/\", _txHash, \"/\", _cryptoAddress);\n\n    }\n    // Lumens\n    else {\n      //txHash is actually operations code\n      query = strConcat(\"json(https://horizon.stellar.org/operations/\", _txHash, \").[to,amount,type,asset_type]\");\n    }\n      oraclizeID = oraclize_query(\"URL\", query, 500001);\n\n      deposit[_cryptoAddress].potentialPayoutAddress = msg.sender;\n\n      oraclizeLookup[oraclizeID] = _cryptoAddress;\n\n      emit LogInfo(\"Oraclize query was sent, standing by for the answer...\");\n\n  }\n\n\n\n  /// @notice Oraclize call back function invoking payout process\n  /// @notice payable because oraclize call needs gas and this is preventing fraud\n  /// @param _oraclizeID The byte represation of an Oraclize ID returned when query sent\n  /// @param _result Result of the API call, contating the value of transaction to address\n  function __callback(bytes32 _oraclizeID, string _result) {\n    require(msg.sender == oraclize_cbAddress());\n\n    bool validTransaction;\n\n    string memory cryptoAddress = oraclizeLookup[_oraclizeID];\n\n    address recipientAddress = deposit[cryptoAddress].potentialPayoutAddress;\n\n    uint ethAmount = deposit[cryptoAddress].ethDepositInWei;\n\n\n    //Bitcoin\n    if(deposit[cryptoAddress].assetType == 0){\n\n      validTransaction = stringToUint(_result) >= stringToUint(deposit[cryptoAddress].cryptoWithdrawAmount); //checking if amount higher\n    }\n    //Lumens\n    else {\n\n      string memory compareString = strConcat(\"[\\\"\" , cryptoAddress , \"\\\", \\\"\" , deposit[cryptoAddress].cryptoWithdrawAmount , \"\\\", \\\"\" , \"payment\\\", \\\"native\\\"]\");\n\n      validTransaction = compareStrings(compareString,_result);   //checking for exact amount\n    }\n\n    if(validTransaction){\n\n      recipientAddress.transfer(ethAmount);\n\n      deposit[cryptoAddress].exsists = false;\n\n      emit PayedOutEvent(recipientAddress, ethAmount, cryptoAddress);\n\n    } else {\n        emit LogInfo(\"The sended nAmount was too small or non exsisting \");\n    }\n\n  }\n\n\n  /* HELPER FUNCTIONS */\n\n  function compareStrings (string a, string b) view returns (bool){\n         return keccak256(a) == keccak256(b);\n    }\n\n\n\n\n  uint80 constant None = uint80(0);\n\n  function stringToUint(string s) constant returns (uint result) {\n        bytes memory b = bytes(s);\n        uint i;\n        result = 0;\n        for (i = 0; i < b.length; i++) {\n            uint c = uint(b[i]);\n            if (c >= 48 && c <= 57) {\n                result = result * 10 + (c - 48);\n            }\n        }\n    }\n}\n\n//    function __callback2(bytes32 _oraclizeID, string _result) {\n//      emit LogInfo(_result);\n//      oraclizeResult = _result;\n//  }\n//\n//\n//\n//  function getTransactionTest(string _txHash) payable {\n//      string memory query = strConcat(\"json(https://horizon.stellar.org/operations/\", _txHash, \").[to,amount,type,asset_type]\");\n//      oraclizeID = oraclize_query(\"URL\", query, 500001);\n//      emit LogInfo(\"Oraclize query was sent, standing by for the answer...\");\n//\n//\n//  }\n//\n//\n//\n// function testingStrings(string cryptoAddress) {\n//\n//    //string memory cryptoAddress = oraclizeLookup[oraclizeID];\n//\n//    address recipientAddress = deposit[cryptoAddress].potentialPayoutAddress;\n//\n//    string memory compareString = strConcat(\"[\\\"\" , cryptoAddress , \"\\\", \\\"\" , \"375.9900000\" , \"\\\", \\\"\" , \"payment\\\", \\\"native\\\"]\");\n//\n//    //require(compareStrings(compareString,oraclizeResult));\n//    emit LogInfo(compareString);\n//    emit LogInfo(oraclizeResult);\n//    if(compareStrings(compareString,oraclizeResult)){\n//        emit LogInfo(\"The comparing was successfull! \");\n//      }\n//  }\n",
+  "source": "pragma solidity ^0.4.0;//please import oraclizeAPI_pre0.4.sol when solidity < 0.4.0\n\ncontract OraclizeI {\n    address public cbAddress;\n    function query(uint _timestamp, string _datasource, string _arg) payable returns (bytes32 _id);\n    function query_withGasLimit(uint _timestamp, string _datasource, string _arg, uint _gaslimit) payable returns (bytes32 _id);\n    function query2(uint _timestamp, string _datasource, string _arg1, string _arg2) payable returns (bytes32 _id);\n    function query2_withGasLimit(uint _timestamp, string _datasource, string _arg1, string _arg2, uint _gaslimit) payable returns (bytes32 _id);\n    function getPrice(string _datasource) returns (uint _dsprice);\n    function getPrice(string _datasource, uint gaslimit) returns (uint _dsprice);\n    function useCoupon(string _coupon);\n    function setProofType(byte _proofType);\n    function setConfig(bytes32 _config);\n    function setCustomGasPrice(uint _gasPrice);\n}\ncontract OraclizeAddrResolverI {\n    function getAddress() returns (address _addr);\n}\ncontract usingOraclize {\n    uint constant day = 60*60*24;\n    uint constant week = 60*60*24*7;\n    uint constant month = 60*60*24*30;\n    byte constant proofType_NONE = 0x00;\n    byte constant proofType_TLSNotary = 0x10;\n    byte constant proofStorage_IPFS = 0x01;\n    uint8 constant networkID_auto = 0;\n    uint8 constant networkID_mainnet = 1;\n    uint8 constant networkID_testnet = 2;\n    uint8 constant networkID_morden = 2;\n    uint8 constant networkID_consensys = 161;\n\n    OraclizeAddrResolverI OAR;\n\n    OraclizeI oraclize;\n    modifier oraclizeAPI {\n        if(address(OAR)==0) oraclize_setNetwork(networkID_auto);\n        oraclize = OraclizeI(OAR.getAddress());\n        _;\n    }\n    modifier coupon(string code){\n        oraclize = OraclizeI(OAR.getAddress());\n        oraclize.useCoupon(code);\n        _;\n    }\n\n    function oraclize_setNetwork(uint8 networkID) internal returns(bool){\n        if (getCodeSize(0x1d3b2638a7cc9f2cb3d298a3da7a90b67e5506ed)>0){ //mainnet\n            OAR = OraclizeAddrResolverI(0x1d3b2638a7cc9f2cb3d298a3da7a90b67e5506ed);\n            return true;\n        }\n        if (getCodeSize(0xc03a2615d5efaf5f49f60b7bb6583eaec212fdf1)>0){ //ropsten testnet\n            OAR = OraclizeAddrResolverI(0xc03a2615d5efaf5f49f60b7bb6583eaec212fdf1);\n            return true;\n        }\n        if (getCodeSize(0x20e12a1f859b3feae5fb2a0a32c18f5a65555bbf)>0){ //ether.camp ide\n            OAR = OraclizeAddrResolverI(0x20e12a1f859b3feae5fb2a0a32c18f5a65555bbf);\n            return true;\n        }\n        if (getCodeSize(0x93bbbe5ce77034e3095f0479919962a903f898ad)>0){ //norsborg testnet\n            OAR = OraclizeAddrResolverI(0x93bbbe5ce77034e3095f0479919962a903f898ad);\n            return true;\n        }\n        if (getCodeSize(0x51efaf4c8b3c9afbd5ab9f4bbc82784ab6ef8faa)>0){ //browser-solidity\n            OAR = OraclizeAddrResolverI(0x51efaf4c8b3c9afbd5ab9f4bbc82784ab6ef8faa);\n            return true;\n        }\n        return false;\n    }\n\n    function __callback(bytes32 myid, string result) {\n        __callback(myid, result, new bytes(0));\n    }\n    function __callback(bytes32 myid, string result, bytes proof) {\n    }\n\n    function oraclize_getPrice(string datasource) oraclizeAPI internal returns (uint){\n        return oraclize.getPrice(datasource);\n    }\n    function oraclize_getPrice(string datasource, uint gaslimit) oraclizeAPI internal returns (uint){\n        return oraclize.getPrice(datasource, gaslimit);\n    }\n\n    function oraclize_query(string datasource, string arg) oraclizeAPI internal returns (bytes32 id){\n        uint price = oraclize.getPrice(datasource);\n        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price\n        return oraclize.query.value(price)(0, datasource, arg);\n    }\n    function oraclize_query(uint timestamp, string datasource, string arg) oraclizeAPI internal returns (bytes32 id){\n        uint price = oraclize.getPrice(datasource);\n        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price\n        return oraclize.query.value(price)(timestamp, datasource, arg);\n    }\n    function oraclize_query(uint timestamp, string datasource, string arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){\n        uint price = oraclize.getPrice(datasource, gaslimit);\n        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price\n        return oraclize.query_withGasLimit.value(price)(timestamp, datasource, arg, gaslimit);\n    }\n    function oraclize_query(string datasource, string arg, uint gaslimit) oraclizeAPI internal returns (bytes32 id){\n        uint price = oraclize.getPrice(datasource, gaslimit);\n        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price\n        return oraclize.query_withGasLimit.value(price)(0, datasource, arg, gaslimit);\n    }\n    function oraclize_query(string datasource, string arg1, string arg2) oraclizeAPI internal returns (bytes32 id){\n        uint price = oraclize.getPrice(datasource);\n        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price\n        return oraclize.query2.value(price)(0, datasource, arg1, arg2);\n    }\n    function oraclize_query(uint timestamp, string datasource, string arg1, string arg2) oraclizeAPI internal returns (bytes32 id){\n        uint price = oraclize.getPrice(datasource);\n        if (price > 1 ether + tx.gasprice*200000) return 0; // unexpectedly high price\n        return oraclize.query2.value(price)(timestamp, datasource, arg1, arg2);\n    }\n    function oraclize_query(uint timestamp, string datasource, string arg1, string arg2, uint gaslimit) oraclizeAPI internal returns (bytes32 id){\n        uint price = oraclize.getPrice(datasource, gaslimit);\n        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price\n        return oraclize.query2_withGasLimit.value(price)(timestamp, datasource, arg1, arg2, gaslimit);\n    }\n    function oraclize_query(string datasource, string arg1, string arg2, uint gaslimit) oraclizeAPI internal returns (bytes32 id){\n        uint price = oraclize.getPrice(datasource, gaslimit);\n        if (price > 1 ether + tx.gasprice*gaslimit) return 0; // unexpectedly high price\n        return oraclize.query2_withGasLimit.value(price)(0, datasource, arg1, arg2, gaslimit);\n    }\n    function oraclize_cbAddress() oraclizeAPI internal returns (address){\n        return oraclize.cbAddress();\n    }\n    function oraclize_setProof(byte proofP) oraclizeAPI internal {\n        return oraclize.setProofType(proofP);\n    }\n    function oraclize_setCustomGasPrice(uint gasPrice) oraclizeAPI internal {\n        return oraclize.setCustomGasPrice(gasPrice);\n    }\n    function oraclize_setConfig(bytes32 config) oraclizeAPI internal {\n        return oraclize.setConfig(config);\n    }\n\n    function getCodeSize(address _addr) constant internal returns(uint _size) {\n        assembly {\n            _size := extcodesize(_addr)\n        }\n    }\n\n\n    function parseAddr(string _a) internal returns (address){\n        bytes memory tmp = bytes(_a);\n        uint160 iaddr = 0;\n        uint160 b1;\n        uint160 b2;\n        for (uint i=2; i<2+2*20; i+=2){\n            iaddr *= 256;\n            b1 = uint160(tmp[i]);\n            b2 = uint160(tmp[i+1]);\n            if ((b1 >= 97)&&(b1 <= 102)) b1 -= 87;\n            else if ((b1 >= 48)&&(b1 <= 57)) b1 -= 48;\n            if ((b2 >= 97)&&(b2 <= 102)) b2 -= 87;\n            else if ((b2 >= 48)&&(b2 <= 57)) b2 -= 48;\n            iaddr += (b1*16+b2);\n        }\n        return address(iaddr);\n    }\n\n\n    function strCompare(string _a, string _b) internal returns (int) {\n        bytes memory a = bytes(_a);\n        bytes memory b = bytes(_b);\n        uint minLength = a.length;\n        if (b.length < minLength) minLength = b.length;\n        for (uint i = 0; i < minLength; i ++)\n            if (a[i] < b[i])\n                return -1;\n            else if (a[i] > b[i])\n                return 1;\n        if (a.length < b.length)\n            return -1;\n        else if (a.length > b.length)\n            return 1;\n        else\n            return 0;\n   }\n\n    function indexOf(string _haystack, string _needle) internal returns (int)\n    {\n        bytes memory h = bytes(_haystack);\n        bytes memory n = bytes(_needle);\n        if(h.length < 1 || n.length < 1 || (n.length > h.length))\n            return -1;\n        else if(h.length > (2**128 -1))\n            return -1;\n        else\n        {\n            uint subindex = 0;\n            for (uint i = 0; i < h.length; i ++)\n            {\n                if (h[i] == n[0])\n                {\n                    subindex = 1;\n                    while(subindex < n.length && (i + subindex) < h.length && h[i + subindex] == n[subindex])\n                    {\n                        subindex++;\n                    }\n                    if(subindex == n.length)\n                        return int(i);\n                }\n            }\n            return -1;\n        }\n    }\n    function strConcat(string _a, string _b, string _c, string _d, string _e, string _f) internal returns (string){\n      string memory firstPart = strConcat(_a,_b,_c,_d,_e);\n\n      bytes memory _bfirstPart = bytes(firstPart);\n      bytes memory _bf = bytes(_f);\n\n      string memory abcdef = new string(_bfirstPart.length + _bf.length);\n      bytes memory babcdef = bytes(abcdef);\n      uint k = 0;\n\n      for (uint i = 0; i < _bfirstPart.length; i++) babcdef[k++] = _bfirstPart[i];\n      for (i = 0; i < _bf.length; i++) babcdef[k++] = _bf[i];\n      return string(babcdef);\n  }\n\n    function strConcat(string _a, string _b, string _c, string _d, string _e) internal returns (string){\n        bytes memory _ba = bytes(_a);\n        bytes memory _bb = bytes(_b);\n        bytes memory _bc = bytes(_c);\n        bytes memory _bd = bytes(_d);\n        bytes memory _be = bytes(_e);\n        string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);\n        bytes memory babcde = bytes(abcde);\n        uint k = 0;\n        for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];\n        for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];\n        for (i = 0; i < _bc.length; i++) babcde[k++] = _bc[i];\n        for (i = 0; i < _bd.length; i++) babcde[k++] = _bd[i];\n        for (i = 0; i < _be.length; i++) babcde[k++] = _be[i];\n        return string(babcde);\n    }\n\n    function strConcat(string _a, string _b, string _c, string _d) internal returns (string) {\n        return strConcat(_a, _b, _c, _d, \"\");\n    }\n\n    function strConcat(string _a, string _b, string _c) internal returns (string) {\n        return strConcat(_a, _b, _c, \"\", \"\");\n    }\n\n    function strConcat(string _a, string _b) internal returns (string) {\n        return strConcat(_a, _b, \"\", \"\", \"\");\n    }\n\n    // parseInt\n    function parseInt(string _a) internal returns (uint) {\n        return parseInt(_a, 0);\n    }\n\n    // parseInt(parseFloat*10^_b)\n    function parseInt(string _a, uint _b) internal returns (uint) {\n        bytes memory bresult = bytes(_a);\n        uint mint = 0;\n        bool decimals = false;\n        for (uint i=0; i<bresult.length; i++){\n            if ((bresult[i] >= 48)&&(bresult[i] <= 57)){\n                if (decimals){\n                   if (_b == 0) break;\n                    else _b--;\n                }\n                mint *= 10;\n                mint += uint(bresult[i]) - 48;\n            } else if (bresult[i] == 46) decimals = true;\n        }\n        if (_b > 0) mint *= 10**_b;\n        return mint;\n    }\n\n    function uint2str(uint i) internal returns (string){\n        if (i == 0) return \"0\";\n        uint j = i;\n        uint len;\n        while (j != 0){\n            len++;\n            j /= 10;\n        }\n        bytes memory bstr = new bytes(len);\n        uint k = len - 1;\n        while (i != 0){\n            bstr[k--] = byte(48 + i % 10);\n            i /= 10;\n        }\n        return string(bstr);\n    }\n\n\n\n}\n// </ORACLIZE_API>\n\n// <SafeMath_Lib>\n\n/**\n * @title SafeMath\n * @dev Math operations with safety checks that revert on error\n */\nlibrary SafeMath {\n    int256 constant private INT256_MIN = -2**255;\n\n    /**\n    * @dev Multiplies two unsigned integers, reverts on overflow.\n    */\n    function mul(uint256 a, uint256 b) internal pure returns (uint256) {\n        // Gas optimization: this is cheaper than requiring 'a' not being zero, but the\n        // benefit is lost if 'b' is also tested.\n        // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522\n        if (a == 0) {\n            return 0;\n        }\n\n        uint256 c = a * b;\n        require(c / a == b);\n\n        return c;\n    }\n\n    /**\n    * @dev Multiplies two signed integers, reverts on overflow.\n    */\n    function mul(int256 a, int256 b) internal pure returns (int256) {\n        // Gas optimization: this is cheaper than requiring 'a' not being zero, but the\n        // benefit is lost if 'b' is also tested.\n        // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522\n        if (a == 0) {\n            return 0;\n        }\n\n        require(!(a == -1 && b == INT256_MIN)); // This is the only case of overflow not detected by the check below\n\n        int256 c = a * b;\n        require(c / a == b);\n\n        return c;\n    }\n\n    /**\n    * @dev Integer division of two unsigned integers truncating the quotient, reverts on division by zero.\n    */\n    function div(uint256 a, uint256 b) internal pure returns (uint256) {\n        // Solidity only automatically asserts when dividing by 0\n        require(b > 0);\n        uint256 c = a / b;\n        // assert(a == b * c + a % b); // There is no case in which this doesn't hold\n\n        return c;\n    }\n\n    /**\n    * @dev Integer division of two signed integers truncating the quotient, reverts on division by zero.\n    */\n    function div(int256 a, int256 b) internal pure returns (int256) {\n        require(b != 0); // Solidity only automatically asserts when dividing by 0\n        require(!(b == -1 && a == INT256_MIN)); // This is the only case of overflow\n\n        int256 c = a / b;\n\n        return c;\n    }\n\n    /**\n    * @dev Subtracts two unsigned integers, reverts on overflow (i.e. if subtrahend is greater than minuend).\n    */\n    function sub(uint256 a, uint256 b) internal pure returns (uint256) {\n        require(b <= a);\n        uint256 c = a - b;\n\n        return c;\n    }\n\n    /**\n    * @dev Subtracts two signed integers, reverts on overflow.\n    */\n    function sub(int256 a, int256 b) internal pure returns (int256) {\n        int256 c = a - b;\n        require((b >= 0 && c <= a) || (b < 0 && c > a));\n\n        return c;\n    }\n\n    /**\n    * @dev Adds two unsigned integers, reverts on overflow.\n    */\n    function add(uint256 a, uint256 b) internal pure returns (uint256) {\n        uint256 c = a + b;\n        require(c >= a);\n\n        return c;\n    }\n\n    /**\n    * @dev Adds two signed integers, reverts on overflow.\n    */\n    function add(int256 a, int256 b) internal pure returns (int256) {\n        int256 c = a + b;\n        require((b >= 0 && c >= a) || (b < 0 && c < a));\n\n        return c;\n    }\n\n    /**\n    * @dev Divides two unsigned integers and returns the remainder (unsigned integer modulo),\n    * reverts when dividing by zero.\n    */\n    function mod(uint256 a, uint256 b) internal pure returns (uint256) {\n        require(b != 0);\n        return a % b;\n    }\n}\n// </SafeMath_Lib>\n\n\n//test txs\n//https://testnet.steexp.com/tx/f282160d542c42c1f8b15cf0c3872a7b29c088e0890113e78e06c8e4b6492ebc\n//https://horizon.stellar.org/operations/95488874020802561\n//https://horizon.stellar.org/operations/95488770941542401\n\n//test query\n//http://app.oraclize.it/home/test_query#VVJMKEdFVCk=:anNvbihodHRwczovL2hvcml6b24uc3RlbGxhci5vcmcvb3BlcmF0aW9ucy85NTQ4ODc3MDk0MTU0MjQwMSkuW3RvLGFtb3VudCx0eXBlLGFzc2V0X3R5cGVd\n\n\n\n/// @title Smart Escrow Contract for swapping eth to btc using oracliize\n/// @dev use ethereum-bridge for local testing https://github.com/oraclize/ethereum-bridge\ncontract EthereumSwap is usingOraclize {\n\n  // Implementing Safe Math Library\n  using SafeMath for uint;\n\n  address public bridgeConnector;\n\n  uint public oraclizePrice;\n\n  uint public minimumOfferValue = 100;\n\n  bytes32 public oraclizeID;\n\n  string public oraclizeResult;\n\n\n\n  // Offer Struct for creating an Bitcoin Offer for the smart contract\n  struct Offer {\n      bool exsists;\n      uint ethDepositInWei;\n      string cryptoWithdrawAmount;\n      address potentialPayoutAddress;\n      uint assetType;\n    }\n\n  // mapping for checking payout with the string cryptoAddress as key\n  // note: (solidity uses a sha3 hashmap)\n  mapping(string => Offer) deposit;\n\n  // mapping for checking the checking oraclize callback _oraclizeID => _result\n  mapping(bytes32 => string) private oraclizeLookup;\n\n  // Log event to notify UI and DB when user was sucessfull payed out\n  event PayedOutEvent(\n        address  _recipientAddress,\n        uint  _ethAmount,\n        string  _cryptoAddress\n  );\n  // General Purpose Log Event for strings\n  event LogInfo(\n    string log\n  );\n\n  event LogInfoBytes(\n      bytes32 log\n  );\n\n  function getTestingOraclizeAddress() public returns(address){\n    return bridgeConnector;\n  }\n\n  function getOraclizePrice() public returns (uint){\n    return oraclizePrice;\n  }\n\n\n  /// @notice Constructor only used in testing for Oraclize Bridge with ethereum-bridge\n  function EthereumSwap(address _oraclizeAddress) public {\n    OAR = OraclizeAddrResolverI(_oraclizeAddress);\n    bridgeConnector = _oraclizeAddress;\n  }\n\n  /// @notice Deposited by sender how wants to get Bitcoin for his Ether assigning the contract values\n  /// @notice The Bitcoin Address should  be new and not have any prior Transacitions (checked by UI) and should not exsist in mapping!\n  /// @notice should require string length > 0 && <= cryptoAddresslength and msg.value >= minimumOfferValue\n  /// @param _cryptoAddress The Bitcoin Address to which a doner will pay money to\n  /// @param _cryptoWithdrawAmount amount in smallest possible nomination of the crypto asset for which eth can withdrawed\n  function depositEther(string _cryptoAddress, string _cryptoWithdrawAmount, uint _assetType) payable public {\n      // require(!deposit[_cryptoAddress].exsists);\n      Offer memory paymentStruct = Offer({\n                                  exsists:true,\n                                  ethDepositInWei: msg.value,\n                                  cryptoWithdrawAmount: _cryptoWithdrawAmount,\n                                  potentialPayoutAddress: None,\n                                  assetType: _assetType\n                                });\n\n      deposit[_cryptoAddress] = paymentStruct;\n\n      emit LogInfo(\"Ether was deposited to contract\");\n  }\n\n  /// @notice Oraclize call, Bitcoin sender calls this function with his  and recipient Address which will invoke call back function\n  /// @notice payable because oraclize call needs gas and this is preventing fraud\n  /// @notice assetTypes: 0 == Bitcoin, 1 == Lumens\n  /// @param _txHash The Bitcoin tx Hash prooving the doner payed money to it or the Lumens operation Code\n  /// @param _cryptoAddress The Crypto Address to which a doner has payed money to\n  function getTransaction(string _txHash, string _cryptoAddress) payable {\n    require(deposit[_cryptoAddress].exsists);\n\n    string memory query;\n\n    // oraclizePrice = oraclize_getPrice(\"URL\");\n    // if (oraclize_getPrice(\"URL\") <= msg.value) {\n\n    // Bitcoin\n    if (deposit[_cryptoAddress].assetType == 0) {\n      query = strConcat(\"https://blockchain.info/q/txresult/\", _txHash, \"/\", _cryptoAddress);\n\n    }\n    // Lumens\n    else {\n      //txHash is actually operations code\n      query = strConcat(\"json(https://horizon.stellar.org/operations/\", _txHash, \").[to,amount,type,asset_type]\");\n    }\n      oraclizeID = oraclize_query(\"URL\", query, 500001);\n\n      deposit[_cryptoAddress].potentialPayoutAddress = msg.sender;\n\n      oraclizeLookup[oraclizeID] = _cryptoAddress;\n\n      emit LogInfo(\"Oraclize query was sent, standing by for the answer...\");\n\n  }\n\n\n\n  /// @notice Oraclize call back function invoking payout process\n  /// @notice payable because oraclize call needs gas and this is preventing fraud\n  /// @param _oraclizeID The byte represation of an Oraclize ID returned when query sent\n  /// @param _result Result of the API call, contating the value of transaction to address\n  function __callback(bytes32 _oraclizeID, string _result) {\n    require(msg.sender == oraclize_cbAddress());\n\n    bool validTransaction;\n\n    string memory cryptoAddress = oraclizeLookup[_oraclizeID];\n\n    address recipientAddress = deposit[cryptoAddress].potentialPayoutAddress;\n\n    uint ethAmount = deposit[cryptoAddress].ethDepositInWei;\n\n\n    //Bitcoin\n    if(deposit[cryptoAddress].assetType == 0){\n\n      validTransaction = stringToUint(_result) >= stringToUint(deposit[cryptoAddress].cryptoWithdrawAmount); //checking if amount higher\n    }\n    //Lumens\n    else {\n\n      string memory compareString = strConcat(\"[\\\"\" , cryptoAddress , \"\\\", \\\"\" , deposit[cryptoAddress].cryptoWithdrawAmount , \"\\\", \\\"\" , \"payment\\\", \\\"native\\\"]\");\n\n      validTransaction = compareStrings(compareString,_result);   //checking for exact amount\n    }\n\n    if(validTransaction){\n\n      recipientAddress.transfer(ethAmount);\n\n      deposit[cryptoAddress].exsists = false;\n\n      emit PayedOutEvent(recipientAddress, ethAmount, cryptoAddress);\n\n    } else {\n        emit LogInfo(\"The sended Amount was too small or non exsisting \");\n    }\n\n  }\n\n\n  /* HELPER FUNCTIONS */\n\n  function compareStrings (string a, string b) view returns (bool){\n         return keccak256(a) == keccak256(b);\n    }\n\n\n\n\n  uint80 constant None = uint80(0);\n\n  function stringToUint(string s) constant returns (uint result) {\n        bytes memory b = bytes(s);\n        uint i;\n        result = 0;\n        for (i = 0; i < b.length; i++) {\n            uint c = uint(b[i]);\n            if (c >= 48 && c <= 57) {\n                result = result * 10 + (c - 48);\n            }\n        }\n    }\n}\n",
   "sourcePath": "/home/markus/Documents/Programming/smartEscrow/ethereumSwap/contracts/EthereumSwap.sol",
   "ast": {
     "absolutePath": "/home/markus/Documents/Programming/smartEscrow/ethereumSwap/contracts/EthereumSwap.sol",
@@ -28477,7 +28477,7 @@
             "body": {
               "id": 2219,
               "nodeType": "Block",
-              "src": "20520:1072:0",
+              "src": "20520:1071:0",
               "statements": [
                 {
                   "expression": {
@@ -29556,7 +29556,7 @@
                   "falseBody": {
                     "id": 2217,
                     "nodeType": "Block",
-                    "src": "21504:83:0",
+                    "src": "21504:82:0",
                     "statements": [
                       {
                         "eventCall": {
@@ -29564,7 +29564,7 @@
                           "arguments": [
                             {
                               "argumentTypes": null,
-                              "hexValue": "5468652073656e646564206e416d6f756e742077617320746f6f20736d616c6c206f72206e6f6e20657873697374696e6720",
+                              "hexValue": "5468652073656e64656420416d6f756e742077617320746f6f20736d616c6c206f72206e6f6e20657873697374696e6720",
                               "id": 2214,
                               "isConstant": false,
                               "isLValue": false,
@@ -29572,20 +29572,20 @@
                               "kind": "string",
                               "lValueRequested": false,
                               "nodeType": "Literal",
-                              "src": "21527:52:0",
+                              "src": "21527:51:0",
                               "subdenomination": null,
                               "typeDescriptions": {
-                                "typeIdentifier": "t_stringliteral_e4d3848ceaa78807067010de13c63b12c50868336e83f083947a1296b5ac3cb1",
-                                "typeString": "literal_string \"The sended nAmount was too small or non exsisting \""
+                                "typeIdentifier": "t_stringliteral_069e79fa5fc7367ee7da2cfb13d58142f9efaf9560b0f798b982b9aab689cbcf",
+                                "typeString": "literal_string \"The sended Amount was too small or non exsisting \""
                               },
-                              "value": "The sended nAmount was too small or non exsisting "
+                              "value": "The sended Amount was too small or non exsisting "
                             }
                           ],
                           "expression": {
                             "argumentTypes": [
                               {
-                                "typeIdentifier": "t_stringliteral_e4d3848ceaa78807067010de13c63b12c50868336e83f083947a1296b5ac3cb1",
-                                "typeString": "literal_string \"The sended nAmount was too small or non exsisting \""
+                                "typeIdentifier": "t_stringliteral_069e79fa5fc7367ee7da2cfb13d58142f9efaf9560b0f798b982b9aab689cbcf",
+                                "typeString": "literal_string \"The sended Amount was too small or non exsisting \""
                               }
                             ],
                             "id": 2213,
@@ -29607,7 +29607,7 @@
                           "lValueRequested": false,
                           "names": [],
                           "nodeType": "FunctionCall",
-                          "src": "21519:61:0",
+                          "src": "21519:60:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_tuple$__$",
                             "typeString": "tuple()"
@@ -29615,13 +29615,13 @@
                         },
                         "id": 2216,
                         "nodeType": "EmitStatement",
-                        "src": "21514:66:0"
+                        "src": "21514:65:0"
                       }
                     ]
                   },
                   "id": 2218,
                   "nodeType": "IfStatement",
-                  "src": "21307:280:0",
+                  "src": "21307:279:0",
                   "trueBody": {
                     "id": 2212,
                     "nodeType": "Block",
@@ -29959,7 +29959,7 @@
               "src": "20520:0:0"
             },
             "scope": 2306,
-            "src": "20463:1129:0",
+            "src": "20463:1128:0",
             "stateMutability": "nonpayable",
             "superFunction": 295,
             "visibility": "public"
@@ -29968,7 +29968,7 @@
             "body": {
               "id": 2237,
               "nodeType": "Block",
-              "src": "21687:53:0",
+              "src": "21686:53:0",
               "statements": [
                 {
                   "expression": {
@@ -29992,7 +29992,7 @@
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
                           "referencedDeclaration": 2222,
-                          "src": "21715:1:0",
+                          "src": "21714:1:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_string_memory_ptr",
                             "typeString": "string memory"
@@ -30011,7 +30011,7 @@
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 2372,
-                        "src": "21705:9:0",
+                        "src": "21704:9:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
                           "typeString": "function () pure returns (bytes32)"
@@ -30025,7 +30025,7 @@
                       "lValueRequested": false,
                       "names": [],
                       "nodeType": "FunctionCall",
-                      "src": "21705:12:0",
+                      "src": "21704:12:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
                         "typeString": "bytes32"
@@ -30043,7 +30043,7 @@
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
                           "referencedDeclaration": 2224,
-                          "src": "21731:1:0",
+                          "src": "21730:1:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_string_memory_ptr",
                             "typeString": "string memory"
@@ -30062,7 +30062,7 @@
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 2372,
-                        "src": "21721:9:0",
+                        "src": "21720:9:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
                           "typeString": "function () pure returns (bytes32)"
@@ -30076,13 +30076,13 @@
                       "lValueRequested": false,
                       "names": [],
                       "nodeType": "FunctionCall",
-                      "src": "21721:12:0",
+                      "src": "21720:12:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
                         "typeString": "bytes32"
                       }
                     },
-                    "src": "21705:28:0",
+                    "src": "21704:28:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -30091,7 +30091,7 @@
                   "functionReturnParameters": 2228,
                   "id": 2236,
                   "nodeType": "Return",
-                  "src": "21698:35:0"
+                  "src": "21697:35:0"
                 }
               ]
             },
@@ -30113,7 +30113,7 @@
                   "name": "a",
                   "nodeType": "VariableDeclaration",
                   "scope": 2238,
-                  "src": "21648:8:0",
+                  "src": "21647:8:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -30124,7 +30124,7 @@
                     "id": 2221,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "21648:6:0",
+                    "src": "21647:6:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -30139,7 +30139,7 @@
                   "name": "b",
                   "nodeType": "VariableDeclaration",
                   "scope": 2238,
-                  "src": "21658:8:0",
+                  "src": "21657:8:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -30150,7 +30150,7 @@
                     "id": 2223,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "21658:6:0",
+                    "src": "21657:6:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -30160,7 +30160,7 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "21647:20:0"
+              "src": "21646:20:0"
             },
             "payable": false,
             "returnParameters": {
@@ -30173,7 +30173,7 @@
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "scope": 2238,
-                  "src": "21682:4:0",
+                  "src": "21681:4:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -30184,7 +30184,7 @@
                     "id": 2226,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "21682:4:0",
+                    "src": "21681:4:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -30194,10 +30194,10 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "21681:6:0"
+              "src": "21680:6:0"
             },
             "scope": 2306,
-            "src": "21623:117:0",
+            "src": "21622:117:0",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "public"
@@ -30208,7 +30208,7 @@
             "name": "None",
             "nodeType": "VariableDeclaration",
             "scope": 2306,
-            "src": "21747:32:0",
+            "src": "21746:32:0",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -30219,7 +30219,7 @@
               "id": 2239,
               "name": "uint80",
               "nodeType": "ElementaryTypeName",
-              "src": "21747:6:0",
+              "src": "21746:6:0",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint80",
                 "typeString": "uint80"
@@ -30238,7 +30238,7 @@
                   "kind": "number",
                   "lValueRequested": false,
                   "nodeType": "Literal",
-                  "src": "21777:1:0",
+                  "src": "21776:1:0",
                   "subdenomination": null,
                   "typeDescriptions": {
                     "typeIdentifier": "t_rational_0_by_1",
@@ -30260,7 +30260,7 @@
                 "isPure": true,
                 "lValueRequested": false,
                 "nodeType": "ElementaryTypeNameExpression",
-                "src": "21770:6:0",
+                "src": "21769:6:0",
                 "typeDescriptions": {
                   "typeIdentifier": "t_type$_t_uint80_$",
                   "typeString": "type(uint80)"
@@ -30275,7 +30275,7 @@
               "lValueRequested": false,
               "names": [],
               "nodeType": "FunctionCall",
-              "src": "21770:9:0",
+              "src": "21769:9:0",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint80",
                 "typeString": "uint80"
@@ -30287,7 +30287,7 @@
             "body": {
               "id": 2304,
               "nodeType": "Block",
-              "src": "21847:263:0",
+              "src": "21846:263:0",
               "statements": [
                 {
                   "assignments": [
@@ -30300,7 +30300,7 @@
                       "name": "b",
                       "nodeType": "VariableDeclaration",
                       "scope": 2305,
-                      "src": "21857:14:0",
+                      "src": "21856:14:0",
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "typeDescriptions": {
@@ -30311,7 +30311,7 @@
                         "id": 2250,
                         "name": "bytes",
                         "nodeType": "ElementaryTypeName",
-                        "src": "21857:5:0",
+                        "src": "21856:5:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes_storage_ptr",
                           "typeString": "bytes"
@@ -30332,7 +30332,7 @@
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 2245,
-                        "src": "21880:1:0",
+                        "src": "21879:1:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_memory_ptr",
                           "typeString": "string memory"
@@ -30352,7 +30352,7 @@
                       "isPure": true,
                       "lValueRequested": false,
                       "nodeType": "ElementaryTypeNameExpression",
-                      "src": "21874:5:0",
+                      "src": "21873:5:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_type$_t_bytes_storage_ptr_$",
                         "typeString": "type(bytes storage pointer)"
@@ -30367,14 +30367,14 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "21874:8:0",
+                    "src": "21873:8:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes_memory",
                       "typeString": "bytes memory"
                     }
                   },
                   "nodeType": "VariableDeclarationStatement",
-                  "src": "21857:25:0"
+                  "src": "21856:25:0"
                 },
                 {
                   "assignments": [],
@@ -30385,7 +30385,7 @@
                       "name": "i",
                       "nodeType": "VariableDeclaration",
                       "scope": 2305,
-                      "src": "21892:6:0",
+                      "src": "21891:6:0",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
@@ -30396,7 +30396,7 @@
                         "id": 2256,
                         "name": "uint",
                         "nodeType": "ElementaryTypeName",
-                        "src": "21892:4:0",
+                        "src": "21891:4:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -30409,7 +30409,7 @@
                   "id": 2258,
                   "initialValue": null,
                   "nodeType": "VariableDeclarationStatement",
-                  "src": "21892:6:0"
+                  "src": "21891:6:0"
                 },
                 {
                   "expression": {
@@ -30426,7 +30426,7 @@
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
                       "referencedDeclaration": 2248,
-                      "src": "21908:6:0",
+                      "src": "21907:6:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -30444,7 +30444,7 @@
                       "kind": "number",
                       "lValueRequested": false,
                       "nodeType": "Literal",
-                      "src": "21917:1:0",
+                      "src": "21916:1:0",
                       "subdenomination": null,
                       "typeDescriptions": {
                         "typeIdentifier": "t_rational_0_by_1",
@@ -30452,7 +30452,7 @@
                       },
                       "value": "0"
                     },
-                    "src": "21908:10:0",
+                    "src": "21907:10:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -30460,13 +30460,13 @@
                   },
                   "id": 2262,
                   "nodeType": "ExpressionStatement",
-                  "src": "21908:10:0"
+                  "src": "21907:10:0"
                 },
                 {
                   "body": {
                     "id": 2302,
                     "nodeType": "Block",
-                    "src": "21959:145:0",
+                    "src": "21958:145:0",
                     "statements": [
                       {
                         "assignments": [
@@ -30479,7 +30479,7 @@
                             "name": "c",
                             "nodeType": "VariableDeclaration",
                             "scope": 2305,
-                            "src": "21973:6:0",
+                            "src": "21972:6:0",
                             "stateVariable": false,
                             "storageLocation": "default",
                             "typeDescriptions": {
@@ -30490,7 +30490,7 @@
                               "id": 2274,
                               "name": "uint",
                               "nodeType": "ElementaryTypeName",
-                              "src": "21973:4:0",
+                              "src": "21972:4:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_uint256",
                                 "typeString": "uint256"
@@ -30513,7 +30513,7 @@
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
                                 "referencedDeclaration": 2251,
-                                "src": "21987:1:0",
+                                "src": "21986:1:0",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_bytes_memory_ptr",
                                   "typeString": "bytes memory"
@@ -30527,7 +30527,7 @@
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
                                 "referencedDeclaration": 2257,
-                                "src": "21989:1:0",
+                                "src": "21988:1:0",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_uint256",
                                   "typeString": "uint256"
@@ -30538,7 +30538,7 @@
                               "isPure": false,
                               "lValueRequested": false,
                               "nodeType": "IndexAccess",
-                              "src": "21987:4:0",
+                              "src": "21986:4:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_bytes1",
                                 "typeString": "bytes1"
@@ -30558,7 +30558,7 @@
                             "isPure": true,
                             "lValueRequested": false,
                             "nodeType": "ElementaryTypeNameExpression",
-                            "src": "21982:4:0",
+                            "src": "21981:4:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_type$_t_uint256_$",
                               "typeString": "type(uint256)"
@@ -30573,14 +30573,14 @@
                           "lValueRequested": false,
                           "names": [],
                           "nodeType": "FunctionCall",
-                          "src": "21982:10:0",
+                          "src": "21981:10:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
                           }
                         },
                         "nodeType": "VariableDeclarationStatement",
-                        "src": "21973:19:0"
+                        "src": "21972:19:0"
                       },
                       {
                         "condition": {
@@ -30612,7 +30612,7 @@
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
                               "referencedDeclaration": 2275,
-                              "src": "22010:1:0",
+                              "src": "22009:1:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_uint256",
                                 "typeString": "uint256"
@@ -30630,7 +30630,7 @@
                               "kind": "number",
                               "lValueRequested": false,
                               "nodeType": "Literal",
-                              "src": "22015:2:0",
+                              "src": "22014:2:0",
                               "subdenomination": null,
                               "typeDescriptions": {
                                 "typeIdentifier": "t_rational_48_by_1",
@@ -30638,7 +30638,7 @@
                               },
                               "value": "48"
                             },
-                            "src": "22010:7:0",
+                            "src": "22009:7:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bool",
                               "typeString": "bool"
@@ -30664,7 +30664,7 @@
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
                               "referencedDeclaration": 2275,
-                              "src": "22021:1:0",
+                              "src": "22020:1:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_uint256",
                                 "typeString": "uint256"
@@ -30682,7 +30682,7 @@
                               "kind": "number",
                               "lValueRequested": false,
                               "nodeType": "Literal",
-                              "src": "22026:2:0",
+                              "src": "22025:2:0",
                               "subdenomination": null,
                               "typeDescriptions": {
                                 "typeIdentifier": "t_rational_57_by_1",
@@ -30690,13 +30690,13 @@
                               },
                               "value": "57"
                             },
-                            "src": "22021:7:0",
+                            "src": "22020:7:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bool",
                               "typeString": "bool"
                             }
                           },
-                          "src": "22010:18:0",
+                          "src": "22009:18:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bool",
                             "typeString": "bool"
@@ -30705,11 +30705,11 @@
                         "falseBody": null,
                         "id": 2301,
                         "nodeType": "IfStatement",
-                        "src": "22006:88:0",
+                        "src": "22005:88:0",
                         "trueBody": {
                           "id": 2300,
                           "nodeType": "Block",
-                          "src": "22030:64:0",
+                          "src": "22029:64:0",
                           "statements": [
                             {
                               "expression": {
@@ -30726,7 +30726,7 @@
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
                                   "referencedDeclaration": 2248,
-                                  "src": "22048:6:0",
+                                  "src": "22047:6:0",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_uint256",
                                     "typeString": "uint256"
@@ -30763,7 +30763,7 @@
                                       "nodeType": "Identifier",
                                       "overloadedDeclarations": [],
                                       "referencedDeclaration": 2248,
-                                      "src": "22057:6:0",
+                                      "src": "22056:6:0",
                                       "typeDescriptions": {
                                         "typeIdentifier": "t_uint256",
                                         "typeString": "uint256"
@@ -30781,7 +30781,7 @@
                                       "kind": "number",
                                       "lValueRequested": false,
                                       "nodeType": "Literal",
-                                      "src": "22066:2:0",
+                                      "src": "22065:2:0",
                                       "subdenomination": null,
                                       "typeDescriptions": {
                                         "typeIdentifier": "t_rational_10_by_1",
@@ -30789,7 +30789,7 @@
                                       },
                                       "value": "10"
                                     },
-                                    "src": "22057:11:0",
+                                    "src": "22056:11:0",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_uint256",
                                       "typeString": "uint256"
@@ -30818,7 +30818,7 @@
                                           "nodeType": "Identifier",
                                           "overloadedDeclarations": [],
                                           "referencedDeclaration": 2275,
-                                          "src": "22072:1:0",
+                                          "src": "22071:1:0",
                                           "typeDescriptions": {
                                             "typeIdentifier": "t_uint256",
                                             "typeString": "uint256"
@@ -30836,7 +30836,7 @@
                                           "kind": "number",
                                           "lValueRequested": false,
                                           "nodeType": "Literal",
-                                          "src": "22076:2:0",
+                                          "src": "22075:2:0",
                                           "subdenomination": null,
                                           "typeDescriptions": {
                                             "typeIdentifier": "t_rational_48_by_1",
@@ -30844,7 +30844,7 @@
                                           },
                                           "value": "48"
                                         },
-                                        "src": "22072:6:0",
+                                        "src": "22071:6:0",
                                         "typeDescriptions": {
                                           "typeIdentifier": "t_uint256",
                                           "typeString": "uint256"
@@ -30858,19 +30858,19 @@
                                     "isPure": false,
                                     "lValueRequested": false,
                                     "nodeType": "TupleExpression",
-                                    "src": "22071:8:0",
+                                    "src": "22070:8:0",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_uint256",
                                       "typeString": "uint256"
                                     }
                                   },
-                                  "src": "22057:22:0",
+                                  "src": "22056:22:0",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_uint256",
                                     "typeString": "uint256"
                                   }
                                 },
-                                "src": "22048:31:0",
+                                "src": "22047:31:0",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_uint256",
                                   "typeString": "uint256"
@@ -30878,7 +30878,7 @@
                               },
                               "id": 2299,
                               "nodeType": "ExpressionStatement",
-                              "src": "22048:31:0"
+                              "src": "22047:31:0"
                             }
                           ]
                         }
@@ -30903,7 +30903,7 @@
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
                       "referencedDeclaration": 2257,
-                      "src": "21940:1:0",
+                      "src": "21939:1:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -30920,7 +30920,7 @@
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 2251,
-                        "src": "21944:1:0",
+                        "src": "21943:1:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes_memory_ptr",
                           "typeString": "bytes memory"
@@ -30934,13 +30934,13 @@
                       "memberName": "length",
                       "nodeType": "MemberAccess",
                       "referencedDeclaration": null,
-                      "src": "21944:8:0",
+                      "src": "21943:8:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       }
                     },
-                    "src": "21940:12:0",
+                    "src": "21939:12:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -30962,7 +30962,7 @@
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 2257,
-                        "src": "21933:1:0",
+                        "src": "21932:1:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -30980,7 +30980,7 @@
                         "kind": "number",
                         "lValueRequested": false,
                         "nodeType": "Literal",
-                        "src": "21937:1:0",
+                        "src": "21936:1:0",
                         "subdenomination": null,
                         "typeDescriptions": {
                           "typeIdentifier": "t_rational_0_by_1",
@@ -30988,7 +30988,7 @@
                         },
                         "value": "0"
                       },
-                      "src": "21933:5:0",
+                      "src": "21932:5:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -30996,7 +30996,7 @@
                     },
                     "id": 2266,
                     "nodeType": "ExpressionStatement",
-                    "src": "21933:5:0"
+                    "src": "21932:5:0"
                   },
                   "loopExpression": {
                     "expression": {
@@ -31009,7 +31009,7 @@
                       "nodeType": "UnaryOperation",
                       "operator": "++",
                       "prefix": false,
-                      "src": "21954:3:0",
+                      "src": "21953:3:0",
                       "subExpression": {
                         "argumentTypes": null,
                         "id": 2271,
@@ -31017,7 +31017,7 @@
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 2257,
-                        "src": "21954:1:0",
+                        "src": "21953:1:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -31030,10 +31030,10 @@
                     },
                     "id": 2273,
                     "nodeType": "ExpressionStatement",
-                    "src": "21954:3:0"
+                    "src": "21953:3:0"
                   },
                   "nodeType": "ForStatement",
-                  "src": "21928:176:0"
+                  "src": "21927:176:0"
                 }
               ]
             },
@@ -31055,7 +31055,7 @@
                   "name": "s",
                   "nodeType": "VariableDeclaration",
                   "scope": 2305,
-                  "src": "21806:8:0",
+                  "src": "21805:8:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -31066,7 +31066,7 @@
                     "id": 2244,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "21806:6:0",
+                    "src": "21805:6:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -31076,7 +31076,7 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "21805:10:0"
+              "src": "21804:10:0"
             },
             "payable": false,
             "returnParameters": {
@@ -31089,7 +31089,7 @@
                   "name": "result",
                   "nodeType": "VariableDeclaration",
                   "scope": 2305,
-                  "src": "21834:11:0",
+                  "src": "21833:11:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -31100,7 +31100,7 @@
                     "id": 2247,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
-                    "src": "21834:4:0",
+                    "src": "21833:4:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -31110,20 +31110,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "21833:13:0"
+              "src": "21832:13:0"
             },
             "scope": 2306,
-            "src": "21784:326:0",
+            "src": "21783:326:0",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "public"
           }
         ],
         "scope": 2307,
-        "src": "16052:6060:0"
+        "src": "16052:6059:0"
       }
     ],
-    "src": "0:23218:0"
+    "src": "0:22112:0"
   },
   "legacyAST": {
     "absolutePath": "/home/markus/Documents/Programming/smartEscrow/ethereumSwap/contracts/EthereumSwap.sol",
@@ -59580,7 +59580,7 @@
             "body": {
               "id": 2219,
               "nodeType": "Block",
-              "src": "20520:1072:0",
+              "src": "20520:1071:0",
               "statements": [
                 {
                   "expression": {
@@ -60659,7 +60659,7 @@
                   "falseBody": {
                     "id": 2217,
                     "nodeType": "Block",
-                    "src": "21504:83:0",
+                    "src": "21504:82:0",
                     "statements": [
                       {
                         "eventCall": {
@@ -60667,7 +60667,7 @@
                           "arguments": [
                             {
                               "argumentTypes": null,
-                              "hexValue": "5468652073656e646564206e416d6f756e742077617320746f6f20736d616c6c206f72206e6f6e20657873697374696e6720",
+                              "hexValue": "5468652073656e64656420416d6f756e742077617320746f6f20736d616c6c206f72206e6f6e20657873697374696e6720",
                               "id": 2214,
                               "isConstant": false,
                               "isLValue": false,
@@ -60675,20 +60675,20 @@
                               "kind": "string",
                               "lValueRequested": false,
                               "nodeType": "Literal",
-                              "src": "21527:52:0",
+                              "src": "21527:51:0",
                               "subdenomination": null,
                               "typeDescriptions": {
-                                "typeIdentifier": "t_stringliteral_e4d3848ceaa78807067010de13c63b12c50868336e83f083947a1296b5ac3cb1",
-                                "typeString": "literal_string \"The sended nAmount was too small or non exsisting \""
+                                "typeIdentifier": "t_stringliteral_069e79fa5fc7367ee7da2cfb13d58142f9efaf9560b0f798b982b9aab689cbcf",
+                                "typeString": "literal_string \"The sended Amount was too small or non exsisting \""
                               },
-                              "value": "The sended nAmount was too small or non exsisting "
+                              "value": "The sended Amount was too small or non exsisting "
                             }
                           ],
                           "expression": {
                             "argumentTypes": [
                               {
-                                "typeIdentifier": "t_stringliteral_e4d3848ceaa78807067010de13c63b12c50868336e83f083947a1296b5ac3cb1",
-                                "typeString": "literal_string \"The sended nAmount was too small or non exsisting \""
+                                "typeIdentifier": "t_stringliteral_069e79fa5fc7367ee7da2cfb13d58142f9efaf9560b0f798b982b9aab689cbcf",
+                                "typeString": "literal_string \"The sended Amount was too small or non exsisting \""
                               }
                             ],
                             "id": 2213,
@@ -60710,7 +60710,7 @@
                           "lValueRequested": false,
                           "names": [],
                           "nodeType": "FunctionCall",
-                          "src": "21519:61:0",
+                          "src": "21519:60:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_tuple$__$",
                             "typeString": "tuple()"
@@ -60718,13 +60718,13 @@
                         },
                         "id": 2216,
                         "nodeType": "EmitStatement",
-                        "src": "21514:66:0"
+                        "src": "21514:65:0"
                       }
                     ]
                   },
                   "id": 2218,
                   "nodeType": "IfStatement",
-                  "src": "21307:280:0",
+                  "src": "21307:279:0",
                   "trueBody": {
                     "id": 2212,
                     "nodeType": "Block",
@@ -61062,7 +61062,7 @@
               "src": "20520:0:0"
             },
             "scope": 2306,
-            "src": "20463:1129:0",
+            "src": "20463:1128:0",
             "stateMutability": "nonpayable",
             "superFunction": 295,
             "visibility": "public"
@@ -61071,7 +61071,7 @@
             "body": {
               "id": 2237,
               "nodeType": "Block",
-              "src": "21687:53:0",
+              "src": "21686:53:0",
               "statements": [
                 {
                   "expression": {
@@ -61095,7 +61095,7 @@
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
                           "referencedDeclaration": 2222,
-                          "src": "21715:1:0",
+                          "src": "21714:1:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_string_memory_ptr",
                             "typeString": "string memory"
@@ -61114,7 +61114,7 @@
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 2372,
-                        "src": "21705:9:0",
+                        "src": "21704:9:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
                           "typeString": "function () pure returns (bytes32)"
@@ -61128,7 +61128,7 @@
                       "lValueRequested": false,
                       "names": [],
                       "nodeType": "FunctionCall",
-                      "src": "21705:12:0",
+                      "src": "21704:12:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
                         "typeString": "bytes32"
@@ -61146,7 +61146,7 @@
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
                           "referencedDeclaration": 2224,
-                          "src": "21731:1:0",
+                          "src": "21730:1:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_string_memory_ptr",
                             "typeString": "string memory"
@@ -61165,7 +61165,7 @@
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 2372,
-                        "src": "21721:9:0",
+                        "src": "21720:9:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
                           "typeString": "function () pure returns (bytes32)"
@@ -61179,13 +61179,13 @@
                       "lValueRequested": false,
                       "names": [],
                       "nodeType": "FunctionCall",
-                      "src": "21721:12:0",
+                      "src": "21720:12:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_bytes32",
                         "typeString": "bytes32"
                       }
                     },
-                    "src": "21705:28:0",
+                    "src": "21704:28:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -61194,7 +61194,7 @@
                   "functionReturnParameters": 2228,
                   "id": 2236,
                   "nodeType": "Return",
-                  "src": "21698:35:0"
+                  "src": "21697:35:0"
                 }
               ]
             },
@@ -61216,7 +61216,7 @@
                   "name": "a",
                   "nodeType": "VariableDeclaration",
                   "scope": 2238,
-                  "src": "21648:8:0",
+                  "src": "21647:8:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -61227,7 +61227,7 @@
                     "id": 2221,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "21648:6:0",
+                    "src": "21647:6:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -61242,7 +61242,7 @@
                   "name": "b",
                   "nodeType": "VariableDeclaration",
                   "scope": 2238,
-                  "src": "21658:8:0",
+                  "src": "21657:8:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -61253,7 +61253,7 @@
                     "id": 2223,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "21658:6:0",
+                    "src": "21657:6:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -61263,7 +61263,7 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "21647:20:0"
+              "src": "21646:20:0"
             },
             "payable": false,
             "returnParameters": {
@@ -61276,7 +61276,7 @@
                   "name": "",
                   "nodeType": "VariableDeclaration",
                   "scope": 2238,
-                  "src": "21682:4:0",
+                  "src": "21681:4:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -61287,7 +61287,7 @@
                     "id": 2226,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
-                    "src": "21682:4:0",
+                    "src": "21681:4:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -61297,10 +61297,10 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "21681:6:0"
+              "src": "21680:6:0"
             },
             "scope": 2306,
-            "src": "21623:117:0",
+            "src": "21622:117:0",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "public"
@@ -61311,7 +61311,7 @@
             "name": "None",
             "nodeType": "VariableDeclaration",
             "scope": 2306,
-            "src": "21747:32:0",
+            "src": "21746:32:0",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
@@ -61322,7 +61322,7 @@
               "id": 2239,
               "name": "uint80",
               "nodeType": "ElementaryTypeName",
-              "src": "21747:6:0",
+              "src": "21746:6:0",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint80",
                 "typeString": "uint80"
@@ -61341,7 +61341,7 @@
                   "kind": "number",
                   "lValueRequested": false,
                   "nodeType": "Literal",
-                  "src": "21777:1:0",
+                  "src": "21776:1:0",
                   "subdenomination": null,
                   "typeDescriptions": {
                     "typeIdentifier": "t_rational_0_by_1",
@@ -61363,7 +61363,7 @@
                 "isPure": true,
                 "lValueRequested": false,
                 "nodeType": "ElementaryTypeNameExpression",
-                "src": "21770:6:0",
+                "src": "21769:6:0",
                 "typeDescriptions": {
                   "typeIdentifier": "t_type$_t_uint80_$",
                   "typeString": "type(uint80)"
@@ -61378,7 +61378,7 @@
               "lValueRequested": false,
               "names": [],
               "nodeType": "FunctionCall",
-              "src": "21770:9:0",
+              "src": "21769:9:0",
               "typeDescriptions": {
                 "typeIdentifier": "t_uint80",
                 "typeString": "uint80"
@@ -61390,7 +61390,7 @@
             "body": {
               "id": 2304,
               "nodeType": "Block",
-              "src": "21847:263:0",
+              "src": "21846:263:0",
               "statements": [
                 {
                   "assignments": [
@@ -61403,7 +61403,7 @@
                       "name": "b",
                       "nodeType": "VariableDeclaration",
                       "scope": 2305,
-                      "src": "21857:14:0",
+                      "src": "21856:14:0",
                       "stateVariable": false,
                       "storageLocation": "memory",
                       "typeDescriptions": {
@@ -61414,7 +61414,7 @@
                         "id": 2250,
                         "name": "bytes",
                         "nodeType": "ElementaryTypeName",
-                        "src": "21857:5:0",
+                        "src": "21856:5:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes_storage_ptr",
                           "typeString": "bytes"
@@ -61435,7 +61435,7 @@
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 2245,
-                        "src": "21880:1:0",
+                        "src": "21879:1:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_memory_ptr",
                           "typeString": "string memory"
@@ -61455,7 +61455,7 @@
                       "isPure": true,
                       "lValueRequested": false,
                       "nodeType": "ElementaryTypeNameExpression",
-                      "src": "21874:5:0",
+                      "src": "21873:5:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_type$_t_bytes_storage_ptr_$",
                         "typeString": "type(bytes storage pointer)"
@@ -61470,14 +61470,14 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "21874:8:0",
+                    "src": "21873:8:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes_memory",
                       "typeString": "bytes memory"
                     }
                   },
                   "nodeType": "VariableDeclarationStatement",
-                  "src": "21857:25:0"
+                  "src": "21856:25:0"
                 },
                 {
                   "assignments": [],
@@ -61488,7 +61488,7 @@
                       "name": "i",
                       "nodeType": "VariableDeclaration",
                       "scope": 2305,
-                      "src": "21892:6:0",
+                      "src": "21891:6:0",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
@@ -61499,7 +61499,7 @@
                         "id": 2256,
                         "name": "uint",
                         "nodeType": "ElementaryTypeName",
-                        "src": "21892:4:0",
+                        "src": "21891:4:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -61512,7 +61512,7 @@
                   "id": 2258,
                   "initialValue": null,
                   "nodeType": "VariableDeclarationStatement",
-                  "src": "21892:6:0"
+                  "src": "21891:6:0"
                 },
                 {
                   "expression": {
@@ -61529,7 +61529,7 @@
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
                       "referencedDeclaration": 2248,
-                      "src": "21908:6:0",
+                      "src": "21907:6:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -61547,7 +61547,7 @@
                       "kind": "number",
                       "lValueRequested": false,
                       "nodeType": "Literal",
-                      "src": "21917:1:0",
+                      "src": "21916:1:0",
                       "subdenomination": null,
                       "typeDescriptions": {
                         "typeIdentifier": "t_rational_0_by_1",
@@ -61555,7 +61555,7 @@
                       },
                       "value": "0"
                     },
-                    "src": "21908:10:0",
+                    "src": "21907:10:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -61563,13 +61563,13 @@
                   },
                   "id": 2262,
                   "nodeType": "ExpressionStatement",
-                  "src": "21908:10:0"
+                  "src": "21907:10:0"
                 },
                 {
                   "body": {
                     "id": 2302,
                     "nodeType": "Block",
-                    "src": "21959:145:0",
+                    "src": "21958:145:0",
                     "statements": [
                       {
                         "assignments": [
@@ -61582,7 +61582,7 @@
                             "name": "c",
                             "nodeType": "VariableDeclaration",
                             "scope": 2305,
-                            "src": "21973:6:0",
+                            "src": "21972:6:0",
                             "stateVariable": false,
                             "storageLocation": "default",
                             "typeDescriptions": {
@@ -61593,7 +61593,7 @@
                               "id": 2274,
                               "name": "uint",
                               "nodeType": "ElementaryTypeName",
-                              "src": "21973:4:0",
+                              "src": "21972:4:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_uint256",
                                 "typeString": "uint256"
@@ -61616,7 +61616,7 @@
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
                                 "referencedDeclaration": 2251,
-                                "src": "21987:1:0",
+                                "src": "21986:1:0",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_bytes_memory_ptr",
                                   "typeString": "bytes memory"
@@ -61630,7 +61630,7 @@
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
                                 "referencedDeclaration": 2257,
-                                "src": "21989:1:0",
+                                "src": "21988:1:0",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_uint256",
                                   "typeString": "uint256"
@@ -61641,7 +61641,7 @@
                               "isPure": false,
                               "lValueRequested": false,
                               "nodeType": "IndexAccess",
-                              "src": "21987:4:0",
+                              "src": "21986:4:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_bytes1",
                                 "typeString": "bytes1"
@@ -61661,7 +61661,7 @@
                             "isPure": true,
                             "lValueRequested": false,
                             "nodeType": "ElementaryTypeNameExpression",
-                            "src": "21982:4:0",
+                            "src": "21981:4:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_type$_t_uint256_$",
                               "typeString": "type(uint256)"
@@ -61676,14 +61676,14 @@
                           "lValueRequested": false,
                           "names": [],
                           "nodeType": "FunctionCall",
-                          "src": "21982:10:0",
+                          "src": "21981:10:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
                             "typeString": "uint256"
                           }
                         },
                         "nodeType": "VariableDeclarationStatement",
-                        "src": "21973:19:0"
+                        "src": "21972:19:0"
                       },
                       {
                         "condition": {
@@ -61715,7 +61715,7 @@
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
                               "referencedDeclaration": 2275,
-                              "src": "22010:1:0",
+                              "src": "22009:1:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_uint256",
                                 "typeString": "uint256"
@@ -61733,7 +61733,7 @@
                               "kind": "number",
                               "lValueRequested": false,
                               "nodeType": "Literal",
-                              "src": "22015:2:0",
+                              "src": "22014:2:0",
                               "subdenomination": null,
                               "typeDescriptions": {
                                 "typeIdentifier": "t_rational_48_by_1",
@@ -61741,7 +61741,7 @@
                               },
                               "value": "48"
                             },
-                            "src": "22010:7:0",
+                            "src": "22009:7:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bool",
                               "typeString": "bool"
@@ -61767,7 +61767,7 @@
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
                               "referencedDeclaration": 2275,
-                              "src": "22021:1:0",
+                              "src": "22020:1:0",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_uint256",
                                 "typeString": "uint256"
@@ -61785,7 +61785,7 @@
                               "kind": "number",
                               "lValueRequested": false,
                               "nodeType": "Literal",
-                              "src": "22026:2:0",
+                              "src": "22025:2:0",
                               "subdenomination": null,
                               "typeDescriptions": {
                                 "typeIdentifier": "t_rational_57_by_1",
@@ -61793,13 +61793,13 @@
                               },
                               "value": "57"
                             },
-                            "src": "22021:7:0",
+                            "src": "22020:7:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bool",
                               "typeString": "bool"
                             }
                           },
-                          "src": "22010:18:0",
+                          "src": "22009:18:0",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bool",
                             "typeString": "bool"
@@ -61808,11 +61808,11 @@
                         "falseBody": null,
                         "id": 2301,
                         "nodeType": "IfStatement",
-                        "src": "22006:88:0",
+                        "src": "22005:88:0",
                         "trueBody": {
                           "id": 2300,
                           "nodeType": "Block",
-                          "src": "22030:64:0",
+                          "src": "22029:64:0",
                           "statements": [
                             {
                               "expression": {
@@ -61829,7 +61829,7 @@
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
                                   "referencedDeclaration": 2248,
-                                  "src": "22048:6:0",
+                                  "src": "22047:6:0",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_uint256",
                                     "typeString": "uint256"
@@ -61866,7 +61866,7 @@
                                       "nodeType": "Identifier",
                                       "overloadedDeclarations": [],
                                       "referencedDeclaration": 2248,
-                                      "src": "22057:6:0",
+                                      "src": "22056:6:0",
                                       "typeDescriptions": {
                                         "typeIdentifier": "t_uint256",
                                         "typeString": "uint256"
@@ -61884,7 +61884,7 @@
                                       "kind": "number",
                                       "lValueRequested": false,
                                       "nodeType": "Literal",
-                                      "src": "22066:2:0",
+                                      "src": "22065:2:0",
                                       "subdenomination": null,
                                       "typeDescriptions": {
                                         "typeIdentifier": "t_rational_10_by_1",
@@ -61892,7 +61892,7 @@
                                       },
                                       "value": "10"
                                     },
-                                    "src": "22057:11:0",
+                                    "src": "22056:11:0",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_uint256",
                                       "typeString": "uint256"
@@ -61921,7 +61921,7 @@
                                           "nodeType": "Identifier",
                                           "overloadedDeclarations": [],
                                           "referencedDeclaration": 2275,
-                                          "src": "22072:1:0",
+                                          "src": "22071:1:0",
                                           "typeDescriptions": {
                                             "typeIdentifier": "t_uint256",
                                             "typeString": "uint256"
@@ -61939,7 +61939,7 @@
                                           "kind": "number",
                                           "lValueRequested": false,
                                           "nodeType": "Literal",
-                                          "src": "22076:2:0",
+                                          "src": "22075:2:0",
                                           "subdenomination": null,
                                           "typeDescriptions": {
                                             "typeIdentifier": "t_rational_48_by_1",
@@ -61947,7 +61947,7 @@
                                           },
                                           "value": "48"
                                         },
-                                        "src": "22072:6:0",
+                                        "src": "22071:6:0",
                                         "typeDescriptions": {
                                           "typeIdentifier": "t_uint256",
                                           "typeString": "uint256"
@@ -61961,19 +61961,19 @@
                                     "isPure": false,
                                     "lValueRequested": false,
                                     "nodeType": "TupleExpression",
-                                    "src": "22071:8:0",
+                                    "src": "22070:8:0",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_uint256",
                                       "typeString": "uint256"
                                     }
                                   },
-                                  "src": "22057:22:0",
+                                  "src": "22056:22:0",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_uint256",
                                     "typeString": "uint256"
                                   }
                                 },
-                                "src": "22048:31:0",
+                                "src": "22047:31:0",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_uint256",
                                   "typeString": "uint256"
@@ -61981,7 +61981,7 @@
                               },
                               "id": 2299,
                               "nodeType": "ExpressionStatement",
-                              "src": "22048:31:0"
+                              "src": "22047:31:0"
                             }
                           ]
                         }
@@ -62006,7 +62006,7 @@
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
                       "referencedDeclaration": 2257,
-                      "src": "21940:1:0",
+                      "src": "21939:1:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -62023,7 +62023,7 @@
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 2251,
-                        "src": "21944:1:0",
+                        "src": "21943:1:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes_memory_ptr",
                           "typeString": "bytes memory"
@@ -62037,13 +62037,13 @@
                       "memberName": "length",
                       "nodeType": "MemberAccess",
                       "referencedDeclaration": null,
-                      "src": "21944:8:0",
+                      "src": "21943:8:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       }
                     },
-                    "src": "21940:12:0",
+                    "src": "21939:12:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
                       "typeString": "bool"
@@ -62065,7 +62065,7 @@
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 2257,
-                        "src": "21933:1:0",
+                        "src": "21932:1:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -62083,7 +62083,7 @@
                         "kind": "number",
                         "lValueRequested": false,
                         "nodeType": "Literal",
-                        "src": "21937:1:0",
+                        "src": "21936:1:0",
                         "subdenomination": null,
                         "typeDescriptions": {
                           "typeIdentifier": "t_rational_0_by_1",
@@ -62091,7 +62091,7 @@
                         },
                         "value": "0"
                       },
-                      "src": "21933:5:0",
+                      "src": "21932:5:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
@@ -62099,7 +62099,7 @@
                     },
                     "id": 2266,
                     "nodeType": "ExpressionStatement",
-                    "src": "21933:5:0"
+                    "src": "21932:5:0"
                   },
                   "loopExpression": {
                     "expression": {
@@ -62112,7 +62112,7 @@
                       "nodeType": "UnaryOperation",
                       "operator": "++",
                       "prefix": false,
-                      "src": "21954:3:0",
+                      "src": "21953:3:0",
                       "subExpression": {
                         "argumentTypes": null,
                         "id": 2271,
@@ -62120,7 +62120,7 @@
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
                         "referencedDeclaration": 2257,
-                        "src": "21954:1:0",
+                        "src": "21953:1:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
@@ -62133,10 +62133,10 @@
                     },
                     "id": 2273,
                     "nodeType": "ExpressionStatement",
-                    "src": "21954:3:0"
+                    "src": "21953:3:0"
                   },
                   "nodeType": "ForStatement",
-                  "src": "21928:176:0"
+                  "src": "21927:176:0"
                 }
               ]
             },
@@ -62158,7 +62158,7 @@
                   "name": "s",
                   "nodeType": "VariableDeclaration",
                   "scope": 2305,
-                  "src": "21806:8:0",
+                  "src": "21805:8:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -62169,7 +62169,7 @@
                     "id": 2244,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
-                    "src": "21806:6:0",
+                    "src": "21805:6:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_string_storage_ptr",
                       "typeString": "string"
@@ -62179,7 +62179,7 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "21805:10:0"
+              "src": "21804:10:0"
             },
             "payable": false,
             "returnParameters": {
@@ -62192,7 +62192,7 @@
                   "name": "result",
                   "nodeType": "VariableDeclaration",
                   "scope": 2305,
-                  "src": "21834:11:0",
+                  "src": "21833:11:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -62203,7 +62203,7 @@
                     "id": 2247,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
-                    "src": "21834:4:0",
+                    "src": "21833:4:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -62213,20 +62213,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "21833:13:0"
+              "src": "21832:13:0"
             },
             "scope": 2306,
-            "src": "21784:326:0",
+            "src": "21783:326:0",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "public"
           }
         ],
         "scope": 2307,
-        "src": "16052:6060:0"
+        "src": "16052:6059:0"
       }
     ],
-    "src": "0:23218:0"
+    "src": "0:22112:0"
   },
   "compiler": {
     "name": "solc",
@@ -62234,7 +62234,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.1",
-  "updatedAt": "2019-02-01T22:38:23.314Z",
+  "updatedAt": "2019-02-02T17:11:04.888Z",
   "devdoc": {
     "methods": {}
   },

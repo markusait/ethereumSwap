@@ -101,10 +101,7 @@ class Market extends Component {
     const {deployedContract} = this.state
     //Error Event
     deployedContract.events.LogInfo({fromBlock: 'latest', toBlock: 'pending'}).on('data', (event) => {
-      console.log(event.returnValues.log)
       this.notify(event.returnValues.log)
-      console.log(event)
-
     }).on('error', (error) => {
       console.error(error)
     })

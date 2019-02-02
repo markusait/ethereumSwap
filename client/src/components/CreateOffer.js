@@ -2,6 +2,7 @@ import React, {Component} from "react";
 import {Link} from 'react-router-dom'
 import getWeb3Data from "../utils/getWeb3";
 import axios from 'axios';
+import getCurrency from "../utils/getCurrencyByCode"
 import 'react-toastify/dist/ReactToastify.css';
 import {ToastContainer, Main, Card, toast, Row} from '../styles/index.js'
 
@@ -32,8 +33,6 @@ class CreateOffer extends Component {
         deployedContract,
         deployedContractAddress
       } = await getWeb3Data()
-      console.log(web3);
-      console.log(deployedContract);
       this.setState({
         web3,
         accounts,
@@ -53,7 +52,6 @@ class CreateOffer extends Component {
       ? target.checked
       : target.value
     const name = target.name
-    // console.log(name,value);
     this.setState({[name]: value})
   }
 
@@ -70,7 +68,6 @@ class CreateOffer extends Component {
     try {
       const {accounts, cryptoAddress, cryptoAmount, ethAmount, deployedContract, stellar} = this.state;
 
-      console.log(cryptoAddress,ethAmount,deployedContract,stellar);
       const response = await deployedContract.methods.depositEther(cryptoAddress, cryptoAmount.toString(), ~~stellar).send({from: accounts[0], value: ethAmount, gas: 1500000})
 
       this.setState({offerTxHash: response.transactionHash, createdOffer: true});
@@ -89,6 +86,7 @@ class CreateOffer extends Component {
   writeDetailsToDB = async (event) => {
     try {
       const data = this.state;
+      console.log(getCurrency(~~data.stellar))
       const offer = {
         contractAddress: data.deployedContractAddress,
         contractNetworkId: data.networkId,
@@ -97,7 +95,7 @@ class CreateOffer extends Component {
         cryptoAddress: data.cryptoAddress,
         cryptoAmount: data.cryptoAmount,
         offerTxHash: data.offerTxHash,
-        curreny: ~~data.stellar
+        currency: getCurrency(~~data.stellar)
       }
       const response = await axios.post('/api/offers', offer)
     } catch (e) {

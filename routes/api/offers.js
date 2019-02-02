@@ -17,20 +17,8 @@ router.get('/', (req, res) => {
 // @desc    Create An Offer
 // @access  Public
 router.post('/', (req, res) => {
-  // const data = req.body
-  // const newOffer = new Offer({
-  //   contractAddress: data.contractAddress,
-  //   contractNetworkId: data.contractNetworkId,
-  //   ownerAddress: data.ownerAddress,
-  //   amountEth: data.amountEth,
-  //   cryptoAddress: data.cryptoAddress,
-  //   cryptoAmount: data.cryptoAmount,
-  //   offerTxHash: data.offerTxHash,
-  //   date: data.date
-  //   currency: data.currency
-  // });
+  console.log(req.body);
   const newOffer = new Offer(req.body)
-
   newOffer.save()
   .then(offer => res.json(offer))
   .catch(e => {
@@ -51,14 +39,18 @@ router.put('/:id', function (req, res) {
   });
 })
 
-
 // @route   DELETE api/offers/:id
 // @desc    Delete A Offer
 // @access  Public
-// router.delete('/:id', (req, res) => {
-//   Offer.findById(req.params.id)
-//     .then(offer => offer.remove().then(() => res.json({ success: true })))
-//     .catch(err => res.status(404).json({ success: false }));
+// router.delete('/', (req, res) => {
+//   Offer.remove({}, (err) => {
+//     if(err) console.log(err);
+//     res.json({success: true})
+//   })
+  // // Offer.findById(req.params.id)
+  // //   .then(offer => offer.remove().then(() => res.json({ success: true })))
+  // //   .catch(err => res.status(404).json({ success: false }));
 // });
+
 
 module.exports = router;

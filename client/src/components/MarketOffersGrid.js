@@ -36,7 +36,7 @@ class MarketOffersGrid extends Component {
                   />
                    </div>
                   <p>
-                    Amount to claim: {offer.cryptoAmount} {offer.curreny ? "Lumens": "Bitcoin"}
+                    Amount to claim: {offer.cryptoAmount} {offer.currency}
                   </p>
                   <p>
                     Amount to Pay: {offer.amountEth} </p>

@@ -1,5 +1,6 @@
 import React, {Component} from "react"
 import { Preloader, Button } from '../styles/index'
+import getCurrency from "../utils/getCurrencyByCode"
 
 class MarketOfferModal extends Component {
   constructor(props) {
@@ -18,10 +19,11 @@ class MarketOfferModal extends Component {
     if (!this.props.show) {
       return null
     }
+    console.log(this.props.offer.currency);
     const Status = () => {
       if (this.props.offer.payedOut) {
         return (<div>
-          <p>This Contract was payed out already
+          <p>This Contract is payed out already
           </p>
         </div>)
       }
