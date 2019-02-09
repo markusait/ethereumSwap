@@ -23,10 +23,15 @@
     "truffle-contract": "^3.0.4"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "bignumber.js": "^8.0.2",
+    "crypto-js": "^3.1.9-1",
+    "cryptojs": "^2.5.3",
     "ethereum-bridge": "^0.6.1",
     "express": "^4.16.4",
+    "json-stringify-safe": "^5.0.1",
     "mongoose": "^5.4.2",
+    "save": "^2.3.3",
     "truffle": "^5.0.3",
     "truffle-hdwallet-provider": "^1.0.2",
     "web3": "^1.0.0-beta.37"

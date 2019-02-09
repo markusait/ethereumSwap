@@ -18,6 +18,9 @@ offer = {tx: "d04f8780b597a5e2630d2fdcb954446d546d3a5a2df881d11237abde0f1dd4ee",
 instance.methods.depositEther("3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9","615525",0).send({from:accounts[0],value: 1000000000000000000, gas: 3500000}).then((res) => {console.log(res.events)}).catch(e => console.log(e))
 
 instance.methods.depositEther("GDRK2CMWPHEEHRY6RUBVKXW4FH3KGXVN5ZLZIVKNVCIYIPBASWPAMRQW","375.9900000",1).send({from:accounts[0],value: 1000000000000000000, gas: 3500000}).then((res) => {console.log(res.events)}).catch(e => console.log(e))
+instance.methods.depositEther("GBR5DSDUAGOI5K6U6QD7PLEHMDMEJYE3JRUBLIJN4EZI45COHRSQAPFI","11000.1280000",1).send({from:accounts[0],value: 1000000000000000000, gas: 3500000}).then((res) => {console.log(res.events)}).catch(e => console.log(e))
+
+instance.methods.ownerWithdraw("3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9")
 
 
 web3.eth.getBalance(app.address)
@@ -27,6 +30,7 @@ web3.eth.getBalance(app.address)
 //btc
 instance.methods.getTransaction("b1ddc46ad47f6f95d75129281b22636d5b19a06bcf534305b018fd8e688265e1","3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9").send({from:accounts[0],value: 500000000000000000, gas: 3500000}).then((res) => {console.log(res.events)}).catch(e => console.log(e))
 //lumens
+instance.methods.getTransaction("95488874020802561","GDRK2CMWPHEEHRY6RUBVKXW4FH3KGXVN5ZLZIVKNVCIYIPBASWPAMRQW").send({from:accounts[0],value: 500000000000000000, gas: 3500000}).then((res) => {console.log(res.events)}).catch(e => console.log(e))
 instance.methods.getTransaction("95488874020802561","GDRK2CMWPHEEHRY6RUBVKXW4FH3KGXVN5ZLZIVKNVCIYIPBASWPAMRQW").send({from:accounts[0],value: 500000000000000000, gas: 3500000}).then((res) => {console.log(res.events)}).catch(e => console.log(e))
 
 

@@ -15,7 +15,6 @@ class CreateOffer extends Component {
     web3: null,
     networkId: null,
     accounts: null,
-    // account = '0x0',
     deployedContract: null,
     deployedContractAddress: null,
     deployedNetwork: null,
@@ -59,7 +58,7 @@ class CreateOffer extends Component {
     if (!error) {
       toast("Transaction successfull")
     } else {
-      toast.error("Transaction unsucsessfull please try again " + error)
+      toast.error(error)
     }
   }
 
@@ -67,6 +66,8 @@ class CreateOffer extends Component {
     event.preventDefault();
     try {
       const {accounts, cryptoAddress, cryptoAmount, ethAmount, deployedContract, stellar} = this.state;
+
+      console.log(cryptoAddress,cryptoAmount,~~stellar);
 
       const response = await deployedContract.methods.depositEther(cryptoAddress, cryptoAmount.toString(), ~~stellar).send({from: accounts[0], value: ethAmount, gas: 1500000})
 
@@ -77,7 +78,8 @@ class CreateOffer extends Component {
       this.notify()
 
     } catch (e) {
-      this.notify(e)
+      this.state.deployedContract == null ? this.notify("Contract not deployed on this blockchain please change your rpc provider to http://ethblockchain.digitpay.de")
+      : this.notify(e)
       console.error(e)
     }
 
@@ -86,7 +88,6 @@ class CreateOffer extends Component {
   writeDetailsToDB = async (event) => {
     try {
       const data = this.state;
-      console.log(getCurrency(~~data.stellar))
       const offer = {
         contractAddress: data.deployedContractAddress,
         contractNetworkId: data.networkId,
@@ -148,7 +149,6 @@ class CreateOffer extends Component {
                       Stellar
                     </label>
                   </div>
-
                 </Row>
                 <Row>
                   <div className="chips-addresses input-field col s12">

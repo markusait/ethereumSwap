@@ -72,8 +72,9 @@ contract usingOraclize {
     }
     function __callback(bytes32 myid, string result, bytes proof) {
     }
-
+    //edited!!!
     function oraclize_getPrice(string datasource) oraclizeAPI internal returns (uint){
+        if(oraclize.getPrice(datasource) == 0) return 500000;
         return oraclize.getPrice(datasource);
     }
     function oraclize_getPrice(string datasource, uint gaslimit) oraclizeAPI internal returns (uint){
@@ -415,16 +416,6 @@ library SafeMath {
 // </SafeMath_Lib>
 
 
-//test txs
-//https://testnet.steexp.com/tx/f282160d542c42c1f8b15cf0c3872a7b29c088e0890113e78e06c8e4b6492ebc
-//https://horizon.stellar.org/operations/95488874020802561
-//https://horizon.stellar.org/operations/95488770941542401
-
-//test query
-//http://app.oraclize.it/home/test_query#VVJMKEdFVCk=:anNvbihodHRwczovL2hvcml6b24uc3RlbGxhci5vcmcvb3BlcmF0aW9ucy85NTQ4ODc3MDk0MTU0MjQwMSkuW3RvLGFtb3VudCx0eXBlLGFzc2V0X3R5cGVd
-
-
-
 /// @title Smart Escrow Contract for swapping eth to btc using oracliize
 /// @dev use ethereum-bridge for local testing https://github.com/oraclize/ethereum-bridge
 contract EthereumSwap is usingOraclize {
@@ -436,17 +427,14 @@ contract EthereumSwap is usingOraclize {
 
   uint public oraclizePrice;
 
-  uint public minimumOfferValue = 100;
-
   bytes32 public oraclizeID;
 
   string public oraclizeResult;
 
-
-
   // Offer Struct for creating an Bitcoin Offer for the smart contract
   struct Offer {
       bool exsists;
+      address owner;
       uint ethDepositInWei;
       string cryptoWithdrawAmount;
       address potentialPayoutAddress;
@@ -471,10 +459,6 @@ contract EthereumSwap is usingOraclize {
     string log
   );
 
-  event LogInfoBytes(
-      bytes32 log
-  );
-
   function getTestingOraclizeAddress() public returns(address){
     return bridgeConnector;
   }
@@ -482,7 +466,6 @@ contract EthereumSwap is usingOraclize {
   function getOraclizePrice() public returns (uint){
     return oraclizePrice;
   }
-
 
   /// @notice Constructor only used in testing for Oraclize Bridge with ethereum-bridge
   function EthereumSwap(address _oraclizeAddress) public {
@@ -496,9 +479,10 @@ contract EthereumSwap is usingOraclize {
   /// @param _cryptoAddress The Bitcoin Address to which a doner will pay money to
   /// @param _cryptoWithdrawAmount amount in smallest possible nomination of the crypto asset for which eth can withdrawed
   function depositEther(string _cryptoAddress, string _cryptoWithdrawAmount, uint _assetType) payable public {
-      // require(!deposit[_cryptoAddress].exsists);
+      require(!deposit[_cryptoAddress].exsists);
       Offer memory paymentStruct = Offer({
                                   exsists:true,
+                                  owner: msg.sender,
                                   ethDepositInWei: msg.value,
                                   cryptoWithdrawAmount: _cryptoWithdrawAmount,
                                   potentialPayoutAddress: None,
@@ -516,24 +500,24 @@ contract EthereumSwap is usingOraclize {
   /// @param _txHash The Bitcoin tx Hash prooving the doner payed money to it or the Lumens operation Code
   /// @param _cryptoAddress The Crypto Address to which a doner has payed money to
   function getTransaction(string _txHash, string _cryptoAddress) payable {
-    require(deposit[_cryptoAddress].exsists);
-
     string memory query;
 
-    // oraclizePrice = oraclize_getPrice("URL");
-    // if (oraclize_getPrice("URL") <= msg.value) {
+    oraclizePrice = oraclize_getPrice("URL");
+
+    require(deposit[_cryptoAddress].exsists);
+
+    // require(msg.value => oraclize_getPrice("URL"));
 
     // Bitcoin
     if (deposit[_cryptoAddress].assetType == 0) {
       query = strConcat("https://blockchain.info/q/txresult/", _txHash, "/", _cryptoAddress);
 
     }
-    // Lumens
+    // Lumens , txHash is actually operations code
     else {
-      //txHash is actually operations code
       query = strConcat("json(https://horizon.stellar.org/operations/", _txHash, ").[to,amount,type,asset_type]");
     }
-      oraclizeID = oraclize_query("URL", query, 500001);
+      oraclizeID = oraclize_query("URL", query, 500000);
 
       deposit[_cryptoAddress].potentialPayoutAddress = msg.sender;
 
@@ -552,7 +536,7 @@ contract EthereumSwap is usingOraclize {
   function __callback(bytes32 _oraclizeID, string _result) {
     require(msg.sender == oraclize_cbAddress());
 
-    bool validTransaction;
+    bool validTransaction = false;
 
     string memory cryptoAddress = oraclizeLookup[_oraclizeID];
 
@@ -564,7 +548,7 @@ contract EthereumSwap is usingOraclize {
     //Bitcoin
     if(deposit[cryptoAddress].assetType == 0){
 
-      validTransaction = stringToUint(_result) >= stringToUint(deposit[cryptoAddress].cryptoWithdrawAmount); //checking if amount higher
+      validTransaction = stringToUint(_result) >= stringToUint(deposit[cryptoAddress].cryptoWithdrawAmount); //checking if amount is higher
     }
     //Lumens
     else {
@@ -588,16 +572,36 @@ contract EthereumSwap is usingOraclize {
 
   }
 
+  /// @notice backup function for owners to reclaim their Ether
+  /// @param _cryptoAddress the bitcoin or stellar address that was used to identify the offer
+  function ownerWithdraw(string _cryptoAddress) public {
+
+    require(deposit[_cryptoAddress].exsists);
+
+    address sender = msg.sender;
+
+    if(deposit[_cryptoAddress].owner == sender){
+
+        sender.transfer(deposit[_cryptoAddress].ethDepositInWei);
+
+        deposit[_cryptoAddress].exsists = false;
+
+        emit LogInfo("Owner received amount back");
+
+
+    } else {
+
+      emit LogInfo("Please send this transaction from the right address");
+
+    }
+  }
+
 
   /* HELPER FUNCTIONS */
 
   function compareStrings (string a, string b) view returns (bool){
          return keccak256(a) == keccak256(b);
     }
-
-
-
-
   uint80 constant None = uint80(0);
 
   function stringToUint(string s) constant returns (uint result) {

@@ -10,7 +10,7 @@ class Home extends Component {
       <Main type="home">
         <div className="homewrap">
       <Header>
-        Welcome to EtherSwap, a decentralized exchange based on Oraclize
+        Welcome to EtherSwaps, a lightweight decentralized exchange 
       </Header>
       <h5 class="light">
         Exchange Ether, Bitcoin and Stellar with anyone in the most decentralized way for free!

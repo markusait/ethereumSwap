@@ -13,11 +13,10 @@ class MarketOffersGrid extends Component {
       return "normal hoverable"
   }
   render() {
-    // if(this.props.offers.length == 0) return <p>not here yet</p>
         const StatusText = ({offer}) => {
           const status = this.defineComponentstate(offer)
-          if(status === "payedOut hoverable" ) return <p className="markedContract">This contract is alredy payed out!</p>
-          if(status === "routeTx hoverable") return <p className="markedContract">This is your Contract!</p>
+          if(status === "payedOut hoverable" ) return <p className="markedContract">This Offer is alredy payed out!</p>
+          if(status === "routeTx hoverable") return <p className="markedContract">This is your Offer!</p>
           return <React.Fragment> </React.Fragment>
         }
 

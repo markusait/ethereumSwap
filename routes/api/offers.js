@@ -1,17 +1,19 @@
 const express = require('express');
 const router = express.Router();
-
-// Offer Model
 const Offer = require('../../models/Offer');
+
 
 // @route   GET api/offers
 // @desc    Get All Offers
 // @access  Public
 router.get('/', (req, res) => {
   Offer.find()
-    .sort({ date: -1 })
+    .sort({
+      date: -1
+    })
     .then(offers => res.json(offers));
 });
+
 
 // @route   POST api/offers
 // @desc    Create An Offer
@@ -20,22 +22,35 @@ router.post('/', (req, res) => {
   console.log(req.body);
   const newOffer = new Offer(req.body)
   newOffer.save()
-  .then(offer => res.json(offer))
-  .catch(e => {
-    res.json(e)
-    console.error(e)
-  });
+    .then(offer => res.json(offer))
+    .catch(e => {
+      res.json(e)
+      console.error(e)
+    });
 });
 // @route   PUT api/offers/:id
 // @desc    Update an Offer
 // @access  Public
-router.put('/:id', function (req, res) {
-  const query = {'_id': req.params.id}
-  const updateData = {cryptoAmount,payedOut, payedOutTransactionHash, recipientAddress} = req.body
+router.put('/:id', function(req, res) {
+  const query = {
+    '_id': req.params.id
+  }
+  const updateData = {
+    cryptoAmount,
+    payedOut,
+    payedOutTransactionHash,
+    recipientAddress
+  } = req.body
   console.log(updateData);
-  Offer.findOneAndUpdate(query, updateData, {upsert:true}, (err, doc) =>{
-    if (err) return res.status(404).json({ success: false });
-    return res.json({ success: true });
+  Offer.findOneAndUpdate(query, updateData, {
+    upsert: true
+  }, (err, doc) => {
+    if (err) return res.status(404).json({
+      success: false
+    });
+    return res.json({
+      success: true
+    });
   });
 })
 
@@ -47,9 +62,9 @@ router.put('/:id', function (req, res) {
 //     if(err) console.log(err);
 //     res.json({success: true})
 //   })
-  // // Offer.findById(req.params.id)
-  // //   .then(offer => offer.remove().then(() => res.json({ success: true })))
-  // //   .catch(err => res.status(404).json({ success: false }));
+// Offer.findById(req.params.id)
+//   .then(offer => offer.remove().then(() => res.json({ success: true })))
+//   .catch(err => res.status(404).json({ success: false }));
 // });
 
 

@@ -31,10 +31,7 @@ html, body {
   top: -1.1rem !important;
 }
 
-/* .radioBtn{
-  position: inherit !important;
-  opacity: 1 !important;
-} */
+
 .switch label .lever:after{
   background-color: orange !important;
 }
@@ -51,7 +48,9 @@ html, body {
 .btn-floating.btn-large {
     z-index: 0;
 }
-
+.side-nav li a{
+  color: black;
+}
 
 h5 {
   margin: 2rem !important;
@@ -83,9 +82,6 @@ h5 {
   width:300px;
 }
 
-/* p {
-  line-height: 2rem;
-} */
 .markedContract {
   margin-top: -19px;
   margin-bottom: -2px;
@@ -201,3 +197,38 @@ code {
 }
 
 @media only screen and (max-width: 600px)
+
+
+
+.button {
+  display: block;
+  position: relative;
+  margin: 50px auto 0;
+  padding: 10px 0;
+  width: 110px;
+  color: #fff;
+  text-align: center;
+  text-transform: uppercase;
+  background-color: #0099cc;
+  border: none;
+}
+.button.one:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100%;
+  background-color: rgba(255,255,255,0.4);
+	-webkit-transition: none;
+	   -moz-transition: none;
+	        transition: none;
+}
+.button.one:hover:after {
+  width: 120%;
+  background-color: rgba(255,255,255,0);
+
+	-webkit-transition: all 0.4s ease-in-out;
+	   -moz-transition: all 0.4s ease-in-out;
+	        transition: all 0.4s ease-in-out;
+}

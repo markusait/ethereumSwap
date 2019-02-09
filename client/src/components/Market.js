@@ -16,11 +16,9 @@ class Market extends Component {
       openModalIndex: null,
       payoutOfferId:null,
       cryptoAmount: 615525,
-      ethAmount: 1000000000000000000,
       web3: null,
       networkId: null,
       accounts: null,
-      // account = '0x0',
       deployedContract: null,
       deployedContractAddress: null,
       redeemTxHash: null,
@@ -82,12 +80,9 @@ class Market extends Component {
 
   initializePayoutProcess = async (index, cryptoTransactionHash, cryptoAddress) => {
     try {
-      console.log(index, cryptoTransactionHash, cryptoAddress);
       const payoutOfferId = this.state.offersData[index]['_id']
       const {accounts, deployedContract, oraclizeApiPrice} = this.state
-      console.log(deployedContract, this.state.web3);
-      const response = await deployedContract.methods.getTransaction(cryptoTransactionHash, cryptoAddress).send({from: accounts[0], value: oraclizeApiPrice, gas: 1500000})
-
+      const response = await deployedContract.methods.getTransaction(cryptoTransactionHash, cryptoAddress).send({from: accounts[0], value: oraclizeApiPrice, gas: 3500000})
       this.setState({redeemTxHash: response.transactionHash, loading: true, payoutOfferId})
       this.watchEvents()
     } catch (e) {
@@ -96,10 +91,9 @@ class Market extends Component {
   }
 
   watchEvents = async () => {
-    //run this from watch events
-    // this.modifyOfferFromDB()
+    console.log('Watching');
     const {deployedContract} = this.state
-    //Error Event
+    //error event
     deployedContract.events.LogInfo({fromBlock: 'latest', toBlock: 'pending'}).on('data', (event) => {
       this.notify(event.returnValues.log)
     }).on('error', (error) => {
@@ -129,7 +123,7 @@ class Market extends Component {
     !error ?
       toast.success(`🦄 Transaction Successfull ! ${payedOutTransactionHash}`, {position: toast.POSITION.TOP_CENTER})
     :
-      toast.error(`Transaction unsuccsessfull! ${error} please try again `)
+      toast.error(error)
     }
 
   openModal = (e, index) => {
@@ -141,9 +135,8 @@ class Market extends Component {
   }
 
   render() {
-    //waiting for offers data to be loaded
     if (!this.state.offersData)
-      return ( <Preloader size='big'/>)
+      return (<div> <Preloader size='big'> </Preloader><p>Please install Meta Mask and switch to the RPC Provider http://ethblockchain.digitpay.de</p> </div>)
 
     return (
       <Main type={this.state.offersData < 5 ? "home" : "market"}>

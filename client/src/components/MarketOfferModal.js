@@ -19,7 +19,6 @@ class MarketOfferModal extends Component {
     if (!this.props.show) {
       return null
     }
-    console.log(this.props.offer.currency);
     const Status = () => {
       if (this.props.offer.payedOut) {
         return (<div>
@@ -72,7 +71,7 @@ class MarketOfferModal extends Component {
           <div className="input-field col s12">
             <input id="cryptoTransactionHash" name="cryptoTransactionHash" value={this.state.cryptoTransactionHash} onChange={this.handleChange} maxLength="64" type="text" className="validate"></input>
             <label htmlFor="amountSatoshi">
-              Bitcoin Transaction Hash
+              Bitcoin Transaction Hash or Stellar Payment Operation ID
             </label>
           </div>
         </div>

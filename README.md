@@ -1,5 +1,6 @@
 #  Ethereum Swap - [http:/etherswaps.co](http://etherswaps.co)
 ---
+A smart contract decentralized Exchange build with React
 ![Market](/client/src/assets/EtherswapsMarketGrid.png)
 
 ## Quickstart
@@ -60,6 +61,7 @@ Make sure to the correct host in the truffle.js when doing so.
 - run tests with
 
           truffle test
+
 - build the client folder with
 
       cd client && npm run build
