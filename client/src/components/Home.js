@@ -1,19 +1,31 @@
 import React, {Component} from "react";
 import {Link} from 'react-router-dom'
-import {Main, Header, Card, Metamask, BitcoinImg, StellarImg, EtherImg} from '../styles/index'
+import {
+  Main,
+  Header,
+  Card,
+  Metamask,
+  BitcoinImg,
+  StellarImg,
+  EtherImg,
+  Preloader
+} from '../styles/index'
 
 
 class Home extends Component {
-
+    constructor(props) {
+      super(props)
+    }
   render() {
+    if (!this.props.web3) return <Preloader > loading < /Preloader>
     return (
       <Main type="home">
         <div className="homewrap">
       <Header>
-        Welcome to EtherSwaps, a lightweight decentralized exchange 
+        Welcome to EtherSwaps, a lightweight decentralized exchange
       </Header>
       <h5 class="light">
-        Exchange Ether, Bitcoin and Stellar with anyone in the most decentralized way for free!
+        {this.props.accounts[0]} Exchange Ether, Bitcoin and Stellar with anyone in the most decentralized way for free!
         <br/>
 
         <Link to="/choose">

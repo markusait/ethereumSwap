@@ -7,29 +7,27 @@ import 'react-toastify/dist/ReactToastify.css';
 import {ToastContainer, Main, Card, toast, Row} from '../styles/index.js'
 
 class CreateOffer extends Component {
-  state = {
-    stellar: false,
-    cryptoAddress: '3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9',
-    cryptoAmount: '615525',
-    ethAmount: 1000000000000000000,
-    web3: null,
-    networkId: null,
-    accounts: null,
-    deployedContract: null,
-    deployedContractAddress: null,
-    deployedNetwork: null,
-    offerTxHash: null,
-    createdOffer: false
-  };
-
-  componentDidMount = async () => {
-    try {
-    const web3Data = await getWeb3Data()
-    this.setState({...web3Data})
-    } catch (error) {
-      console.error(error);
+  constructor(props) {
+    super(props)
+    this.state = {
+      stellar: false,
+      cryptoAddress: '3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9',
+      cryptoAmount: '615525',
+      ethAmount: 1000000000000000000,
+      offerTxHash: null,
+      createdOffer: false
     }
-  };
+  }
+
+
+  // componentDidMount = async () => {
+  //   try {
+  //   const web3Data = await getWeb3Data()
+  //   this.setState({...web3Data})
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   handleChange = (event) => {
     const target = event.target
@@ -51,7 +49,7 @@ class CreateOffer extends Component {
   depositToContract = async (event) => {
     event.preventDefault();
     try {
-      const {accounts, cryptoAddress, cryptoAmount, ethAmount, deployedContract, stellar} = this.state;
+      const {accounts, cryptoAddress, cryptoAmount, ethAmount, deployedContract, stellar} = this.props;
 
       const response = await deployedContract.methods.depositEther(cryptoAddress, cryptoAmount.toString(), ~~stellar).send({from: accounts[0], value: ethAmount, gas: 1500000})
 
@@ -62,7 +60,7 @@ class CreateOffer extends Component {
       this.notify()
 
     } catch (e) {
-      this.state.deployedContract == null ? this.notify("Contract not deployed on this blockchain please change your rpc provider to http://ethblockchain.digitpay.de")
+      this.props.deployedContract == null ? this.notify("Contract not deployed on this blockchain please change your rpc provider to http://ethblockchain.digitpay.de")
       : this.notify(e)
       console.error(e)
     }
