@@ -2,8 +2,6 @@ import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
 import {SplitDiv, CenterDiv} from '../styles/index.js'
 
-// <Link to="/market">Go to MarketPlace</Link>
-// <Link to="/createOffer"> create a new Offer</Link>
 class Choose extends Component {
   render() {
     return (<div>

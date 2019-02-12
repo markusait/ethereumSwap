@@ -19,7 +19,6 @@ router.get('/', (req, res) => {
 // @desc    Create An Offer
 // @access  Public
 router.post('/', (req, res) => {
-  console.log(req.body);
   const newOffer = new Offer(req.body)
   newOffer.save()
     .then(offer => res.json(offer))

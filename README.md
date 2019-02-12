@@ -45,7 +45,7 @@ Make sure to the correct host in the truffle.js when doing so.
         #or if not installed globally
         node bridge -a 9 -H 127.0.0.1 -p 7545 --dev
 
-3. Compile and deploy the contract to the blockchain. More info  [here](https://github.com/oraclize/ethereum-bridge)  
+3. Compile and deploy the contract to the blockchain. More info  [here](https://github.com/oraclize/ethereum-bridge)
 
         truffle migrate --reset
 
@@ -69,7 +69,30 @@ Make sure to the correct host in the truffle.js when doing so.
 - using pm2 and nginx you can start both back and front end on Port 8080 or proccess.env port with
 
       pm2 start server.js
+
 nginx config:
+
+        upstream example.com {
+                server 127.0.0.1:8080;
+                keepalive 8;
+        }
+        server {
+                listen 80;
+                server_name example.com;
+
+        location / {
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For    $proxy_add_x_forwarded_for;
+                proxy_set_header Host $http_host;
+                proxy_set_header X-NginX-Proxy true;
+                proxy_pass http://example.com;
+                proxy_redirect off;
+                }
+        }
+
+
+
+
 
 ---
 ## Overview
@@ -96,4 +119,4 @@ __Further Development and Features__
   - [ ] More detailed Tests
   - [ ] Guaranteeing Atomicity and Real Time data to avoid that a contracts are payed out too early
 - [ ] BTC USD preis sync in input field
-- [ ] Frontend Value redeem option with mapping of address => msg.value
+- [ ] Implement redeem option for offer creator in front-end

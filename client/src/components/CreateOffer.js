@@ -24,22 +24,8 @@ class CreateOffer extends Component {
 
   componentDidMount = async () => {
     try {
-      const {
-        web3,
-        accounts,
-        networkId,
-        deployedNetwork,
-        deployedContract,
-        deployedContractAddress
-      } = await getWeb3Data()
-      this.setState({
-        web3,
-        accounts,
-        networkId,
-        deployedContract,
-        deployedNetwork,
-        deployedContractAddress
-      })
+    const web3Data = await getWeb3Data()
+    this.setState({...web3Data})
     } catch (error) {
       console.error(error);
     }
@@ -66,8 +52,6 @@ class CreateOffer extends Component {
     event.preventDefault();
     try {
       const {accounts, cryptoAddress, cryptoAmount, ethAmount, deployedContract, stellar} = this.state;
-
-      console.log(cryptoAddress,cryptoAmount,~~stellar);
 
       const response = await deployedContract.methods.depositEther(cryptoAddress, cryptoAmount.toString(), ~~stellar).send({from: accounts[0], value: ethAmount, gas: 1500000})
 
@@ -98,7 +82,7 @@ class CreateOffer extends Component {
         offerTxHash: data.offerTxHash,
         currency: getCurrency(~~data.stellar)
       }
-      const response = await axios.post('/api/offers', offer)
+      await axios.post('/api/offers', offer)
     } catch (e) {
       console.error(e)
     }

@@ -37,22 +37,54 @@ const getWeb3 = () =>
 
   });
 
+  const getNetwork = (netId) => {
+    switch (netId.toString()) {
+      case "1":
+        return 'Mainnet'
+      case "2":
+        return 'Morden'
+      case "3":
+        return 'Ropsten'
+      case "4":
+        return 'Rinkeby'
+      case "42":
+        return 'Kovan'
+      case "5777":
+        return 'Etherswaps Blockchain'
+      default:
+        return 'an unknown network.'
+    }
+  }
+
 
 const getWeb3Data = async () => {
   const web3 = await getWeb3()
   // Use web3 to get the user's accounts.
   const accounts = await web3.eth.getAccounts();
 
-  // Get the contract instance.
-  const networkId = await web3.eth.net.getId();
   // for ganach networkId should be  5777
+  const networkId = await web3.eth.net.getId();
+
+  const network = getNetwork(networkId)
+
+  const account = await window.ethereum.enable()
+
   const deployedNetwork = EthereumSwap.networks[networkId];
 
   const deployedContractAddress = deployedNetwork.address
 
   const deployedContract = new web3.eth.Contract(EthereumSwap.abi, deployedNetwork && deployedContractAddress)
 
-  return {web3, accounts, networkId, deployedNetwork, deployedContract, deployedContractAddress }
+  return {
+    web3,
+    accounts,
+    account,
+    networkId,
+    deployedNetwork,
+    deployedContract,
+    deployedContractAddress,
+    network,
+  }
 
 }
 

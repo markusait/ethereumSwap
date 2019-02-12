@@ -7,6 +7,7 @@ const con = mongoose.createConnection('mongodb://localhost/postdb');
 const port = process.env.PORT || 8080;
 const offers = require('./routes/api/offers');
 
+
 //Adding body parser middle ware
 app.use(bodyParser.urlencoded({
   extended: false

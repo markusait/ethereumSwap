@@ -5,20 +5,16 @@ import Home from './components/Home';
 import Choose from './components/Choose';
 import Market from './components/Market';
 import CreateOffer from './components/CreateOffer';
+import AppNavbar from './components/AppNavbar'
 import * as serviceWorker from './serviceWorker';
-import { HashRouter as Router, Route, Switch, Link } from 'react-router-dom';
-import {Navbar, NavItem, Icon} from 'react-materialize'
+import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 
 
 ReactDOM.render(
     <Router>
       <Switch>
         <div>
-          <Navbar brand='Etherswaps' right>
-            <NavItem><Link to="/choose"> Getting started </Link></NavItem>
-            <NavItem><Link to="/createOffer">Create an Offer </Link></NavItem>
-            <NavItem><NavItem><Link to="/market"><Icon>view_module</Icon></Link></NavItem></NavItem>
-          </Navbar>
+        <AppNavbar />
         <Route exact path="/" component={Home} />
         <Route exact path="/choose" component={Choose} />
         <Route exact path="/createOffer" component={CreateOffer} />

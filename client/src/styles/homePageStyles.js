@@ -9,13 +9,12 @@ const Main = styled.div `
     switch(props.type){
       case "home":
         return "linear-gradient(to bottom, #f09819, #edde5d);"
-        break
       case "create":
         return "linear-gradient(to bottom, #ff8a00, #da1b60);"
-        break
       case "market":
         return  "linear-gradient(to bottom, #ff8a00, #da1b60);"
-        break
+      default:
+        return "linear-gradient(to bottom, #ff8a00, #da1b60);"
       }
     }
   };

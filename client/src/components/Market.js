@@ -1,10 +1,9 @@
 import React, {Component} from "react"
 import MarketOfferModal from './MarketOfferModal'
 import MarketOffersGrid from './MarketOffersGrid'
-import EthereumSwap from "../contractInterface/EthereumSwap.json"
 import getWeb3Data from "../utils/getWeb3"
 import axios from 'axios'
-import {Grid, Card, Main, ToastContainer, toast, Preloader } from '../styles/index'
+import {Grid, Main, ToastContainer, toast, Preloader } from '../styles/index'
 
 class Market extends Component {
   constructor(props) {
@@ -27,30 +26,14 @@ class Market extends Component {
     }
   }
 
-  componentWillMount = async () => {
+  componentDidMount = async () => {
     try {
       const routeTx = await this.checkRoutedFrom()
-      //fetch db for Offers get offers data from constructor
       const offersData = await this.getOffersFromDB()
-
-      // Get network provider and web3 instance.
-      const {
-        web3,
-        accounts,
-        networkId,
-        deployedNetwork,
-        deployedContract,
-        deployedContractAddress
-      } = await getWeb3Data()
-
+      const web3Data = await getWeb3Data()
       this.setState({
+        ...web3Data,
         offersData,
-        web3,
-        accounts,
-        deployedContract,
-        networkId,
-        deployedNetwork,
-        deployedContractAddress,
         routeTx
       })
     } catch (error) {
@@ -91,7 +74,6 @@ class Market extends Component {
   }
 
   watchEvents = async () => {
-    console.log('Watching');
     const {deployedContract} = this.state
     //error event
     deployedContract.events.LogInfo({fromBlock: 'latest', toBlock: 'pending'}).on('data', (event) => {

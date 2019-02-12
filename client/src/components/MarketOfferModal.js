@@ -1,6 +1,5 @@
 import React, {Component} from "react"
 import { Preloader, Button } from '../styles/index'
-import getCurrency from "../utils/getCurrencyByCode"
 
 class MarketOfferModal extends Component {
   constructor(props) {
