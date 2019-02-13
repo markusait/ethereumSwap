@@ -60,31 +60,27 @@ const getWeb3 = () =>
 const getWeb3Data = async () => {
   const web3 = await getWeb3()
   // Use web3 to get the user's accounts.
-  const accounts = await web3.eth.getAccounts();
-
+  // const accounts = await window.ethereum.enable()
+  const account = (await web3.eth.getAccounts())[0];
   // for ganach networkId should be  5777
-  const networkId = await web3.eth.net.getId();
+  const contractNetworkId = await web3.eth.net.getId();
 
-  const network = getNetwork(networkId)
+  const contractNetwork = getNetwork(contractNetworkId)
 
-  const account = await window.ethereum.enable()
+  const contractNetworkObject = EthereumSwap.networks[contractNetworkId];
 
-  const deployedNetwork = EthereumSwap.networks[networkId];
+  const contractAddress = contractNetworkObject.address
 
-  const deployedContractAddress = deployedNetwork.address
-
-  const deployedContract = new web3.eth.Contract(EthereumSwap.abi, deployedNetwork && deployedContractAddress)
+  const contract = new web3.eth.Contract(EthereumSwap.abi, contractNetworkObject && contractAddress)
 
   return {
-    web3,
-    accounts,
-    account,
-    networkId,
-    deployedNetwork,
-    deployedContract,
-    deployedContractAddress,
-    network,
-  }
+  web3,
+  account,
+  contract,
+  contractNetworkId,
+  contractAddress,
+  contractNetwork,
+}
 
 }
 

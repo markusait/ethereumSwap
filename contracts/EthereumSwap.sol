@@ -421,25 +421,25 @@ library SafeMath {
 contract EthereumSwap is usingOraclize {
 
   // Implementing Safe Math Library
-  using SafeMath for uint;
+    using SafeMath for uint;
 
-  address public bridgeConnector;
+    address public bridgeConnector;
 
-  uint public oraclizePrice;
+    uint public oraclizePrice;
 
-  bytes32 public oraclizeID;
+    bytes32 public oraclizeID;
 
-  string public oraclizeResult;
+    string public oraclizeResult;
 
   // Offer Struct for creating an Bitcoin Offer for the smart contract
-  struct Offer {
-      bool exsists;
-      address owner;
-      uint ethDepositInWei;
-      string cryptoWithdrawAmount;
-      address potentialPayoutAddress;
-      uint assetType;
-    }
+    struct Offer {
+        bool exsists;
+        address owner;
+        uint ethDepositInWei;
+        string cryptoWithdrawAmount;
+        address potentialPayoutAddress;
+        uint assetType;
+        }
 
   // mapping for checking payout with the string cryptoAddress as key
   // note: (solidity uses a sha3 hashmap)
@@ -479,7 +479,7 @@ contract EthereumSwap is usingOraclize {
   /// @param _cryptoAddress The Bitcoin Address to which a doner will pay money to
   /// @param _cryptoWithdrawAmount amount in smallest possible nomination of the crypto asset for which eth can withdrawed
   function depositEther(string _cryptoAddress, string _cryptoWithdrawAmount, uint _assetType) payable public {
-      require(!deposit[_cryptoAddress].exsists);
+      //require(!deposit[_cryptoAddress].exsists);
       Offer memory paymentStruct = Offer({
                                   exsists:true,
                                   owner: msg.sender,

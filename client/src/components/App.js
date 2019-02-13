@@ -15,12 +15,11 @@ import '../styles/main.css';
 class App extends Component {
     state = {
         web3: null,
-        network: null,
-        networkId: null,
-        accounts: null,
-        deployedContract: null,
-        deployedContractAddress: null,
-        deployedNetwork: null,
+        account: null,
+        contract: null,
+        contractNetworkId: null,
+        contractAddress: null,
+        contractNetwork: null,
     };
     componentDidMount = async () => {
         try {
@@ -35,13 +34,12 @@ class App extends Component {
     };
 
     getNetwork = () => {
-        return !this.state.web3 ? "none" : this.state.network
+        return !this.state.web3 ? "none" : this.state.contractNetwork
     }
     watchForAccountChanges = () => {
-        window.ethereum.on('accountsChanged', (accounts) => {
-            console.log(this.state.accounts)
+        window.ethereum.on('accountsChanged', (account) => {
             this.setState({
-                accounts
+                account
             })
         })
     }

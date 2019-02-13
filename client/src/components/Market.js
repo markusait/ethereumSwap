@@ -16,7 +16,6 @@ class Market extends Component {
       payoutOfferId:null,
       cryptoAmount: 615525,
       web3: null,
-      networkId: null,
       accounts: null,
       deployedContract: null,
       deployedContractAddress: null,

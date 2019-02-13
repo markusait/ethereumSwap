@@ -20,6 +20,8 @@ router.get('/', (req, res) => {
 // @access  Public
 router.post('/', (req, res) => {
   const newOffer = new Offer(req.body)
+  console.log("getting offer")
+  console.log(req.body)
   newOffer.save()
     .then(offer => res.json(offer))
     .catch(e => {
@@ -56,15 +58,12 @@ router.put('/:id', function(req, res) {
 // @route   DELETE api/offers/:id
 // @desc    Delete A Offer
 // @access  Public
-// router.delete('/', (req, res) => {
-//   Offer.remove({}, (err) => {
-//     if(err) console.log(err);
-//     res.json({success: true})
-//   })
-// Offer.findById(req.params.id)
-//   .then(offer => offer.remove().then(() => res.json({ success: true })))
-//   .catch(err => res.status(404).json({ success: false }));
-// });
+router.delete('/', (req, res) => {
+  Offer.remove({}, (err) => {
+    if(err) console.log(err);
+    res.json({success: true})
+  })
+});
 
 
 module.exports = router;

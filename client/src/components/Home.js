@@ -13,11 +13,8 @@ import {
 
 
 class Home extends Component {
-    constructor(props) {
-      super(props)
-    }
   render() {
-    if (!this.props.web3) return <Preloader > loading < /Preloader>
+    // if (!this.props.web3) return <Preloader > loading < /Preloader>
     return (
       <Main type="home">
         <div className="homewrap">
@@ -25,7 +22,7 @@ class Home extends Component {
         Welcome to EtherSwaps, a lightweight decentralized exchange
       </Header>
       <h5 class="light">
-        {this.props.accounts[0]} Exchange Ether, Bitcoin and Stellar with anyone in the most decentralized way for free!
+           Exchange Ether, Bitcoin and Stellar with anyone in the most decentralized way for free!
         <br/>
 
         <Link to="/choose">

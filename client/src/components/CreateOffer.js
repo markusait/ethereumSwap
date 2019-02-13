@@ -1,8 +1,7 @@
 import React, {Component} from "react";
 import {Link} from 'react-router-dom'
-import getWeb3Data from "../utils/getWeb3";
 import axios from 'axios';
-import getCurrency from "../utils/getCurrencyByCode"
+import getDataForDB from "../utils/getDataForDB"
 import 'react-toastify/dist/ReactToastify.css';
 import {ToastContainer, Main, Card, toast, Row} from '../styles/index.js'
 
@@ -11,31 +10,23 @@ class CreateOffer extends Component {
     super(props)
     this.state = {
       stellar: false,
-      cryptoAddress: '3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9',
-      cryptoAmount: '615525',
-      ethAmount: 1000000000000000000,
+      offerCryptoAddress: '3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9',
+      offerCryptoAmount: '615525',
+      offerEthAmount: 1000000000000000000,
       offerTxHash: null,
       createdOffer: false
     }
   }
 
-
-  // componentDidMount = async () => {
-  //   try {
-  //   const web3Data = await getWeb3Data()
-  //   this.setState({...web3Data})
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
   handleChange = (event) => {
     const target = event.target
-    const value = target.type === 'checkbox'
-      ? target.checked
-      : target.value
+    const value = target.type === 'checkbox' ?
+      target.checked :
+      target.value
     const name = target.name
-    this.setState({[name]: value})
+    this.setState({
+      [name]: value
+    })
   }
 
   notify = (error) => {
@@ -47,40 +38,49 @@ class CreateOffer extends Component {
   }
 
   depositToContract = async (event) => {
-    event.preventDefault();
-    try {
-      const {accounts, cryptoAddress, cryptoAmount, ethAmount, deployedContract, stellar} = this.props;
+        event.preventDefault();
+        try {
 
-      const response = await deployedContract.methods.depositEther(cryptoAddress, cryptoAmount.toString(), ~~stellar).send({from: accounts[0], value: ethAmount, gas: 1500000})
+          const { account, contract } = this.props;
+          const {
+            offerCryptoAddress,
+            offerCryptoAmount,
+            offerEthAmount,
+            stellar
+          } = this.state
 
-      this.setState({offerTxHash: response.transactionHash, createdOffer: true});
+          const response = await contract.methods
+            .depositEther(offerCryptoAddress, offerCryptoAmount.toString(), ~~stellar)
+            .send({
+              from: account,
+              value: offerEthAmount,
+              gas: 1500000
+            })
+
+          this.setState({
+            offerTxHash: response.transactionHash,
+            createdOffer: true
+          });
 
       this.writeDetailsToDB()
 
       this.notify()
 
     } catch (e) {
-      this.props.deployedContract == null ? this.notify("Contract not deployed on this blockchain please change your rpc provider to http://ethblockchain.digitpay.de")
+      this.props.contract == null ? this.notify("Contract not deployed on this blockchain please change your rpc provider to http://ethblockchain.digitpay.de")
       : this.notify(e)
       console.error(e)
     }
 
   }
 
-  writeDetailsToDB = async (event) => {
+
+
+  writeDetailsToDB = async () => {
     try {
-      const data = this.state;
-      const offer = {
-        contractAddress: data.deployedContractAddress,
-        contractNetworkId: data.networkId,
-        ownerAddress: data.accounts[0],
-        amountEth: data.ethAmount,
-        cryptoAddress: data.cryptoAddress,
-        cryptoAmount: data.cryptoAmount,
-        offerTxHash: data.offerTxHash,
-        currency: getCurrency(~~data.stellar)
-      }
-      await axios.post('/api/offers', offer)
+      const offerData = getDataForDB({...this.state, ...this.props})
+      console.log(offerData)
+      await axios.post('/api/offers', offerData)
     } catch (e) {
       console.error(e)
     }
@@ -99,11 +99,11 @@ class CreateOffer extends Component {
         return (<React.Fragment></React.Fragment>)
       }
     }
-    const CryptoAddressLabel = () => {
-      return <label className="toplabel" htmlFor="cryptoAddress"> {this.state.stellar ? "Stellar Address" : "Bitcoin Address"}  </label>
+    const offerCryptoAddressLabel = () => {
+      return <label className="toplabel" htmlFor="offerCryptoAddress"> {this.state.stellar ? "Stellar Address" : "Bitcoin Address"}  </label>
     }
-    const CryptoAmountLabel = () => {
-      return <label className="toplabel" htmlFor="cryptoAmount"> {this.state.stellar ? "Exact Amount in Stroops" : "Amount BTC in Satoshi"}  </label>
+    const offerCryptoAmountLabel = () => {
+      return <label className="toplabel" htmlFor="offerCryptoAmount"> {this.state.stellar ? "Exact Amount in Stroops" : "Amount BTC in Satoshi"}  </label>
     }
     const EthAmountLabel = () => {
       return <label className="toplabel" htmlFor="ethAmount"> Amount Ether (in Wei) the Offer is worth for you </label>
@@ -134,14 +134,14 @@ class CreateOffer extends Component {
                 </Row>
                 <Row>
                   <div className="chips-addresses input-field col s12">
-                    <input name="cryptoAddress" value={this.state.cryptoAddress} onChange={this.handleChange} id="cryptoAddress" type="text" className="validate"/>
-                      <CryptoAddressLabel/>
+                    <input name="offerCryptoAddress" value={this.state.offerCryptoAddress} onChange={this.handleChange} id="offerCryptoAddress" type="text" className="validate"/>
+                      <offerCryptoAddressLabel/>
                   </div>
                 </Row>
                 <Row>
                   <div className="input-field col s6">
-                    <input name="cryptoAmount" value={this.state.cryptoAmount} onChange={this.handleChange} type="text" className="validate"></input>
-                      <CryptoAmountLabel/>
+                    <input name="offerCryptoAmount" value={this.state.offerCryptoAmount} onChange={this.handleChange} type="text" className="validate"></input>
+                      <offerCryptoAmountLabel/>
                     </div>
                   <div className="input-field col s6">
                     <input id="ethAmount" name="ethAmount" value={this.state.ethAmount} onChange={this.handleChange} type="number" min="1" max="100000000000000000000" className="validate"></input>
