@@ -12,7 +12,7 @@ class CreateOffer extends Component {
       stellar: false,
       offerCryptoAddress: '3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9',
       offerCryptoAmount: '615525',
-      offerEthAmount: 10000000000000000,
+      offerEthAmount: 1000000000000000000,
       offerTxHash: null,
     }
   }
@@ -56,11 +56,11 @@ class CreateOffer extends Component {
               gas: 1500000
             })
 
-      this.props.createdAnOffer(transactionHash)
+          this.props.createdAnOffer(transactionHash)
 
-      this.writeDetailsToDB()
+          this.writeDetailsToDB()
 
-      this.notify()
+          this.notify()
 
     } catch (e) {
       this.props.contract == null ? this.notify("Contract not deployed on this blockchain please change your rpc provider to http://ethblockchain.digitpay.de")

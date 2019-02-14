@@ -15,7 +15,7 @@ class Market extends Component {
       payoutOfferId:null,
       cryptoAmount: 615525,
       redeemTxHash: null,
-      oraclizeApiPrice: 500000000000000,
+      oraclizeApiPrice: 500000000000000000,
       gasLimit: 3500000,
     }
   }
