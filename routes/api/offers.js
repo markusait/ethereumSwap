@@ -57,12 +57,12 @@ router.put('/:id', function(req, res) {
 // @route   DELETE api/offers/:id
 // @desc    Delete A Offer
 // @access  Public
-router.delete('/', (req, res) => {
-  Offer.remove({}, (err) => {
-    if(err) console.log(err);
-    res.json({success: true})
-  })
-});
+// router.delete('/', (req, res) => {
+//   Offer.remove({}, (err) => {
+//     if(err) console.log(err);
+//     res.json({success: true})
+//   })
+// });
 
 
 module.exports = router;

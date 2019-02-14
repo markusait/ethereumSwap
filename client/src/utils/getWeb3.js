@@ -51,6 +51,8 @@ const getWeb3 = () =>
       case "42":
         return 'Kovan'
       case "5777":
+        return 'Local Blockchain'
+      case "1548680914004":
         return 'Etherswaps Blockchain'
       default:
         return 'an unknown network.'
@@ -71,7 +73,7 @@ const getWeb3Data = async () => {
   const contractNetworkId = await web3.eth.net.getId();
 
   //checking which contract should be used and getting write json interface
-  // const ethereumSwap = EthereumSwap
+  const EthereumSwap = getContractInterface(contractNetworkId)
 
   const contractNetwork = getNetwork(contractNetworkId)
 

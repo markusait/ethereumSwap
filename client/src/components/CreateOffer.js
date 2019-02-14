@@ -94,10 +94,10 @@ class CreateOffer extends Component {
         return (<React.Fragment></React.Fragment>)
       }
     }
-    const offerCryptoAddressLabel = () => {
+    const OfferCryptoAddressLabel = () => {
       return <label className="toplabel" htmlFor="offerCryptoAddress"> {this.state.stellar ? "Stellar Address" : "Bitcoin Address"}  </label>
     }
-    const offerCryptoAmountLabel = () => {
+    const OfferCryptoAmountLabel = () => {
       return <label className="toplabel" htmlFor="offerCryptoAmount"> {this.state.stellar ? "Exact Amount in Stroops" : "Amount BTC in Satoshi"}  </label>
     }
     const EthAmountLabel = () => {
@@ -130,13 +130,13 @@ class CreateOffer extends Component {
                 <Row>
                   <div className="chips-addresses input-field col s12">
                     <input name="offerCryptoAddress" value={this.state.offerCryptoAddress} onChange={this.handleChange} id="offerCryptoAddress" type="text" className="validate"/>
-                      <offerCryptoAddressLabel/>
+                      < OfferCryptoAddressLabel / >
                   </div>
                 </Row>
                 <Row>
                   <div className="input-field col s6">
                     <input name="offerCryptoAmount" value={this.state.offerCryptoAmount} onChange={this.handleChange} type="text" className="validate"></input>
-                      <offerCryptoAmountLabel/>
+                      < OfferCryptoAmountLabel / >
                     </div>
                   <div className="input-field col s6">
                     <input id="ethAmount" name="ethAmount" value={this.state.offerEthAmount} onChange={this.handleChange} type="number" min="1" className="validate"></input>
