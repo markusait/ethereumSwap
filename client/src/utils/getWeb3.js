@@ -1,5 +1,6 @@
 import Web3 from "web3";
 import EthereumSwap from "../contractInterface/EthereumSwap.json";
+import EthereumSwapRopsten from "../contractInterface/EthereumSwapRopsten.json";
 
 // IMPORTANT:
 // omitted window event listener here see here for more:
@@ -56,6 +57,10 @@ const getWeb3 = () =>
     }
   }
 
+const getContractInterface = (contractNetworkId) => {
+  return contractNetworkId === 3 ? EthereumSwapRopsten : EthereumSwap
+}
+
 
 const getWeb3Data = async () => {
   const web3 = await getWeb3()
@@ -65,13 +70,16 @@ const getWeb3Data = async () => {
   // for ganach networkId should be  5777
   const contractNetworkId = await web3.eth.net.getId();
 
+  //checking which contract should be used and getting write json interface
+  const ethereumSwap = getContractInterface(contractNetworkId)
+
   const contractNetwork = getNetwork(contractNetworkId)
 
-  const contractNetworkObject = EthereumSwap.networks[contractNetworkId];
+  const contractNetworkObject = ethereumSwap.networks[contractNetworkId];
 
   const contractAddress = contractNetworkObject.address
 
-  const contract = new web3.eth.Contract(EthereumSwap.abi, contractNetworkObject && contractAddress)
+  const contract = new web3.eth.Contract(ethereumSwap.abi, contractNetworkObject && contractAddress)
 
   return {
   web3,
