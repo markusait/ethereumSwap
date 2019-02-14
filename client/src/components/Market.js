@@ -1,7 +1,6 @@
 import React, {Component} from "react"
 import MarketOfferModal from './MarketOfferModal'
 import MarketOffersGrid from './MarketOffersGrid'
-import getWeb3Data from "../utils/getWeb3"
 import axios from 'axios'
 import {Grid, Main, ToastContainer, toast, Preloader } from '../styles/index'
 
@@ -15,36 +14,28 @@ class Market extends Component {
       openModalIndex: null,
       payoutOfferId:null,
       cryptoAmount: 615525,
-      web3: null,
-      accounts: null,
-      deployedContract: null,
-      deployedContractAddress: null,
       redeemTxHash: null,
-      oraclizeApiPrice: 500000000000000000,
-      routeTx: null
+      oraclizeApiPrice: 500000000000000,
+      gasLimit: 3500000,
     }
   }
 
   componentDidMount = async () => {
     try {
-      const routeTx = await this.checkRoutedFrom()
       const offersData = await this.getOffersFromDB()
-      const web3Data = await getWeb3Data()
       this.setState({
-        ...web3Data,
-        offersData,
-        routeTx
+        offersData
       })
     } catch (error) {
       console.error(error)
     }
   }
 
-  getOffersFromDB = async (flag) => {
+  getOffersFromDB = async (reload) => {
     try {
-      const response = await axios.get('/api/offers', {crossdomain: true})
-      if(flag) this.setState({offersData:response.data, loading: false})
-      return response.data
+      const {data} = await axios.get('/api/offers', {crossdomain: true})
+      if(reload) this.setState({offersData: data, loading: false})
+      return data
     } catch (e) {
       console.error(e)
     }
@@ -52,7 +43,11 @@ class Market extends Component {
 
   modifyOfferFromDB = async (payedOutTransactionHash, recipientAddress) => {
     try {
-      const updateData = {"payedOut": true, "payedOutTransactionHash": payedOutTransactionHash, "recipientAddress": recipientAddress}
+      const updateData = {
+        payedOutTransactionHash,
+        recipientAddress,
+        'payedOut': true,
+      }
       const response = await axios.put(`/api/offers/${this.state.payoutOfferId}`, updateData)
       return response
     } catch (e) {
@@ -63,9 +58,15 @@ class Market extends Component {
   initializePayoutProcess = async (index, cryptoTransactionHash, cryptoAddress) => {
     try {
       const payoutOfferId = this.state.offersData[index]['_id']
-      const {accounts, deployedContract, oraclizeApiPrice} = this.state
-      const response = await deployedContract.methods.getTransaction(cryptoTransactionHash, cryptoAddress).send({from: accounts[0], value: oraclizeApiPrice, gas: 3500000})
-      this.setState({redeemTxHash: response.transactionHash, loading: true, payoutOfferId})
+      const { account, contract } = this.props
+      const { gasLimit, oraclizeApiPrice } = this.state
+      const response = await contract.methods.getTransaction(cryptoTransactionHash, cryptoAddress)
+                                  .send({from: account, value: oraclizeApiPrice, gas: gasLimit})
+      this.setState({
+        payoutOfferId,
+        redeemTxHash: response.transactionHash,
+        loading: true
+      })
       this.watchEvents()
     } catch (e) {
       console.error(e)
@@ -73,16 +74,16 @@ class Market extends Component {
   }
 
   watchEvents = async () => {
-    const {deployedContract} = this.state
+    const {contract} = this.props
     //error event
-    deployedContract.events.LogInfo({fromBlock: 'latest', toBlock: 'pending'}).on('data', (event) => {
+    contract.events.LogInfo({fromBlock: 'latest', toBlock: 'pending'}).on('data', (event) => {
       this.notify(event.returnValues.log)
     }).on('error', (error) => {
       console.error(error)
     })
 
     //sucessfull event
-    deployedContract.events.PayedOutEvent({fromBlock: 'latest', toBlock: 'pending'}).on('data', (event) => {
+    contract.events.PayedOutEvent({fromBlock: 'latest', toBlock: 'pending'}).on('data', (event) => {
 
       const recipientAddress = event.returnValues._recipientAddress
       const payedOutTransactionHash = event.transactionHash
@@ -90,14 +91,10 @@ class Market extends Component {
       this.modifyOfferFromDB(payedOutTransactionHash, recipientAddress)
       this.getOffersFromDB(true)
       this.notify(false, payedOutTransactionHash)
+
     }).on('error', (error) => {
       console.error(error)
     })
-  }
-
-  checkRoutedFrom = () => {
-    let path = this.props.location.pathname
-    return path.length > 7 ? path.substring(8, path.length) : null
   }
 
   notify = (error, payedOutTransactionHash) => {
@@ -126,7 +123,7 @@ class Market extends Component {
           <MarketOffersGrid
             offers={this.state.offersData}
             openModal={this.openModal}
-            routeTx={this.state.routeTx}
+            offerTxHash={this.props.offerTxHash}
             />
           <MarketOfferModal
             offer={this.state.offersData[this.state.openModalIndex]}

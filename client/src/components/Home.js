@@ -8,7 +8,6 @@ import {
   BitcoinImg,
   StellarImg,
   EtherImg,
-  Preloader
 } from '../styles/index'
 
 

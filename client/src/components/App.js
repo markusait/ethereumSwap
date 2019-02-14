@@ -20,6 +20,7 @@ class App extends Component {
         contractNetworkId: null,
         contractAddress: null,
         contractNetwork: null,
+        offerTxHash: null
     };
     componentDidMount = async () => {
         try {
@@ -43,6 +44,13 @@ class App extends Component {
             })
         })
     }
+
+    createdAnOffer = (transactionHash) => {
+        this.setState({
+            offerTxHash: transactionHash
+        })
+    }
+
     render() {
         return (
         <Router>
@@ -51,8 +59,15 @@ class App extends Component {
                     <AppNavbar network={this.getNetwork}/>
                     <Route exact path="/" render={()=><Home {...this.state}/>}/>
                     <Route exact path="/choose" component={Choose} />
-                    <Route exact path="/createOffer" render={()=><CreateOffer {...this.state}/>} />
-                    <Route path="/market" component={Market} />
+                    <Route
+                      exact path = "/createOffer"
+                      render = {() =>
+                        < CreateOffer {...this.state}
+                            createdAnOffer = {this.createdAnOffer}
+                            />
+                    }
+                    />
+                    <Route path="/market"  render={()=> <Market {...this.state} />} />
                 </div>
             </Switch>
         </Router>

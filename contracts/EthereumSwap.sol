@@ -479,7 +479,7 @@ contract EthereumSwap is usingOraclize {
   /// @param _cryptoAddress The Bitcoin Address to which a doner will pay money to
   /// @param _cryptoWithdrawAmount amount in smallest possible nomination of the crypto asset for which eth can withdrawed
   function depositEther(string _cryptoAddress, string _cryptoWithdrawAmount, uint _assetType) payable public {
-      //require(!deposit[_cryptoAddress].exsists);
+      //require(!deposit[_cryptoAddress].exsists, " Offer for this address already exsists");
       Offer memory paymentStruct = Offer({
                                   exsists:true,
                                   owner: msg.sender,
@@ -504,7 +504,7 @@ contract EthereumSwap is usingOraclize {
 
     oraclizePrice = oraclize_getPrice("URL");
 
-    require(deposit[_cryptoAddress].exsists);
+    require(deposit[_cryptoAddress].exsists, "No Offer for this address available");
 
     // require(msg.value => oraclize_getPrice("URL"));
 
@@ -534,7 +534,7 @@ contract EthereumSwap is usingOraclize {
   /// @param _oraclizeID The byte represation of an Oraclize ID returned when query sent
   /// @param _result Result of the API call, contating the value of transaction to address
   function __callback(bytes32 _oraclizeID, string _result) {
-    require(msg.sender == oraclize_cbAddress());
+    require(msg.sender == oraclize_cbAddress(), "Only Oraclize can call this function");
 
     bool validTransaction = false;
 
@@ -576,7 +576,7 @@ contract EthereumSwap is usingOraclize {
   /// @param _cryptoAddress the bitcoin or stellar address that was used to identify the offer
   function ownerWithdraw(string _cryptoAddress) public {
 
-    require(deposit[_cryptoAddress].exsists);
+    require(deposit[_cryptoAddress].exsists, "No Offer for this address available");
 
     address sender = msg.sender;
 

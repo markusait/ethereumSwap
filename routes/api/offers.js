@@ -36,14 +36,13 @@ router.put('/:id', function(req, res) {
   const query = {
     '_id': req.params.id
   }
-  const updateData = {
-    cryptoAmount,
-    payedOut,
-    payedOutTransactionHash,
-    recipientAddress
-  } = req.body
-  console.log(updateData);
-  Offer.findOneAndUpdate(query, updateData, {
+  // const updateData = {
+  //   payedOut,
+  //   payedOutTransactionHash,
+  //   recipientAddress
+  // } = req.body
+  console.log(req.body);
+  Offer.findOneAndUpdate(query, req.body, {
     upsert: true
   }, (err, doc) => {
     if (err) return res.status(404).json({

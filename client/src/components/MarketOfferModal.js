@@ -27,7 +27,7 @@ class MarketOfferModal extends Component {
       }
       if (!this.props.loading) {
         return (<button onClick={() => {
-            this.props.initializePayoutProcess(this.props.index, this.state.cryptoTransactionHash, this.props.offer.cryptoAddress)
+            this.props.initializePayoutProcess(this.props.index, this.state.cryptoTransactionHash, this.props.offer.offerCryptoAddress)
           }} type="submit" value="initializePayout" id="initializePayout" className="btn waves-effect waves-light orange">initialize Payout
         </button>)
       } else {
@@ -41,14 +41,14 @@ class MarketOfferModal extends Component {
     return (<div className="modal advantages hoverable">
       <div className="modal-content">
         <p>
-          Currency: {this.props.offer.currency}
+          Currency: {this.props.offer.offerCurrency}
         </p>
         <p>
-          CryptoAddress: {this.props.offer.cryptoAddress}</p>
+          CryptoAddress: {this.props.offer.offerCryptoAddress}</p>
         <p>
-          Amount : {this.props.offer.cryptoAmount}</p>
+          Amount : {this.props.offer.offerCryptoAmount}</p>
         <p>
-          Amount to Pay: {this.props.offer.amountEth}</p>
+          Amount to Pay: {this.props.offer.offerEthAmount}</p>
         <p>
           Ethereum Address of contract: {this.props.offer.contractAddress}</p>
         <p>
@@ -64,7 +64,6 @@ class MarketOfferModal extends Component {
           RecipientAddress:  {this.props.offer.recipientAddress}
         </p>
         <p>
-
         </p>
         <div className="row">
           <div className="input-field col s12">
@@ -77,7 +76,8 @@ class MarketOfferModal extends Component {
         <Status/>
       </div>
       <div className="modal-footer">
-        <Button onClick={this.props.onHide} type="submit" value="Close" id="initContract" className="btn waves-effect waves-light orange">Close
+        <Button onClick={this.props.onHide} type="submit" value="Close" id="initContract" className="btn waves-effect waves-light orange">
+          Close
         </Button>
       </div>
     </div>)

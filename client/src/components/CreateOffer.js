@@ -14,7 +14,6 @@ class CreateOffer extends Component {
       offerCryptoAmount: '615525',
       offerEthAmount: 1000000000000000000,
       offerTxHash: null,
-      createdOffer: false
     }
   }
 
@@ -49,7 +48,7 @@ class CreateOffer extends Component {
             stellar
           } = this.state
 
-          const response = await contract.methods
+          const {transactionHash} = await contract.methods
             .depositEther(offerCryptoAddress, offerCryptoAmount.toString(), ~~stellar)
             .send({
               from: account,
@@ -57,10 +56,7 @@ class CreateOffer extends Component {
               gas: 1500000
             })
 
-          this.setState({
-            offerTxHash: response.transactionHash,
-            createdOffer: true
-          });
+      this.props.createdAnOffer(transactionHash)
 
       this.writeDetailsToDB()
 
@@ -79,7 +75,6 @@ class CreateOffer extends Component {
   writeDetailsToDB = async () => {
     try {
       const offerData = getDataForDB({...this.state, ...this.props})
-      console.log(offerData)
       await axios.post('/api/offers', offerData)
     } catch (e) {
       console.error(e)
@@ -88,11 +83,11 @@ class CreateOffer extends Component {
 
   render() {
     const MarketLink = () => {
-      if (this.state.createdOffer) {
+      if (this.props.offerTxHash) {
         return (<React.Fragment>
-          <Link to={"/market/" + this.state.offerTxHash}>Go to MarketPlace</Link>
+          <Link to={"/market/" + this.props.offerTxHash}>Go to MarketPlace</Link>
           <p>
-            {'this is your Transaction hash' + this.state.offerTxHash}
+            {'this is your Transaction hash' + this.props.offerTxHash}
           </p>
         </React.Fragment>)
       } else {
@@ -144,7 +139,7 @@ class CreateOffer extends Component {
                       <offerCryptoAmountLabel/>
                     </div>
                   <div className="input-field col s6">
-                    <input id="ethAmount" name="ethAmount" value={this.state.ethAmount} onChange={this.handleChange} type="number" min="1" max="100000000000000000000" className="validate"></input>
+                    <input id="ethAmount" name="ethAmount" value={this.state.offerEthAmount} onChange={this.handleChange} type="number" min="1" max="100000000000000000000" className="validate"></input>
                     <EthAmountLabel/>
                   </div>
                 </Row>

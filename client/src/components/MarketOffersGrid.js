@@ -3,13 +3,10 @@ import {Blockies, Card, CardAction, Button} from '../styles/index'
 
 
 class MarketOffersGrid extends Component {
-  constructor(props) {
-    super(props)
-  }
 
   defineComponentstate(offer){
       if(offer.payedOut) return "payedOut hoverable"
-      if(this.props.routeTx === offer.offerTxHash) return "routeTx hoverable"
+      if (this.props.offerTxHash === offer.offerTxHash) return "routeTx hoverable"
       return "normal hoverable"
   }
   render() {
@@ -27,7 +24,7 @@ class MarketOffersGrid extends Component {
               <StatusText offer={offer}/>
                 <div className="card-image">
                   <Blockies
-                        seed={offer.cryptoAddress}
+                        seed={offer.offerCryptoAddress}
                         size={100}
                         scale={3}
                         bgColor="#FF7F00"
@@ -35,10 +32,10 @@ class MarketOffersGrid extends Component {
                   />
                    </div>
                   <p>
-                    Amount to claim: {offer.cryptoAmount} {offer.currency}
+                    Amount to claim: {offer.offerCryptoAmount} {offer.offerCurrency}
                   </p>
                   <p>
-                    Amount to Pay: {offer.amountEth} </p>
+                    Amount to Pay: {offer.offerEthAmount} </p>
                 <CardAction>
                   <Button floating large waves='light' icon='remove_red_eye' className="orange marketBtn" id={offer._id} onClick={e => this.props.openModal(e, index)}>View Details</Button>
                 </CardAction>
