@@ -12,7 +12,7 @@ class CreateOffer extends Component {
       stellar: false,
       offerCryptoAddress: '3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9',
       offerCryptoAmount: '615525',
-      offerEthAmount: 1000000000000000000,
+      offerEthAmount: 10000000000000000,
       offerTxHash: null,
     }
   }
@@ -139,7 +139,7 @@ class CreateOffer extends Component {
                       <offerCryptoAmountLabel/>
                     </div>
                   <div className="input-field col s6">
-                    <input id="ethAmount" name="ethAmount" value={this.state.offerEthAmount} onChange={this.handleChange} type="number" min="1" max="100000000000000000000" className="validate"></input>
+                    <input id="ethAmount" name="ethAmount" value={this.state.offerEthAmount} onChange={this.handleChange} type="number" min="1" className="validate"></input>
                     <EthAmountLabel/>
                   </div>
                 </Row>
