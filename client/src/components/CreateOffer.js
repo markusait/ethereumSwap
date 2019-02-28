@@ -2,6 +2,7 @@ import React, {Component} from "react";
 import {Link} from 'react-router-dom'
 import axios from 'axios';
 import getDataForDB from "../utils/getDataForDB"
+import { getPrices, weiDenomination, satoshiDenomination, stroopsDenomination} from "../utils/getPrices";
 import 'react-toastify/dist/ReactToastify.css';
 import {ToastContainer, Main, Card, toast, Row} from '../styles/index.js'
 
@@ -12,10 +13,15 @@ class CreateOffer extends Component {
       stellar: false,
       offerCryptoAddress: '3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9',
       offerCryptoAmount: '615525',
-      offerEthAmount: 1000000000000000000,
+      offerEthAmount: 0,
       offerTxHash: null,
+      priceForCryptoLabel: '',
+      priceForEthLabel: ''
     }
   }
+  componentDidMount = () => {
+    this.updatePrices()
+  };
 
   handleChange = (event) => {
     const target = event.target
@@ -23,8 +29,22 @@ class CreateOffer extends Component {
       target.checked :
       target.value
     const name = target.name
+    this.updatePrices()
     this.setState({
       [name]: value
+    })
+  }
+
+  updatePrices = async (currency, vsCurrency) => {
+    const weiPrice = await getPrices('ethereum', (this.state.stellar ? 'xlm' : 'btc'))
+    const lumensPrice = await getPrices('stellar', 'eth')
+    const btcPrice = await getPrices('bitcoin', 'eth')
+    console.log(btcPrice, this.state.offerCryptoAmount)
+    const cryptoPrice = Math.floor((this.state.stellar ? lumensPrice : btcPrice ) * this.state.offerCryptoAmount * weiDenomination)
+    const ethPrice = Math.floor((weiPrice * this.state.offerEthAmount ) * (this.state.stellar ? stroopsDenomination : satoshiDenomination))
+    this.setState({
+      priceForCryptoLabel: cryptoPrice,
+      priceForEthLabel: ethPrice
     })
   }
 
@@ -39,7 +59,6 @@ class CreateOffer extends Component {
   depositToContract = async (event) => {
         event.preventDefault();
         try {
-
           const { account, contract } = this.props;
           const {
             offerCryptoAddress,
@@ -70,8 +89,6 @@ class CreateOffer extends Component {
 
   }
 
-
-
   writeDetailsToDB = async () => {
     try {
       const offerData = getDataForDB({...this.state, ...this.props})
@@ -82,6 +99,7 @@ class CreateOffer extends Component {
   }
 
   render() {
+
     const MarketLink = () => {
       if (this.props.offerTxHash) {
         return (<React.Fragment>
@@ -98,10 +116,19 @@ class CreateOffer extends Component {
       return <label className="toplabel" htmlFor="offerCryptoAddress"> {this.state.stellar ? "Stellar Address" : "Bitcoin Address"}  </label>
     }
     const OfferCryptoAmountLabel = () => {
-      return <label className="toplabel" htmlFor="offerCryptoAmount"> {this.state.stellar ? "Exact Amount in Stroops" : "Amount BTC in Satoshi"}  </label>
+      return <label className="toplabel" htmlFor="offerCryptoAmount">
+      {
+        this.state.stellar ? `Exact Amount in Stroops, currently worth${this.state.priceForCryptoLabel} wei`
+      : `Amount BTC in Satoshi, currently worth ${this.state.priceForCryptoLabel} Wei`
+      }
+       </label>
     }
     const EthAmountLabel = () => {
-      return <label className="toplabel" htmlFor="ethAmount"> Amount Ether (in Wei) the Offer is worth for you </label>
+      // return <label className="toplabel" htmlFor="ethAmount"> Amount Ether (in Wei) the Offer is worth for you </label>
+      // return <label className="toplabel" htmlFor="ethAmount"> Amount Ether (in Wei) the Offer is worth for you {this.getPriceSync("ethereum", (this.state.stellar ? 'xlm' : 'btc') )} </label>
+      return <label className="toplabel" htmlFor="ethAmount">
+        Amount Ether in Wei the Offer is worth for you,
+        currently worth {`${this.state.priceForEthLabel} ${this.state.stellar ? 'Stroops' : 'Satoshi' }   `}  </label>
     }
 
     return (<Main type="create">
@@ -130,16 +157,16 @@ class CreateOffer extends Component {
                 <Row>
                   <div className="chips-addresses input-field col s12">
                     <input name="offerCryptoAddress" value={this.state.offerCryptoAddress} onChange={this.handleChange} id="offerCryptoAddress" type="text" className="validate"/>
-                      < OfferCryptoAddressLabel / >
+                      <OfferCryptoAddressLabel / >
                   </div>
                 </Row>
                 <Row>
                   <div className="input-field col s6">
                     <input name="offerCryptoAmount" value={this.state.offerCryptoAmount} onChange={this.handleChange} type="text" className="validate"></input>
-                      < OfferCryptoAmountLabel / >
+                      <OfferCryptoAmountLabel/>
                     </div>
                   <div className="input-field col s6">
-                    <input id="ethAmount" name="ethAmount" value={this.state.offerEthAmount} onChange={this.handleChange} type="number" min="1" className="validate"></input>
+                    <input id="ethAmount" name="offerEthAmount" value={this.state.offerEthAmount} onChange={this.handleChange} type="number" min="1" className="validate"></input>
                     <EthAmountLabel/>
                   </div>
                 </Row>

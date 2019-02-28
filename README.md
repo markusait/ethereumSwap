@@ -89,11 +89,6 @@ nginx config:
                 proxy_redirect off;
                 }
         }
-
-
-
-
-
 ---
 ## Overview
 

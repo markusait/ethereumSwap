@@ -29,6 +29,7 @@ html, body {
 
 .toplabel{
   top: -1.1rem !important;
+  pointer-events: auto !important;
 }
 
 
@@ -131,25 +132,10 @@ h5 {
   }
 }
 
-/* The Modal (background) */
 .modal {
   display: flex;
   left: 11%;
   top: 13%;
-  /* border: 2px solid #fff;
-border-radius: 1rem;
-margin-top: 2.8rem;
-padding: 1rem;
-box-shadow: */
-  /* position: fixed; /* Stay in place */
-  /* z-index: 1; /* Sit on top */
-  /* left: 0; */
-  /* top: 0; */
-  /* width: 100%; /* Full width */
-  /* height: 100%; /* Full height */
-  /* overflow: auto; /* Enable scroll if needed */
-  /* background-color: rgb(0,0,0); /* Fallback color */
-  /* background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
 
 /* Modal Content/Box */

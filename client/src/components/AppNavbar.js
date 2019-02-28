@@ -3,9 +3,6 @@ import { Navbar, NavItem, Icon } from 'react-materialize'
 import { Link } from 'react-router-dom';
 
 class AppNavbar extends Component {
-    constructor(props) {
-        super(props)
-    }
 
     render() {
         return (
