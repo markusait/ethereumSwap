@@ -73,7 +73,6 @@ const getWeb3Data = async () => {
   const contractNetworkId = await web3.eth.net.getId();
 
   //checking which contract should be used and getting write json interface
-  // const contractNetwork = getNetwork(contractNetworkId)
   // const EthereumSwap =  getContractInterface(contractNetworkId)
 
   const contractNetworkObject = EthereumSwap.networks[contractNetworkId];
@@ -81,6 +80,8 @@ const getWeb3Data = async () => {
   const contractAddress = contractNetworkObject.address
 
   const contract = new web3.eth.Contract(EthereumSwap.abi, contractNetworkObject && contractAddress)
+
+  const contractNetwork = getNetwork(contractNetworkId)
 
   return {
   web3,

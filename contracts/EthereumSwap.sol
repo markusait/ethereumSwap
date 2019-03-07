@@ -433,13 +433,13 @@ contract EthereumSwap is usingOraclize {
 
     // Offer Struct for creating an Bitcoin Offer for the smart contract
     struct Offer {
-        bool exsists;
+        bool exists;
         address owner;
         uint ethDepositInWei;
         string cryptoWithdrawAmount;
         address potentialPayoutAddress;
         uint assetType;
-        }
+    }
 
     // mapping for checking payout with the string cryptoAddress as key
     // note: (solidity uses a sha3 hashmap)
@@ -479,9 +479,9 @@ contract EthereumSwap is usingOraclize {
     /// @param _cryptoAddress The Bitcoin Address to which a doner will pay money to
     /// @param _cryptoWithdrawAmount amount in smallest possible nomination of the crypto asset for which eth can withdrawed
     function depositEther(string _cryptoAddress, string _cryptoWithdrawAmount, uint _assetType) payable public {
-        //require(!deposit[_cryptoAddress].exsists, " Offer for this address already exsists");
+        //require(!deposit[_cryptoAddress].exists, " Offer for this address already exists");
         Offer memory paymentStruct = Offer({
-            exsists:true,
+            exists:true,
             owner: msg.sender,
             ethDepositInWei: msg.value,
             cryptoWithdrawAmount: _cryptoWithdrawAmount,
@@ -494,17 +494,17 @@ contract EthereumSwap is usingOraclize {
         emit LogInfo("Ether was deposited to contract");
     }
 
-  /// @notice Oraclize call, Bitcoin sender calls this function with his  and recipient Address which will invoke call back function
-  /// @notice payable because oraclize call needs gas and this is preventing fraud
-  /// @notice assetTypes: 0 == Bitcoin, 1 == Lumens
-  /// @param _txHash The Bitcoin tx Hash prooving the doner payed money to it or the Lumens operation Code
-  /// @param _cryptoAddress The Crypto Address to which a doner has payed money to
+    /// @notice Oraclize call, Bitcoin sender calls this function with his  and recipient Address which will invoke call back function
+    /// @notice payable because oraclize call needs gas and this is preventing fraud
+    /// @notice assetTypes: 0 == Bitcoin, 1 == Lumens
+    /// @param _txHash The Bitcoin tx Hash prooving the doner payed money to it or the Lumens operation Code
+    /// @param _cryptoAddress The Crypto Address to which a doner has payed money to
     function getTransaction(string _txHash, string _cryptoAddress) payable public {
         string memory query;
 
         oraclizePrice = oraclize_getPrice("URL");
 
-        require(deposit[_cryptoAddress].exsists, "No Offer for this address available");
+        require(deposit[_cryptoAddress].exists, "No Offer for this address available");
 
         // require(msg.value => oraclize_getPrice("URL"));
 
@@ -529,10 +529,10 @@ contract EthereumSwap is usingOraclize {
 
 
 
-  /// @notice Oraclize call back function invoking payout process
-  /// @notice payable because oraclize call needs gas and this is preventing fraud
-  /// @param _oraclizeID The byte represation of an Oraclize ID returned when query sent
-  /// @param _result Result of the API call, contating the value of transaction to address
+    /// @notice Oraclize call back function invoking payout process
+    /// @notice payable because oraclize call needs gas and this is preventing fraud
+    /// @param _oraclizeID The byte represation of an Oraclize ID returned when query sent
+    /// @param _result Result of the API call, contating the value of transaction to address
     function __callback(bytes32 _oraclizeID, string _result) public {
         require(msg.sender == oraclize_cbAddress(), "Only Oraclize can call this function");
 
@@ -548,23 +548,23 @@ contract EthereumSwap is usingOraclize {
         //Bitcoin
         if(deposit[cryptoAddress].assetType == 0){
 
-        validTransaction = stringToUint(_result) >= stringToUint(deposit[cryptoAddress].cryptoWithdrawAmount); //checking if amount is higher
+            validTransaction = stringToUint(_result) >= stringToUint(deposit[cryptoAddress].cryptoWithdrawAmount); //checking if amount is higher
         }
         //Lumens
         else {
 
-        string memory compareString = strConcat("[\"" , cryptoAddress , "\", \"" , deposit[cryptoAddress].cryptoWithdrawAmount , "\", \"" , "payment\", \"native\"]");
+            string memory compareString = strConcat("[\"" , cryptoAddress , "\", \"" , deposit[cryptoAddress].cryptoWithdrawAmount , "\", \"" , "payment\", \"native\"]");
 
-        validTransaction = compareStrings(compareString,_result);   //checking for exact amount
+            validTransaction = compareStrings(compareString,_result);   //checking for exact amount
         }
 
         if(validTransaction){
 
-        recipientAddress.transfer(ethAmount);
+            recipientAddress.transfer(ethAmount);
 
-        deposit[cryptoAddress].exsists = false;
+            deposit[cryptoAddress].exists = false;
 
-        emit PayedOutEvent(recipientAddress, ethAmount, cryptoAddress);
+            emit PayedOutEvent(recipientAddress, ethAmount, cryptoAddress);
 
         } else {
             emit LogInfo("The sended Amount was too small or non exsisting ");
@@ -572,39 +572,37 @@ contract EthereumSwap is usingOraclize {
 
     }
 
-  /// @notice backup function for owners to reclaim their Ether
-  /// @param _cryptoAddress the bitcoin or stellar address that was used to identify the offer
-  function ownerWithdraw(string _cryptoAddress) public {
+    /// @notice backup function for owners to reclaim their Ether
+    /// @param _cryptoAddress the bitcoin or stellar address that was used to identify the offer
+    function ownerWithdraw(string _cryptoAddress) public {
 
-    require(deposit[_cryptoAddress].exsists, "No Offer for this address available");
+        require(deposit[_cryptoAddress].exists, "No Offer for this address available");
 
-    address sender = msg.sender;
+        address sender = msg.sender;
 
-    if(deposit[_cryptoAddress].owner == sender){
+        if(deposit[_cryptoAddress].owner == sender){
 
-        sender.transfer(deposit[_cryptoAddress].ethDepositInWei);
+            sender.transfer(deposit[_cryptoAddress].ethDepositInWei);
 
-        deposit[_cryptoAddress].exsists = false;
+            deposit[_cryptoAddress].exists = false;
 
-        emit LogInfo("Owner received amount back");
+            emit LogInfo("Owner received amount back");
 
+        } else {
 
-    } else {
+            emit LogInfo("Please send this transaction from the right address");
 
-      emit LogInfo("Please send this transaction from the right address");
-
+        }
     }
-  }
 
 
-  /* HELPER FUNCTIONS */
-
-  function compareStrings (string a, string b) view returns (bool){
-         return keccak256(a) == keccak256(b);
+     /* HELPER FUNCTIONS */
+    function compareStrings (string a, string b) view returns (bool){
+        return keccak256(a) == keccak256(b);
     }
-  uint80 constant None = uint80(0);
+    uint80 constant None = uint80(0);
 
-  function stringToUint(string s) constant returns (uint result) {
+    function stringToUint(string s) constant returns (uint result) {
         bytes memory b = bytes(s);
         uint i;
         result = 0;
