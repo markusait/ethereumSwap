@@ -28,7 +28,7 @@ class MarketOfferModal extends Component {
       if (!this.props.loading) {
         return (<button onClick={() => {
             this.props.initializePayoutProcess(this.props.index, this.state.cryptoTransactionHash, this.props.offer.offerCryptoAddress)
-          }} type="submit" value="initializePayout" id="initializePayout" className="btn waves-effect waves-light orange">initialize Payout
+          }} type="submit" value="initializePayout" id="initializePayout" className="btn waves-effect waves-light teal">initialize Payout
         </button>)
       } else {
         return (<div>
@@ -41,27 +41,28 @@ class MarketOfferModal extends Component {
     return (<div className="modal advantages hoverable">
       <div className="modal-content">
         <p>
+          {this.props.offer.payedOut ? "Already Paid out" : "Not Paid out yet"}
+        </p>
+        <p>
           Currency: {this.props.offer.offerCurrency}
         </p>
         <p>
           CryptoAddress: {this.props.offer.offerCryptoAddress}</p>
         <p>
-          Amount : {this.props.offer.offerCryptoAmount}</p>
+          Amount to claim : {this.props.offer.offerCryptoAmount}</p>
         <p>
           Amount to Pay: {this.props.offer.offerEthAmount}</p>
         <p>
           Ethereum Address of contract: {this.props.offer.contractAddress}</p>
-        <p>
-          PayedOut: {this.props.offer.payedOut}
-        </p>
+
         <p>
           Transaction Hash of offer: {this.props.offer.offerTxHash}
         </p>
         <p>
-          PayedOutTransactionHash:  {this.props.offer.payedOutTransactionHash}
+          {this.props.offer.payedOutTransactionHash ? `TransactionHash of Payout:${this.props.offer.payedOutTransactionHash}` : ""}
         </p>
         <p>
-          RecipientAddress:  {this.props.offer.recipientAddress}
+          {this.props.offer.recipientAddress ? `RecipientAddress:${this.props.offer.recipientAddress}` : ""}
         </p>
         <p>
         </p>
@@ -76,7 +77,7 @@ class MarketOfferModal extends Component {
         <Status/>
       </div>
       <div className="modal-footer">
-        <Button onClick={this.props.onHide} type="submit" value="Close" id="initContract" className="btn waves-effect waves-light orange">
+        <Button onClick={this.props.onHide} type="submit" value="Close" id="initContract" className="btn waves-effect waves-light teal">
           Close
         </Button>
       </div>

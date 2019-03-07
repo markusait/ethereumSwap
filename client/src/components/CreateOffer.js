@@ -1,8 +1,14 @@
 import React, {Component} from "react";
 import {Link} from 'react-router-dom'
 import axios from 'axios';
-import getDataForDB from "../utils/getDataForDB"
-import { getPrices, weiDenomination, satoshiDenomination, stroopsDenomination} from "../utils/getPrices";
+import {
+  getPrices,
+  weiDenomination,
+  satoshiDenomination,
+  stroopsDenomination,
+  getDataForDB,
+  hasPriorTransactions
+} from "../utils/utilFunctions";
 import 'react-toastify/dist/ReactToastify.css';
 import {ToastContainer, Main, Card, toast, Row} from '../styles/index.js'
 
@@ -13,7 +19,7 @@ class CreateOffer extends Component {
       stellar: false,
       offerCryptoAddress: '3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9',
       offerCryptoAmount: '615525',
-      offerEthAmount: 0,
+      offerEthAmount: 1000000000000,
       offerTxHash: null,
       priceForCryptoLabel: '',
       priceForEthLabel: ''
@@ -35,11 +41,12 @@ class CreateOffer extends Component {
     })
   }
 
+
+
   updatePrices = async (currency, vsCurrency) => {
     const weiPrice = await getPrices('ethereum', (this.state.stellar ? 'xlm' : 'btc'))
     const lumensPrice = await getPrices('stellar', 'eth')
     const btcPrice = await getPrices('bitcoin', 'eth')
-    console.log(btcPrice, this.state.offerCryptoAmount)
     const cryptoPrice = Math.floor((this.state.stellar ? lumensPrice : btcPrice ) * this.state.offerCryptoAmount * weiDenomination)
     const ethPrice = Math.floor((weiPrice * this.state.offerEthAmount ) * (this.state.stellar ? stroopsDenomination : satoshiDenomination))
     this.setState({
@@ -67,6 +74,12 @@ class CreateOffer extends Component {
             stellar
           } = this.state
 
+          if (await hasPriorTransactions(offerCryptoAddress, this.state.stellar ? 'stellar' : 'bitcoin')) {
+            throw Object.assign(new Error("make sure the account has no prior transactions"), {
+              code: 402
+            })
+          }
+
           const {transactionHash} = await contract.methods
             .depositEther(offerCryptoAddress, offerCryptoAmount.toString(), ~~stellar)
             .send({
@@ -83,7 +96,7 @@ class CreateOffer extends Component {
 
     } catch (e) {
       this.props.contract == null ? this.notify("Contract not deployed on this blockchain please change your rpc provider to http://ethblockchain.digitpay.de")
-      : this.notify(e)
+      : this.notify(e.message)
       console.error(e)
     }
 
@@ -113,7 +126,7 @@ class CreateOffer extends Component {
       }
     }
     const OfferCryptoAddressLabel = () => {
-      return <label className="toplabel" htmlFor="offerCryptoAddress"> {this.state.stellar ? "Stellar Address" : "Bitcoin Address"}  </label>
+      return <label className="toplabel" htmlFor="offerCryptoAddress"> {this.state.stellar ? "Stellar Address" : "Bitcoin Address"} (make sure it has no prior transactions)  </label>
     }
     const OfferCryptoAmountLabel = () => {
       return <label className="toplabel" htmlFor="offerCryptoAmount">
@@ -170,7 +183,7 @@ class CreateOffer extends Component {
                     <EthAmountLabel/>
                   </div>
                 </Row>
-                <button type="submit" value="Submit" id="initContract" className="btn waves-effect waves-light orange">Submit
+                <button type="submit" value="Submit" id="initContract" className="btn waves-effect waves-light teal">Submit
                 </button>
               </form>
             </Row>

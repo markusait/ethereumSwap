@@ -27,7 +27,7 @@ class MarketOffersGrid extends Component {
                         seed={offer.offerCryptoAddress}
                         size={100}
                         scale={3}
-                        bgColor="#FF7F00"
+                        bgColor = "#72C7BD"
                         spotColor="#000"
                   />
                    </div>
@@ -37,7 +37,8 @@ class MarketOffersGrid extends Component {
                   <p>
                     Amount to Pay: {offer.offerEthAmount} </p>
                 <CardAction>
-                  <Button floating large waves='light' icon='remove_red_eye' className="orange marketBtn" id={offer._id} onClick={e => this.props.openModal(e, index)}>View Details</Button>
+                  <Button floating large waves='light' icon='remove_red_eye' className="teal marketBtn" id={offer._id} onClick={e => this.props.openModal(e, index)}>View Details</Button>
+                  <p class="Offer-Tag"> Claim this Offer now</p>
                 </CardAction>
             </Card>
             </React.Fragment>))

@@ -1,5 +1,5 @@
 import React, { Component } from "react"
-import getWeb3Data from "../utils/getWeb3";
+import getWeb3Data from "../utils/getWeb3Data";
 import Home from './Home';
 import Choose from './Choose';
 import Market from './Market';

@@ -31,6 +31,26 @@ Then create a `config.js` file with a [`mongoURI`](https://mlab.com/) & `oracliz
 
 ## Testing
 
+The app uses two development servers. A backend server for the API which will also serve the static pages. And a react-development server based on webpack which is why the client folder has its own node_modules
+
+ethereumSwap
+
+    ├── client
+    │   ├── public
+    │   └── src
+    │       ├── assets
+    │       ├── components
+    │       ├── node_modules
+    │       ├── styles
+    │       └── utils
+    ├── contracts
+    ├── migrations
+    ├── models
+    ├── node_modules
+    ├── routes
+    │   └── api
+    └── test
+
 You can skip step 1 to 3 by using the blockchain instance at http://ethblockchain.digitpay.de with this Private Key: d60984ec931d45517e170c1a1e48a9ca041a6b9803e4d7cebc1704d8f478b5d0.
 Make sure to the correct host in the truffle.js when doing so.
 
@@ -92,7 +112,7 @@ nginx config:
 ---
 ## Overview
 
-![Overview](/client/src/assets/overview.jpg)
+![Overview](/client/src/assets/overview.png)
 
 As you can see the way this exchange works is that Bob locks up his Ether in a smart contract. Alice sees that Offer in the Marketplace and pays the equivalent amount to Bob's Bitcoin address. After that she submits the transaction hash to the smart contract which conducts and [Oraclize](http://www.oraclize.it/) API call to check if the transaction is valid. If the submitted amount is >= Bob's minimum value (of 1 BTC here) the smart contract sends the funds to Alice.
 
@@ -108,10 +128,12 @@ Of cause this service is also not completely trust less. There are 4 parties a u
 
 __Further Development and Features__
 
+- [x] BTC USD preis sync in input field
+- [x] Implement redeem option for offer creator in smart contract
+- [x] Implement prior transaction lookup
+- [ ] Implement redeem option for offer creator in front-end
 - [ ] Using ipfs to store the smart contract data
 - [ ] Enhance Security
   - [ ] Apply Open zepplin audit tools
   - [ ] More detailed Tests
   - [ ] Guaranteeing Atomicity and Real Time data to avoid that a contracts are payed out too early
-- [ ] BTC USD preis sync in input field
-- [ ] Implement redeem option for offer creator in front-end

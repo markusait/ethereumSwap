@@ -8,13 +8,13 @@ const Main = styled.div `
   background: ${props => {
     switch(props.type){
       case "home":
-        return "linear-gradient(to bottom, #f09819, #edde5d);"
+        return "linear-gradient(to bottom, #085078, #85D8CE);"
       case "create":
-        return "linear-gradient(to bottom, #ff8a00, #da1b60);"
+        return "linear-gradient(to top, #11998e, #38ef7d); "
       case "market":
-        return  "linear-gradient(to bottom, #ff8a00, #da1b60);"
+        return "linear-gradient(to bottom, #085078, #85D8CE);"
       default:
-        return "linear-gradient(to bottom, #ff8a00, #da1b60);"
+        return "linear-gradient(to bottom, #085078, #85D8CE);"
       }
     }
   };

@@ -431,7 +431,7 @@ contract EthereumSwap is usingOraclize {
 
     string public oraclizeResult;
 
-  // Offer Struct for creating an Bitcoin Offer for the smart contract
+    // Offer Struct for creating an Bitcoin Offer for the smart contract
     struct Offer {
         bool exsists;
         address owner;
@@ -441,91 +441,91 @@ contract EthereumSwap is usingOraclize {
         uint assetType;
         }
 
-  // mapping for checking payout with the string cryptoAddress as key
-  // note: (solidity uses a sha3 hashmap)
-  mapping(string => Offer) deposit;
+    // mapping for checking payout with the string cryptoAddress as key
+    // note: (solidity uses a sha3 hashmap)
+    mapping(string => Offer) deposit;
 
-  // mapping for checking the checking oraclize callback _oraclizeID => _result
-  mapping(bytes32 => string) private oraclizeLookup;
+    // mapping for checking the checking oraclize callback _oraclizeID => _result
+    mapping(bytes32 => string) private oraclizeLookup;
 
-  // Log event to notify UI and DB when user was sucessfull payed out
-  event PayedOutEvent(
+    // Log event to notify UI and DB when user was sucessfull payed out
+    event PayedOutEvent(
         address  _recipientAddress,
         uint  _ethAmount,
         string  _cryptoAddress
-  );
+    );
   // General Purpose Log Event for strings
-  event LogInfo(
-    string log
-  );
+    event LogInfo(
+        string log
+    );
 
-  function getTestingOraclizeAddress() public returns(address){
-    return bridgeConnector;
-  }
+    function getTestingOraclizeAddress() public returns(address){
+        return bridgeConnector;
+    }
 
-  function getOraclizePrice() public returns (uint){
-    return oraclizePrice;
-  }
+    function getOraclizePrice() public returns (uint){
+        return oraclizePrice;
+    }
 
-  /// @notice Constructor only used in testing for Oraclize Bridge with ethereum-bridge
-  function EthereumSwap(address _oraclizeAddress) public {
-    OAR = OraclizeAddrResolverI(_oraclizeAddress);
-    bridgeConnector = _oraclizeAddress;
-  }
+    /// @notice Constructor only used in testing for Oraclize Bridge with ethereum-bridge
+    function EthereumSwap(address _oraclizeAddress) public {
+        OAR = OraclizeAddrResolverI(_oraclizeAddress);
+        bridgeConnector = _oraclizeAddress;
+    }
 
-  /// @notice Deposited by sender how wants to get Bitcoin for his Ether assigning the contract values
-  /// @notice The Bitcoin Address should  be new and not have any prior Transacitions (checked by UI) and should not exsist in mapping!
-  /// @notice should require string length > 0 && <= cryptoAddresslength and msg.value >= minimumOfferValue
-  /// @param _cryptoAddress The Bitcoin Address to which a doner will pay money to
-  /// @param _cryptoWithdrawAmount amount in smallest possible nomination of the crypto asset for which eth can withdrawed
-  function depositEther(string _cryptoAddress, string _cryptoWithdrawAmount, uint _assetType) payable public {
-      //require(!deposit[_cryptoAddress].exsists, " Offer for this address already exsists");
-      Offer memory paymentStruct = Offer({
-                                  exsists:true,
-                                  owner: msg.sender,
-                                  ethDepositInWei: msg.value,
-                                  cryptoWithdrawAmount: _cryptoWithdrawAmount,
-                                  potentialPayoutAddress: None,
-                                  assetType: _assetType
-                                });
+    /// @notice Deposited by sender how wants to get Bitcoin for his Ether assigning the contract values
+    /// @notice The Bitcoin Address should  be new and not have any prior Transacitions (checked by UI) and should not exsist in mapping!
+    /// @notice should require string length > 0 && <= cryptoAddresslength and msg.value >= minimumOfferValue
+    /// @param _cryptoAddress The Bitcoin Address to which a doner will pay money to
+    /// @param _cryptoWithdrawAmount amount in smallest possible nomination of the crypto asset for which eth can withdrawed
+    function depositEther(string _cryptoAddress, string _cryptoWithdrawAmount, uint _assetType) payable public {
+        //require(!deposit[_cryptoAddress].exsists, " Offer for this address already exsists");
+        Offer memory paymentStruct = Offer({
+            exsists:true,
+            owner: msg.sender,
+            ethDepositInWei: msg.value,
+            cryptoWithdrawAmount: _cryptoWithdrawAmount,
+            potentialPayoutAddress: None,
+            assetType: _assetType
+        });
 
-      deposit[_cryptoAddress] = paymentStruct;
+        deposit[_cryptoAddress] = paymentStruct;
 
-      emit LogInfo("Ether was deposited to contract");
-  }
+        emit LogInfo("Ether was deposited to contract");
+    }
 
   /// @notice Oraclize call, Bitcoin sender calls this function with his  and recipient Address which will invoke call back function
   /// @notice payable because oraclize call needs gas and this is preventing fraud
   /// @notice assetTypes: 0 == Bitcoin, 1 == Lumens
   /// @param _txHash The Bitcoin tx Hash prooving the doner payed money to it or the Lumens operation Code
   /// @param _cryptoAddress The Crypto Address to which a doner has payed money to
-  function getTransaction(string _txHash, string _cryptoAddress) payable {
-    string memory query;
+    function getTransaction(string _txHash, string _cryptoAddress) payable public {
+        string memory query;
 
-    oraclizePrice = oraclize_getPrice("URL");
+        oraclizePrice = oraclize_getPrice("URL");
 
-    require(deposit[_cryptoAddress].exsists, "No Offer for this address available");
+        require(deposit[_cryptoAddress].exsists, "No Offer for this address available");
 
-    // require(msg.value => oraclize_getPrice("URL"));
+        // require(msg.value => oraclize_getPrice("URL"));
 
-    // Bitcoin
-    if (deposit[_cryptoAddress].assetType == 0) {
-      query = strConcat("https://blockchain.info/q/txresult/", _txHash, "/", _cryptoAddress);
+        // Bitcoin
+        if (deposit[_cryptoAddress].assetType == 0) {
+            query = strConcat("https://blockchain.info/q/txresult/", _txHash, "/", _cryptoAddress);
+
+        }
+        // Lumens , txHash is actually operations code
+        else {
+            query = strConcat("json(https://horizon.stellar.org/operations/", _txHash, ").[to,amount,type,asset_type]");
+        }
+        oraclizeID = oraclize_query("URL", query, 500000);
+
+        deposit[_cryptoAddress].potentialPayoutAddress = msg.sender;
+
+        oraclizeLookup[oraclizeID] = _cryptoAddress;
+
+        emit LogInfo("Oraclize query was sent, standing by for the answer...");
 
     }
-    // Lumens , txHash is actually operations code
-    else {
-      query = strConcat("json(https://horizon.stellar.org/operations/", _txHash, ").[to,amount,type,asset_type]");
-    }
-      oraclizeID = oraclize_query("URL", query, 500000);
-
-      deposit[_cryptoAddress].potentialPayoutAddress = msg.sender;
-
-      oraclizeLookup[oraclizeID] = _cryptoAddress;
-
-      emit LogInfo("Oraclize query was sent, standing by for the answer...");
-
-  }
 
 
 
@@ -533,44 +533,44 @@ contract EthereumSwap is usingOraclize {
   /// @notice payable because oraclize call needs gas and this is preventing fraud
   /// @param _oraclizeID The byte represation of an Oraclize ID returned when query sent
   /// @param _result Result of the API call, contating the value of transaction to address
-  function __callback(bytes32 _oraclizeID, string _result) {
-    require(msg.sender == oraclize_cbAddress(), "Only Oraclize can call this function");
+    function __callback(bytes32 _oraclizeID, string _result) public {
+        require(msg.sender == oraclize_cbAddress(), "Only Oraclize can call this function");
 
-    bool validTransaction = false;
+        bool validTransaction = false;
 
-    string memory cryptoAddress = oraclizeLookup[_oraclizeID];
+        string memory cryptoAddress = oraclizeLookup[_oraclizeID];
 
-    address recipientAddress = deposit[cryptoAddress].potentialPayoutAddress;
+        address recipientAddress = deposit[cryptoAddress].potentialPayoutAddress;
 
-    uint ethAmount = deposit[cryptoAddress].ethDepositInWei;
+        uint ethAmount = deposit[cryptoAddress].ethDepositInWei;
 
 
-    //Bitcoin
-    if(deposit[cryptoAddress].assetType == 0){
+        //Bitcoin
+        if(deposit[cryptoAddress].assetType == 0){
 
-      validTransaction = stringToUint(_result) >= stringToUint(deposit[cryptoAddress].cryptoWithdrawAmount); //checking if amount is higher
+        validTransaction = stringToUint(_result) >= stringToUint(deposit[cryptoAddress].cryptoWithdrawAmount); //checking if amount is higher
+        }
+        //Lumens
+        else {
+
+        string memory compareString = strConcat("[\"" , cryptoAddress , "\", \"" , deposit[cryptoAddress].cryptoWithdrawAmount , "\", \"" , "payment\", \"native\"]");
+
+        validTransaction = compareStrings(compareString,_result);   //checking for exact amount
+        }
+
+        if(validTransaction){
+
+        recipientAddress.transfer(ethAmount);
+
+        deposit[cryptoAddress].exsists = false;
+
+        emit PayedOutEvent(recipientAddress, ethAmount, cryptoAddress);
+
+        } else {
+            emit LogInfo("The sended Amount was too small or non exsisting ");
+        }
+
     }
-    //Lumens
-    else {
-
-      string memory compareString = strConcat("[\"" , cryptoAddress , "\", \"" , deposit[cryptoAddress].cryptoWithdrawAmount , "\", \"" , "payment\", \"native\"]");
-
-      validTransaction = compareStrings(compareString,_result);   //checking for exact amount
-    }
-
-    if(validTransaction){
-
-      recipientAddress.transfer(ethAmount);
-
-      deposit[cryptoAddress].exsists = false;
-
-      emit PayedOutEvent(recipientAddress, ethAmount, cryptoAddress);
-
-    } else {
-        emit LogInfo("The sended Amount was too small or non exsisting ");
-    }
-
-  }
 
   /// @notice backup function for owners to reclaim their Ether
   /// @param _cryptoAddress the bitcoin or stellar address that was used to identify the offer

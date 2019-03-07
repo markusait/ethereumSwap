@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100;" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="pattern-0" x="0" y="0" width="25" height="25" patternUnits="userSpaceOnUse" viewBox="0 0 100 100">
+      <rect x="0" y="0" width="50" height="100" style="fill: black;"/>
+    </pattern>
+  </defs>
+  <g transform="matrix(1, 0, 0, 1, 0.345622, -10.829494)">
+    <g transform="matrix(1, 0, 0, 1, -0.345622, -7.603686)">
+      <polygon points="21.615 42.66 2.615 42.66 21.015 68.779 2.615 94.898 21.615 94.898 40.015 68.779" style="fill: rgb(255, 255, 255); stroke: rgb(8, 225, 156); stroke-width: 1.4px;"/>
+      <polygon points="50.415 42.66 31.415 42.66 49.815 68.779 31.415 94.898 50.415 94.898 68.815 68.779" style="fill: rgb(255, 255, 255); stroke: rgb(8, 225, 156); stroke-width: 1.4px;"/>
+      <polygon points="79.215 42.66 60.215 42.66 78.615 68.779 60.215 94.898 79.215 94.898 97.615 68.779" style="fill: rgb(255, 255, 255); stroke: rgb(8, 225, 156); stroke-width: 1.4px;"/>
+    </g>
+  </g>
+</svg>

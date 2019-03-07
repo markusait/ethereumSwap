@@ -1,6 +1,6 @@
 import Web3 from "web3";
 import EthereumSwap from "../contractInterface/EthereumSwap.json";
-// import EthereumSwapRopsten from "../contractInterface/EthereumSwapRopsten.json";
+import EthereumSwapRopsten from "../contractInterface/EthereumSwapRopsten.json";
 
 // IMPORTANT:
 // omitted window event listener here see here for more:
@@ -38,7 +38,7 @@ const getWeb3 = () =>
 
   });
 
-  const getNetwork = (netId) => {
+const getNetwork = (netId) => {
     switch (netId.toString()) {
       case "1":
         return 'Mainnet'
@@ -73,9 +73,8 @@ const getWeb3Data = async () => {
   const contractNetworkId = await web3.eth.net.getId();
 
   //checking which contract should be used and getting write json interface
-  // const EthereumSwap = getContractInterface(contractNetworkId)
-
-  const contractNetwork = getNetwork(contractNetworkId)
+  // const contractNetwork = getNetwork(contractNetworkId)
+  // const EthereumSwap =  getContractInterface(contractNetworkId)
 
   const contractNetworkObject = EthereumSwap.networks[contractNetworkId];
 
@@ -95,3 +94,10 @@ const getWeb3Data = async () => {
 }
 
 export default getWeb3Data;
+
+
+
+
+
+
+

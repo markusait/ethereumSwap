@@ -1,45 +1,83 @@
 import React, {Component} from "react";
-import {Link} from 'react-router-dom'
+
 import {
-  Main,
-  Header,
+  NetworkImg,
+  BlocksImg,
+  ScalableImg,
   Card,
   Metamask,
-  BitcoinImg,
-  StellarImg,
-  EtherImg,
-} from '../styles/index'
-
-
+  BankImg,
+  FastImg,
+  Footer
+}from '../styles/index'
 class Home extends Component {
+  componentDidMount() {
+    this.setTriangle();
+  }
+
+  setTriangle() {
+      document.getElementsByClassName('path')[0].setAttribute("d", "M0 50 L" + window.innerWidth + " 0 L" + window.innerWidth + " 55z");
+  }
+
   render() {
-    // if (!this.props.web3) return <Preloader > loading < /Preloader>
     return (
-      <Main type="home">
-        <div className="homewrap">
-      <Header>
-        Welcome to EtherSwaps, a lightweight decentralized exchange
-      </Header>
-      <h5 class="light">
-           Exchange Ether, Bitcoin and Stellar with anyone in the most decentralized way for free!
-        <br/>
+      <div className="DEPRHome">
+          <div className="index-banner">
 
-        <Link to="/choose">
-            Get Started now
-        </Link>
-      </h5>
-          <img src={StellarImg} alt="Stellar" className="headerImg"/>
-          <img src={EtherImg} alt="ether" className="headerImg"/>
-          <img src={BitcoinImg} alt="Bitcoin" className="headerImg"/>
+            <div className="title-container">
+                <h1 className="header-title"> Etherswaps</h1>
+                <p className="header-subtitle">
+                  Welcome to Etherswaps, a lightweight decentralized Exchange. < br / >
+                  No Middleman are required to swap your Ether for Bitcoin and Stellar. <br/>
+                  You can enjoy full MetaMask Wallet support with low fees and fast exchange times. <br/>
+                </p>
+            </div>
+            <div className="image-container">
+                <img className="blockImage" src={BlocksImg} alt="blocks" />
+            </div>
 
-      <div className="main-wrap">
-      <Card type="main">
+            <svg className="triangle" aria-hidden="true">
+                <path className="path"></path>
+            </svg>
+        </div>
+        <div className="Info-Section">
+          <div className="wrapper">
+            <h2> Features </h2>
+              <div className="Row">
+                  <div class="advantage-container">
+                    <div class="adv">
+                    {/* TODO add ether bitcoin stellar image here  */}
+                        <img alt="shield" src={NetworkImg}/>
+                        <h5 class="center point1">Ethereum Blockchain</h5>
+                        <p class="point1sub"> Decentralized payments </p>
+                    </div>
+                    <div class="adv">
+                        <img alt="hand" src={ScalableImg}/>
+                        <h5 class="center point2">Modularity</h5>
+                        <p class="point2sub">You do not have to pay any middleman </p>
+                    </div>
+                    <div class="adv">
+                        <img alt="spaceship" src={BankImg} className="green-filter"/>
+                        <h5 class="center point3">No Middleman required</h5>
+                        <p class="point3sub"> With only marginal trust required  </p>
+                    </div>
+                    <div class="adv">
+                        <img alt="person" src={FastImg}/>
+                        <h5 class="center point4">Low fees and fast confirmations</h5>
+                        <p class="point4sub subpoints">You dont ahve to pay any Middleman only need to cover marginal transaction costs and API request fees while confirmations are quick</p>
+                    </div>
+                </div>
+              </div>
+          </div>
+        </div>
+      <div className = "main-wrap" >
         <h3>How it works
         </h3>
+         <Card type="main" className="word-box">
         <ul className="collapsible">
           <li>
             <div className="collapsible-header">
-              <p>1. Download Meta Mask</p>
+              <p>1. Download MetaMask</p>
             </div>
             <div className="collapsible-body">
               <a href="https://Metamask.io/" target="_blank" rel="noopener noreferrer">
@@ -53,8 +91,7 @@ class Home extends Component {
               </p>
             </div>
             <div className="collapsible-body">
-              <p>
-                connect to &nbsp;
+              <p>connect to &nbsp;
                 <a href="http://ethblockchain.digitpay.de" target="_blank" rel="noopener noreferrer">
                   http://ethblockchain.digitpay.de
                 </a>
@@ -64,7 +101,7 @@ class Home extends Component {
           </li>
           <li>
             <div className="collapsible-header">
-              3. Create a new Offer on the Escrow Contract
+              <p> 3. Create a new Offer on the Escrow Contract </p>
             </div>
             <div className="collapsible-body">
               Add a value (e.g 1 ETH), a Bitcoin Address (e.g 3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9) and a minimum redeem value: (e.g 615525).
@@ -74,7 +111,7 @@ class Home extends Component {
           </li>
           <li>
             <div className="collapsible-header">
-              4. Send the appropriate Amount to the Bitcoin or Stellar Address (Mainnet only)
+              <p>4. Send the appropriate Amount to the Bitcoin or Stellar Address (Mainnet only) </p>
             </div>
             <div className="collapsible-body">
               <p>The amount is designated in Satoshi only and transactions are only checked in the Bitcoin Mainnet as of now.
@@ -86,7 +123,7 @@ class Home extends Component {
           </li>
           <li>
             <div className="collapsible-header">
-              5. Redeem the offer by entereing the transaction Hash for the Offer in the markt page
+              <p> 5. Redeem the offer by entereing the transaction Hash for the Offer in the markt page </p>
             </div>
             <div className="collapsible-body">
               <p>
@@ -97,12 +134,21 @@ class Home extends Component {
         </ul>
       </Card>
       </div>
-      </div>
-    </Main>);
+      <Footer copyrights = "® 2019, Etherswaps"
+        links={
+          <ul>
+            <li><a className="grey-text text-lighten-3" href="mailto:markus.saitmacher@web.de">Contact</a></li>
+          </ul>
+        }
+        className='example'
+        >
+    <h5 className="white-text">Etherswaps</h5>
+    {/* <p className="grey-text text-lighten-4">No warrantiy </p> */}
+    </Footer>
+
+     </div>
+    );
   }
 }
 
-// <p>Please note that this Project is in a Testing phase and
-//   &nbsp;<b>should not</b>&nbsp;
-//   be used in production as of now</p>
 export default Home;

@@ -117,7 +117,7 @@ class Market extends Component {
       return (<div> <Preloader size='big'> </Preloader><p>Please install Meta Mask and switch to the RPC Provider http://ethblockchain.digitpay.de</p> </div>)
 
     return (
-      <Main type={this.state.offersData < 5 ? "home" : "market"}>
+      <Main type={"market"}>
         <Grid>
           <ToastContainer autoClose={8000}/>
           <MarketOffersGrid
@@ -132,7 +132,8 @@ class Market extends Component {
             loading={this.state.loading}
             onHide={this.hideModal}
             redeemTxHash={this.state.redeemTxHash}
-            initializePayoutProcess={this.initializePayoutProcess}/>
+            initializePayoutProcess={this.initializePayoutProcess}
+            />
         </Grid>
       </Main>
   )

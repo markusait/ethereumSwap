@@ -9,6 +9,7 @@
     "react": "^16.6.3",
     "react-blockies": "^1.4.0",
     "react-dom": "^16.6.3",
+    "react-landing-page": "^2.0.2",
     "react-loaders": "^3.0.1",
     "react-materialize": "^2.6.0",
     "react-router-dom": "^4.3.1",
