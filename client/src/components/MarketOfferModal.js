@@ -5,7 +5,7 @@ class MarketOfferModal extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      cryptoTransactionHash: 'b1ddc46ad47f6f95d75129281b22636d5b19a06bcf534305b018fd8e688265e1'
+      cryptoTransactionHash: '014ed2e6f875da84648fb38f5b39077f8d54466aecef371a4fe5f9f754088c46'
     }
   }
 
@@ -33,8 +33,14 @@ class MarketOfferModal extends Component {
       } else {
         return (<div>
           <Preloader size='big'/>
-          <p>Please wait while your transaction is beeing processed</p>
-          <p>you can view the status of your transaction here {this.props.redeemTxHash}</p>
+          <p>Please wait while your transaction is beeing processed <br/>
+          {
+            this.props.redeemTxHash ?
+             `If you are on the Ropsten Testnet you can view the status of your transaction here
+              https://ropsten.etherscan.io/tx/${this.props.redeemTxHash}`
+              : ''
+          }
+          </p>
         </div>)
       }
     }

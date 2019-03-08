@@ -1,6 +1,6 @@
 import Web3 from "web3";
 import EthereumSwap from "../contractInterface/EthereumSwap.json";
-import EthereumSwapRopsten from "../contractInterface/EthereumSwapRopsten.json";
+// import EthereumSwapRopsten from "../contractInterface/EthereumSwapRopsten.json";
 
 // IMPORTANT:
 // omitted window event listener here see here for more:

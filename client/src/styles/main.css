@@ -21,6 +21,20 @@ nav ul a {
   color: black !important;
 }
 
+.get-started-button {
+  padding: 15px;
+  background-color: #fff;
+  color: #1fb384;
+  font-size: 13px;
+  line-height: 20px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  display: inline-block;
+  box-shadow: 0 4px 11px 0 rgba(1, 58, 117, .33);
+}
+a.get-started-button:hover {
+  background: #333333;
+}
 
 .headerImg{
   width:125px;
@@ -283,13 +297,8 @@ h2 {
   position: relative;
   height: 35rem;
   background: linear-gradient(to right, #34e89e, #0f3443);
-  /* color: #ffffff; */
   display: flex;
   align-items: stretch;
-  /* background: url('../assets/blocks.png') no-repeat center top , linear-gradient(to right, #34e89e, #0f3443); */
-  /* flex-direction: column;
-  justify-content: center;
-  align-items: center; */
   margin-bottom: 5rem;
 }
 .title-container {
@@ -297,7 +306,7 @@ h2 {
   margin-top: 5%;
   font-family: Inconsolata, monospace;
   z-index: 1;
-  width:58%;
+  width:72%;
 }
 
 .image-container {

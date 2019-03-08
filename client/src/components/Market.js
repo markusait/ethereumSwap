@@ -15,7 +15,9 @@ class Market extends Component {
       payoutOfferId:null,
       cryptoAmount: 615525,
       redeemTxHash: null,
-      oraclizeApiPrice: 500000000000000000,
+      // oraclizeApiPrice: 50000000000000000,
+      oraclizeApiPrice: 4000000000000000,
+      // oraclizeApiPrice: 3,
       gasLimit: 3500000,
     }
   }
@@ -56,6 +58,7 @@ class Market extends Component {
   }
 
   initializePayoutProcess = async (index, cryptoTransactionHash, cryptoAddress) => {
+    this.setState({loading : true})
     try {
       const payoutOfferId = this.state.offersData[index]['_id']
       const { account, contract } = this.props
@@ -65,7 +68,6 @@ class Market extends Component {
       this.setState({
         payoutOfferId,
         redeemTxHash: response.transactionHash,
-        loading: true
       })
       this.watchEvents()
     } catch (e) {
@@ -114,12 +116,12 @@ class Market extends Component {
 
   render() {
     if (!this.state.offersData)
-      return (<div> <Preloader size='big'> </Preloader><p>Please install Meta Mask and switch to the RPC Provider http://ethblockchain.digitpay.de</p> </div>)
+      return (<div> <Preloader size='big'> </Preloader><p>Please install Meta Mask and switch to the RPC Provider http://blockchain.etherswaps.co</p> </div>)
 
     return (
       <Main type={"market"}>
         <Grid>
-          <ToastContainer autoClose={8000}/>
+          <ToastContainer autoClose={60000}/>
           <MarketOffersGrid
             offers={this.state.offersData}
             openModal={this.openModal}

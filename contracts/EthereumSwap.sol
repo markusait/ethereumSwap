@@ -74,7 +74,7 @@ contract usingOraclize {
     }
     //edited!!!
     function oraclize_getPrice(string datasource) oraclizeAPI internal returns (uint){
-        if(oraclize.getPrice(datasource) == 0) return 500000;
+        // if(oraclize.getPrice(datasource) == 0) return 999;
         return oraclize.getPrice(datasource);
     }
     function oraclize_getPrice(string datasource, uint gaslimit) oraclizeAPI internal returns (uint){
@@ -206,19 +206,19 @@ contract usingOraclize {
         }
     }
     function strConcat(string _a, string _b, string _c, string _d, string _e, string _f) internal returns (string){
-      string memory firstPart = strConcat(_a,_b,_c,_d,_e);
+        string memory firstPart = strConcat(_a,_b,_c,_d,_e);
 
-      bytes memory _bfirstPart = bytes(firstPart);
-      bytes memory _bf = bytes(_f);
+        bytes memory _bfirstPart = bytes(firstPart);
+        bytes memory _bf = bytes(_f);
 
-      string memory abcdef = new string(_bfirstPart.length + _bf.length);
-      bytes memory babcdef = bytes(abcdef);
-      uint k = 0;
+        string memory abcdef = new string(_bfirstPart.length + _bf.length);
+        bytes memory babcdef = bytes(abcdef);
+        uint k = 0;
 
-      for (uint i = 0; i < _bfirstPart.length; i++) babcdef[k++] = _bfirstPart[i];
-      for (i = 0; i < _bf.length; i++) babcdef[k++] = _bf[i];
-      return string(babcdef);
-  }
+        for (uint i = 0; i < _bfirstPart.length; i++) babcdef[k++] = _bfirstPart[i];
+        for (i = 0; i < _bf.length; i++) babcdef[k++] = _bf[i];
+        return string(babcdef);
+    }
 
     function strConcat(string _a, string _b, string _c, string _d, string _e) internal returns (string){
         bytes memory _ba = bytes(_a);
@@ -467,7 +467,7 @@ contract EthereumSwap is usingOraclize {
         return oraclizePrice;
     }
 
-    /// @notice Constructor only used in testing for Oraclize Bridge with ethereum-bridge
+    /// @notice Constructor only used in testing for Oraclize Bridge with ethereum-bridge comment out for Ropsten
     function EthereumSwap(address _oraclizeAddress) public {
         OAR = OraclizeAddrResolverI(_oraclizeAddress);
         bridgeConnector = _oraclizeAddress;
@@ -479,7 +479,7 @@ contract EthereumSwap is usingOraclize {
     /// @param _cryptoAddress The Bitcoin Address to which a doner will pay money to
     /// @param _cryptoWithdrawAmount amount in smallest possible nomination of the crypto asset for which eth can withdrawed
     function depositEther(string _cryptoAddress, string _cryptoWithdrawAmount, uint _assetType) payable public {
-        //require(!deposit[_cryptoAddress].exists, " Offer for this address already exists");
+        require(!deposit[_cryptoAddress].exists, " Offer for this address already exists");
         Offer memory paymentStruct = Offer({
             exists:true,
             owner: msg.sender,
@@ -488,6 +488,7 @@ contract EthereumSwap is usingOraclize {
             potentialPayoutAddress: None,
             assetType: _assetType
         });
+
 
         deposit[_cryptoAddress] = paymentStruct;
 
@@ -499,14 +500,16 @@ contract EthereumSwap is usingOraclize {
     /// @notice assetTypes: 0 == Bitcoin, 1 == Lumens
     /// @param _txHash The Bitcoin tx Hash prooving the doner payed money to it or the Lumens operation Code
     /// @param _cryptoAddress The Crypto Address to which a doner has payed money to
-    function getTransaction(string _txHash, string _cryptoAddress) payable public {
+    function getTransaction(string _txHash, string _cryptoAddress) payable public{
         string memory query;
 
-        oraclizePrice = oraclize_getPrice("URL");
+        uint oracleAPIPrice = oraclize_getPrice("URL");
+
+        if(oracleAPIPrice == 0)  oracleAPIPrice = 4000000000000000;
 
         require(deposit[_cryptoAddress].exists, "No Offer for this address available");
 
-        // require(msg.value => oraclize_getPrice("URL"));
+        require(msg.value >= oracleAPIPrice, strConcat("Value of transacation too low, mimimum Ether Amount in Wei is: " , uint2str(oracleAPIPrice)));
 
         // Bitcoin
         if (deposit[_cryptoAddress].assetType == 0) {
@@ -517,6 +520,7 @@ contract EthereumSwap is usingOraclize {
         else {
             query = strConcat("json(https://horizon.stellar.org/operations/", _txHash, ").[to,amount,type,asset_type]");
         }
+
         oraclizeID = oraclize_query("URL", query, 500000);
 
         deposit[_cryptoAddress].potentialPayoutAddress = msg.sender;
@@ -526,8 +530,6 @@ contract EthereumSwap is usingOraclize {
         emit LogInfo("Oraclize query was sent, standing by for the answer...");
 
     }
-
-
 
     /// @notice Oraclize call back function invoking payout process
     /// @notice payable because oraclize call needs gas and this is preventing fraud
@@ -554,8 +556,8 @@ contract EthereumSwap is usingOraclize {
         else {
 
             string memory compareString = strConcat("[\"" , cryptoAddress , "\", \"" , deposit[cryptoAddress].cryptoWithdrawAmount , "\", \"" , "payment\", \"native\"]");
-
-            validTransaction = compareStrings(compareString,_result);   //checking for exact amount
+            //checking for exact amount
+            validTransaction = compareStrings(compareString,_result);
         }
 
         if(validTransaction){
@@ -567,7 +569,7 @@ contract EthereumSwap is usingOraclize {
             emit PayedOutEvent(recipientAddress, ethAmount, cryptoAddress);
 
         } else {
-            emit LogInfo("The sended Amount was too small or non exsisting ");
+            emit LogInfo("The sended Bitcoin or Lumens Amount was too small or non exsisting ");
         }
 
     }
@@ -595,14 +597,13 @@ contract EthereumSwap is usingOraclize {
         }
     }
 
-
      /* HELPER FUNCTIONS */
-    function compareStrings (string a, string b) view returns (bool){
+    function compareStrings (string a, string b) public view returns (bool){
         return keccak256(a) == keccak256(b);
     }
     uint80 constant None = uint80(0);
 
-    function stringToUint(string s) constant returns (uint result) {
+    function stringToUint(string s) public view returns (uint result) {
         bytes memory b = bytes(s);
         uint i;
         result = 0;

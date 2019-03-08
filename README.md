@@ -51,7 +51,7 @@ ethereumSwap
     │   └── api
     └── test
 
-You can skip step 1 to 3 by using the blockchain instance at http://ethblockchain.digitpay.de with this Private Key: d60984ec931d45517e170c1a1e48a9ca041a6b9803e4d7cebc1704d8f478b5d0.
+You can skip step 1 to 3 by using the blockchain instance at http://blockchain.etherswaps.co with this Private Key: d60984ec931d45517e170c1a1e48a9ca041a6b9803e4d7cebc1704d8f478b5d0.
 Make sure to the correct host in the truffle.js when doing so.
 
 1. Create a blockchain instance by using Ganache
@@ -59,13 +59,13 @@ Make sure to the correct host in the truffle.js when doing so.
         ganache-cli --accounts 10 --port 7545
 
 
-2. Spin up the Ethereum Bridge for local testing with oraclize. Open a terminal window and run the following command. Then copy the OAR address in the `config.js` file as such: `oraclizeConnectorAddress: 0xyourOARAddress`. You can also run the command with the `--oar` flag to use the same connector contract each time. More about ethreum-bridge [here](https://github.com/oraclize/ethereum-bridge)
+2. Spin up the Ethereum Bridge for local testing with oraclize. Open a terminal window and run the following command. Then copy the OAR address in the `config.js` file as such: `oraclizeConnectorAddress: 0xyourOARAddress`. You can also run the command with the `--oar` flag to use the same connector contract each time. Make sure to disable the constructor in the smart contract when deploying to Ropsten or Mainnet. More about ethreum-bridge [here](https://github.com/oraclize/ethereum-bridge)
 
         ethereum-bridge -a 9 -H 127.0.0.1 -p 7545 --dev
         #or if not installed globally
         node bridge -a 9 -H 127.0.0.1 -p 7545 --dev
 
-3. Compile and deploy the contract to the blockchain. More info  [here](https://github.com/oraclize/ethereum-bridge)
+3. Compile and deploy the contract to the blockchain. More infos  [here](https://truffleframework.com/)
 
         truffle migrate --reset
 
@@ -80,7 +80,7 @@ Make sure to the correct host in the truffle.js when doing so.
 
 - run tests with
 
-          truffle test
+        truffle test
 
 - build the client folder with
 

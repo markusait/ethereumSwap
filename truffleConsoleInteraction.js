@@ -14,9 +14,9 @@ offer = {tx: "d04f8780b597a5e2630d2fdcb954446d546d3a5a2df881d11237abde0f1dd4ee",
       address: "12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX",
       amount: 143500
 }
-
+//btc
 instance.methods.depositEther("3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9","615525",0).send({from:accounts[0],value: 1000000000000000000, gas: 3500000}).then((res) => {console.log(res.events)}).catch(e => console.log(e))
-
+//lumens
 instance.methods.depositEther("GDRK2CMWPHEEHRY6RUBVKXW4FH3KGXVN5ZLZIVKNVCIYIPBASWPAMRQW","375.9900000",1).send({from:accounts[0],value: 1000000000000000000, gas: 3500000}).then((res) => {console.log(res.events)}).catch(e => console.log(e))
 instance.methods.depositEther("GBR5DSDUAGOI5K6U6QD7PLEHMDMEJYE3JRUBLIJN4EZI45COHRSQAPFI","11000.1280000",1).send({from:accounts[0],value: 1000000000000000000, gas: 3500000}).then((res) => {console.log(res.events)}).catch(e => console.log(e))
 
@@ -70,17 +70,6 @@ app.contract.events.PayedOutEvent()
 
 
 app.LogInfo({}, function(error, event){ console.log(event); }).on('data', function(event){console.log(event)}).on('changed', function(event){}).on('error', console.error);
-
-
-
-
-
-
-
-
-
-
-web3.eth.getBalance(app.address)
 
 //testing gas usage
 // using the promise

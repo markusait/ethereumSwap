@@ -20,8 +20,6 @@ router.get('/', (req, res) => {
 // @access  Public
 router.post('/', (req, res) => {
   const newOffer = new Offer(req.body)
-  console.log("getting offer")
-  console.log(req.body)
   newOffer.save()
     .then(offer => res.json(offer))
     .catch(e => {
@@ -36,12 +34,6 @@ router.put('/:id', function(req, res) {
   const query = {
     '_id': req.params.id
   }
-  // const updateData = {
-  //   payedOut,
-  //   payedOutTransactionHash,
-  //   recipientAddress
-  // } = req.body
-  console.log(req.body);
   Offer.findOneAndUpdate(query, req.body, {
     upsert: true
   }, (err, doc) => {
@@ -53,7 +45,7 @@ router.put('/:id', function(req, res) {
     });
   });
 })
-
+//CAUTION: ALWAYS KEEP THIS DISABLED WHEN IN USAGE
 // @route   DELETE api/offers/:id
 // @desc    Delete A Offer
 // @access  Public

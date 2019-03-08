@@ -27,10 +27,11 @@ class Home extends Component {
             <div className="title-container">
                 <h1 className="header-title"> Etherswaps</h1>
                 <p className="header-subtitle">
-                  Welcome to Etherswaps, a lightweight decentralized Exchange. < br / >
+                  Welcome to Etherswaps, a lightweight decentralized Exchange.<br/>
                   No Middleman are required to swap your Ether for Bitcoin and Stellar. <br/>
                   You can enjoy full MetaMask Wallet support with low fees and fast exchange times. <br/>
                 </p>
+                <a className="get-started-button" href="http://etherswaps.co/#/choose"> get started now</a>
             </div>
             <div className="image-container">
                 <img className="blockImage" src={BlocksImg} alt="blocks" />
@@ -49,22 +50,25 @@ class Home extends Component {
                     {/* TODO add ether bitcoin stellar image here  */}
                         <img alt="shield" src={NetworkImg}/>
                         <h5 class="center point1">Ethereum Blockchain</h5>
-                        <p class="point1sub"> Decentralized payments </p>
+                        <p class="point1sub"> Swap your currencies directly on a decentralized blockchain </p>
                     </div>
                     <div class="adv">
                         <img alt="hand" src={ScalableImg}/>
-                        <h5 class="center point2">Modularity</h5>
-                        <p class="point2sub">You do not have to pay any middleman </p>
+                        <h5 class="center point2">Multiple Blockchains Support </h5>
+                        <p class="point2sub"> Currently you can perrform Atomic Swaps with Ether, Bitcoin and Stellar </p>
                     </div>
                     <div class="adv">
                         <img alt="spaceship" src={BankImg} className="green-filter"/>
                         <h5 class="center point3">No Middleman required</h5>
-                        <p class="point3sub"> With only marginal trust required  </p>
+                        <p class="point3sub"> By using <a href="http://www.oraclize.it/)" target="blank">  Oraclize </a>
+                        the underlying smart contract can perform validations itself so you dont have to trust any third parties  </p>
                     </div>
                     <div class="adv">
                         <img alt="person" src={FastImg}/>
                         <h5 class="center point4">Low fees and fast confirmations</h5>
-                        <p class="point4sub subpoints">You dont ahve to pay any Middleman only need to cover marginal transaction costs and API request fees while confirmations are quick</p>
+                        <p class="point4sub subpoints"> Transact directly on the fast Ethereum Blockchain
+                         Exchange fees payed to the smart contract are around 0.004 Ether (0.5 USD)
+                         while confirmations are quick</p>
                     </div>
                 </div>
               </div>
@@ -92,8 +96,8 @@ class Home extends Component {
             </div>
             <div className="collapsible-body">
               <p>connect to &nbsp;
-                <a href="http://ethblockchain.digitpay.de" target="_blank" rel="noopener noreferrer">
-                  http://ethblockchain.digitpay.de
+                <a href="http://blockchain.etherswaps.co" target="_blank" rel="noopener noreferrer">
+                  http://blockchain.etherswaps.co
                 </a>
                 &nbsp; and use this private key: f0afc4913d6d4b6e46adfaf3509dd516fa76760bc500dd6e023bb8ecc9832545 for testing
               </p>
@@ -137,6 +141,7 @@ class Home extends Component {
       <Footer copyrights = "® 2019, Etherswaps"
         links={
           <ul>
+            <li><a className="grey-text text-lighten-3" href="https://github.com/markusait/ethereumSwap">Fork me on Github </a></li>
             <li><a className="grey-text text-lighten-3" href="mailto:markus.saitmacher@web.de">Contact</a></li>
           </ul>
         }

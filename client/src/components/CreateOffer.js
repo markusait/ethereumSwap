@@ -10,16 +10,23 @@ import {
   hasPriorTransactions
 } from "../utils/utilFunctions";
 import 'react-toastify/dist/ReactToastify.css';
-import {ToastContainer, Main, Card, toast, Row} from '../styles/index.js'
+import {
+  ToastContainer,
+  Main,
+  Card,
+  toast,
+  Row,
+  Preloader
+} from '../styles/index.js'
 
 class CreateOffer extends Component {
   constructor(props) {
     super(props)
     this.state = {
       stellar: false,
-      offerCryptoAddress: '3GZSJ47MPBw3swTZtCTSK8XeZNPed25bf9',
-      offerCryptoAmount: '615525',
-      offerEthAmount: 1000000000000,
+      offerCryptoAddress: '1MfJVqRgryFvnGSQjVt3xCAhdwmcwairYQ',
+      offerCryptoAmount: '700000',
+      offerEthAmount: 2000000000000000000,
       offerTxHash: null,
       priceForCryptoLabel: '',
       priceForEthLabel: ''
@@ -64,6 +71,7 @@ class CreateOffer extends Component {
   }
 
   depositToContract = async (event) => {
+        this.props.startLoading()
         event.preventDefault();
         try {
           const { account, contract } = this.props;
@@ -95,7 +103,7 @@ class CreateOffer extends Component {
           this.notify()
 
     } catch (e) {
-      this.props.contract == null ? this.notify("Contract not deployed on this blockchain please change your rpc provider to http://ethblockchain.digitpay.de")
+      this.props.contract == null ? this.notify("Contract not deployed on this blockchain please change your rpc provider to http://blockchain.etherswaps.co")
       : this.notify(e.message)
       console.error(e)
     }
@@ -118,7 +126,7 @@ class CreateOffer extends Component {
         return (<React.Fragment>
           <Link to={"/market/" + this.props.offerTxHash}>Go to MarketPlace</Link>
           <p>
-            {'this is your Transaction hash' + this.props.offerTxHash}
+            {`this is your Transaction hash ${this.props.offerTxHash}`}
           </p>
         </React.Fragment>)
       } else {
@@ -137,23 +145,22 @@ class CreateOffer extends Component {
        </label>
     }
     const EthAmountLabel = () => {
-      // return <label className="toplabel" htmlFor="ethAmount"> Amount Ether (in Wei) the Offer is worth for you </label>
-      // return <label className="toplabel" htmlFor="ethAmount"> Amount Ether (in Wei) the Offer is worth for you {this.getPriceSync("ethereum", (this.state.stellar ? 'xlm' : 'btc') )} </label>
       return <label className="toplabel" htmlFor="ethAmount">
         Amount Ether in Wei the Offer is worth for you,
         currently worth {`${this.state.priceForEthLabel} ${this.state.stellar ? 'Stroops' : 'Satoshi' }   `}  </label>
     }
+    const Loader = () => this.props.loading ? <Preloader size='big'/> : ''
 
     return (<Main type="create">
       <div className="container col createCard-container">
         <Card className="hoverable">
           <ToastContainer autoClose={8000}/>
           <h5 className="center">
-            Create a new Offer to get Bitcoins for your Ether
+            Create a new offer to get {this.state.stellar ? "Lumens" : "Bitcoins"} for your Ether
           </h5>
           <MarketLink/>
           <p className="center">
-            Type in your Bitcoin Address and the amount of Ether or USD you want to set it free
+            Type in your  {this.state.stellar ? "Lumens" : "Bitcoins"} Address and the amount of Ether or USD you want to set it free
           </p>
           <Row>
             <form onSubmit={this.depositToContract} id="contractForm" className="col s12">
@@ -167,10 +174,11 @@ class CreateOffer extends Component {
                     </label>
                   </div>
                 </Row>
+                <Loader/>
                 <Row>
                   <div className="chips-addresses input-field col s12">
                     <input name="offerCryptoAddress" value={this.state.offerCryptoAddress} onChange={this.handleChange} id="offerCryptoAddress" type="text" className="validate"/>
-                      <OfferCryptoAddressLabel / >
+                      <OfferCryptoAddressLabel/>
                   </div>
                 </Row>
                 <Row>

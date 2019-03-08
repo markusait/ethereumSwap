@@ -35,7 +35,11 @@ class MarketOffersGrid extends Component {
                     Amount to claim: {offer.offerCryptoAmount} {offer.offerCurrency}
                   </p>
                   <p>
-                    Amount to Pay: {offer.offerEthAmount} </p>
+                    Amount to Pay: {offer.offerEthAmount}
+                  </p>
+                  <p>
+                    Deployed on: {offer.contractNetwork}
+                  </p>
                 <CardAction>
                   <Button floating large waves='light' icon='remove_red_eye' className="teal marketBtn" id={offer._id} onClick={e => this.props.openModal(e, index)}>View Details</Button>
                   <p class="Offer-Tag"> Claim this Offer now</p>

@@ -14,6 +14,7 @@ import '../styles/main.css';
 
 class App extends Component {
     state = {
+        loading: false,
         web3: null,
         account: null,
         contract: null,
@@ -44,11 +45,14 @@ class App extends Component {
             })
         })
     }
-
     createdAnOffer = (transactionHash) => {
         this.setState({
-            offerTxHash: transactionHash
+            offerTxHash: transactionHash,
+            loading: false
         })
+    }
+    startLoading = () => {
+        this.setState({loading: true})
     }
 
     render() {
@@ -62,8 +66,9 @@ class App extends Component {
                     <Route
                       exact path = "/createOffer"
                       render = {() =>
-                        < CreateOffer {...this.state}
+                        <CreateOffer {...this.state}
                             createdAnOffer = {this.createdAnOffer}
+                            startLoading = {this.startLoading}
                             />
                     }
                     />

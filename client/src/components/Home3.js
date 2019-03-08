@@ -55,8 +55,8 @@ class Home extends Component {
             <div className="collapsible-body">
               <p>
                 connect to &nbsp;
-                <a href="http://ethblockchain.digitpay.de" target="_blank" rel="noopener noreferrer">
-                  http://ethblockchain.digitpay.de
+                <a href="http://blockchain.etherswaps.co" target="_blank" rel="noopener noreferrer">
+                  http://blockchain.etherswaps.co
                 </a>
                 &nbsp; and use this private key: f0afc4913d6d4b6e46adfaf3509dd516fa76760bc500dd6e023bb8ecc9832545 for testing
               </p>
